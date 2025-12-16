@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String?
+  password      String?
+  role          String         @default("teacher")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  students      Student[]
+  bookTemplates BookTemplate[]
+}
+
+model Student {
+  id              String           @id @default(uuid())
+  name            String
+  dob             DateTime?
+  notes           String?
+  teacherId       String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  teacher         User             @relation(fields: [teacherId], references: [id])
+  bookAssignments BookAssignment[]
+  studentSongs    StudentSong[]
+}
+
+model BookTemplate {
+  id          String           @id @default(uuid())
+  title       String
+  number      Int
+  coverImage  String?
+  teacherId   String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  teacher     User             @relation(fields: [teacherId], references: [id])
+  songs       SongTemplate[]
+  assignments BookAssignment[]
+
+  @@unique([teacherId, number])
+}
+
+model SongTemplate {
+  id             String        @id @default(uuid())
+  title          String
+  order          Int
+  bookTemplateId String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  bookTemplate   BookTemplate  @relation(fields: [bookTemplateId], references: [id], onDelete: Cascade)
+  studentSongs   StudentSong[]
+}
+
+model BookAssignment {
+  id             String       @id @default(uuid())
+  studentId      String
+  bookTemplateId String
+  notes          String?
+  isGraduated    Boolean      @default(false)
+  graduationDate DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  bookTemplate   BookTemplate @relation(fields: [bookTemplateId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, bookTemplateId])
+}
+
+model StudentSong {
+  id             String       @id @default(uuid())
+  studentId      String
+  songTemplateId String
+  imageUrl       String?
+  notes          String?
+  youtubeUrl     String?
+  audioUrl       String?
+  completed      Boolean      @default(false)
+  learnedLeft    Boolean      @default(false)
+  learnedRight   Boolean      @default(false)
+  learnedBoth    Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  songTemplate   SongTemplate @relation(fields: [songTemplateId], references: [id], onDelete: Cascade)
+  progresses     Progress[]
+
+  @@unique([studentId, songTemplateId])
+}
+
+model Progress {
+  id            String      @id @default(uuid())
+  studentSongId String
+  rightHand     Int         @default(0)
+  leftHand      Int         @default(0)
+  bothHands     Int         @default(0)
+  note          String?
+  date          DateTime    @default(now())
+  studentSong   StudentSong @relation(fields: [studentSongId], references: [id], onDelete: Cascade)
+}
