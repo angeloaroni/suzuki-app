@@ -22,7 +22,7 @@ interface SongDetailModalProps {
 
 type ProgressNote = {
     id: string
-    songId: string
+    studentSongId: string
     leftHand: number
     rightHand: number
     bothHands: number

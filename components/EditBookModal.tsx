@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { X, BookOpen, Trash2, Check } from 'lucide-react'
-import { updateBook, deleteBook } from '@/app/actions/book'
+import { updateBookTemplate } from '@/app/actions/book-template'
+import { removeBookFromStudent } from '@/app/actions/book-assignment'
 import ConfirmDialog from './ConfirmDialog'
 
 interface EditBookModalProps {
@@ -10,6 +11,7 @@ interface EditBookModalProps {
     onClose: () => void
     book: {
         id: string
+        templateId: string
         title: string
         number: number
         songCount: number
@@ -32,7 +34,7 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
         setError(null)
         setSuccess(false)
 
-        const result = await updateBook(book.id, {
+        const result = await updateBookTemplate(book.templateId, {
             title: formData.title,
             number: formData.number
         })
@@ -54,7 +56,7 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
         setLoading(true)
         setError(null)
 
-        const result = await deleteBook(book.id)
+        const result = await removeBookFromStudent(book.id)
 
         if (result.success) {
             window.location.reload()

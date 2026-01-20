@@ -5,6 +5,8 @@ import Link from "next/link"
 import LogoutButton from "@/components/LogoutButton"
 import { Music, Users, TrendingUp, Award, Plus, ArrowRight, BookOpen } from "lucide-react"
 
+export const dynamic = 'force-dynamic'
+
 export default async function Dashboard() {
     const session = await getSession()
 

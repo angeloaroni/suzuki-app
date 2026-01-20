@@ -5,12 +5,13 @@ import { X } from 'lucide-react'
 interface ConfirmDialogProps {
     isOpen: boolean
     onClose: () => void
-    onConfirm: () => void
+    onConfirm: () => void | Promise<void>
     title: string
     message: string
     confirmText?: string
     cancelText?: string
     variant?: 'danger' | 'warning' | 'info'
+    isLoading?: boolean
 }
 
 export default function ConfirmDialog({
@@ -21,7 +22,8 @@ export default function ConfirmDialog({
     message,
     confirmText = 'Confirmar',
     cancelText = 'Cancelar',
-    variant = 'danger'
+    variant = 'danger',
+    isLoading = false
 }: ConfirmDialogProps) {
     if (!isOpen) return null
 
@@ -50,7 +52,8 @@ export default function ConfirmDialog({
                     <h3 className="text-xl font-bold text-gray-900">{title}</h3>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        disabled={isLoading}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
                     >
                         <X className="w-5 h-5 text-gray-500" />
                     </button>
@@ -65,18 +68,20 @@ export default function ConfirmDialog({
                 <div className="flex gap-3 p-6 border-t border-gray-100">
                     <button
                         onClick={onClose}
-                        className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                        disabled={isLoading}
+                        className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
                     >
                         {cancelText}
                     </button>
                     <button
-                        onClick={() => {
-                            onConfirm()
-                            onClose()
+                        onClick={async () => {
+                            await onConfirm()
+                            if (!isLoading) onClose()
                         }}
-                        className={`flex-1 px-4 py-2.5 ${styles.button} text-white rounded-xl transition-all shadow-lg font-medium`}
+                        disabled={isLoading}
+                        className={`flex-1 px-4 py-2.5 ${styles.button} text-white rounded-xl transition-all shadow-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
-                        {confirmText}
+                        {isLoading ? 'Cargando...' : confirmText}
                     </button>
                 </div>
             </div>

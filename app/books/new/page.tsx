@@ -3,6 +3,8 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { getNextBookNumber } from "@/app/actions/book-template"
 
+export const dynamic = 'force-dynamic'
+
 export default async function NewBookPage() {
     const result = await getNextBookNumber()
     const nextNumber = result.data || 1

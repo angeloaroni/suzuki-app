@@ -33,13 +33,21 @@ export async function GET(
         const student = await prisma.student.findUnique({
             where: { id: params.id },
             include: {
-                books: {
+                bookAssignments: {
                     include: {
-                        songs: {
-                            orderBy: { order: 'asc' }
+                        bookTemplate: {
+                            include: {
+                                songs: {
+                                    orderBy: { order: 'asc' }
+                                }
+                            }
                         }
                     },
-                    orderBy: { number: 'asc' }
+                    orderBy: {
+                        bookTemplate: {
+                            number: 'asc'
+                        }
+                    }
                 }
             }
         })

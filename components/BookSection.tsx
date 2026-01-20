@@ -7,6 +7,7 @@ import SongCard from "@/components/SongCard"
 
 interface Book {
     id: string
+    templateId: string
     title: string
     number: number
     isGraduated: boolean

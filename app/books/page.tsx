@@ -3,6 +3,8 @@ import { BookTemplateCard } from "@/components/BookTemplateCard"
 import Link from "next/link"
 import { PlusCircle, BookOpen } from "lucide-react"
 
+export const dynamic = 'force-dynamic'
+
 export default async function BooksPage() {
     const result = await getBookTemplates()
     const templates = result.data || []

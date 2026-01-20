@@ -7,7 +7,7 @@ import ConfirmDialog from "./ConfirmDialog"
 
 type ProgressNote = {
     id: string
-    songId: string
+    studentSongId: string
     leftHand: number
     rightHand: number
     bothHands: number

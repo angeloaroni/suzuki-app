@@ -11,6 +11,7 @@ import BookSection from "@/components/BookSection"
 
 interface Book {
     id: string
+    templateId: string
     title: string
     number: number
     isGraduated: boolean
@@ -193,6 +194,7 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                         }}
                         book={{
                             id: selectedBook.id,
+                            templateId: selectedBook.templateId || '',
                             title: selectedBook.title,
                             number: selectedBook.number,
                             songCount: selectedBook.songs.length

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import StudentDetailClient from "@/components/StudentDetailClient"
 
+export const dynamic = 'force-dynamic'
+
 export default async function StudentDetailPage({ params }: { params: { id: string } }) {
     const session = await getSession()
 
