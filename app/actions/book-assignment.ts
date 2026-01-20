@@ -179,11 +179,12 @@ export async function removeBookFromStudent(assignmentId: string) {
 export async function toggleBookGraduation(assignmentId: string) {
     console.log("🎓 Toggling graduation for:", assignmentId)
     try {
+        console.log("🎓 [toggleBookGraduation] START for assignmentId:", assignmentId)
         const session = await getSession()
-        console.log("👤 Session user:", session?.user?.id)
+        console.log("👤 [toggleBookGraduation] Session user:", session?.user?.id)
 
         if (!session?.user?.id) {
-            console.log("❌ No session")
+            console.log("❌ [toggleBookGraduation] No session")
             return { error: "No autorizado" }
         }
 
@@ -191,32 +192,38 @@ export async function toggleBookGraduation(assignmentId: string) {
             where: { id: assignmentId },
             include: { student: true }
         })
-        console.log("📚 Assignment found:", assignment ? "yes" : "no")
+        console.log("📚 [toggleBookGraduation] Assignment found:", assignment ? "YES" : "NO")
 
-        if (!assignment) return { error: "Asignación no encontrada" }
+        if (!assignment) {
+            console.log("❌ [toggleBookGraduation] Assignment not found in DB")
+            return { error: "Asignación no encontrada" }
+        }
 
-        console.log("👨‍🏫 Assignment teacherId:", assignment.student.teacherId)
+        console.log("👨‍🏫 [toggleBookGraduation] Student Teacher ID:", assignment.student.teacherId)
+        console.log("🔄 [toggleBookGraduation] Current Status:", assignment.isGraduated)
 
         if (assignment.student.teacherId !== session.user.id) {
-            console.log("❌ Auth mismatch")
+            console.log("❌ [toggleBookGraduation] Auth mismatch")
             return { error: "No autorizado" }
         }
 
         const newStatus = !assignment.isGraduated
         const graduationDate = newStatus ? new Date() : null
+        console.log("📝 [toggleBookGraduation] Updating to:", newStatus)
 
-        await prisma.bookAssignment.update({
+        const updated = await prisma.bookAssignment.update({
             where: { id: assignmentId },
             data: {
                 isGraduated: newStatus,
                 graduationDate: graduationDate
             }
         })
+        console.log("✅ [toggleBookGraduation] Update successful:", updated.isGraduated)
 
         revalidatePath(`/students/${assignment.studentId}`)
         return { success: true, isGraduated: newStatus, graduationDate }
     } catch (error: any) {
-        console.error("❌ Error toggling graduation:", error)
+        console.error("❌ [toggleBookGraduation] Error toggling graduation:", error)
         return { error: "Error al actualizar estado de graduación: " + error.message }
     }
 }

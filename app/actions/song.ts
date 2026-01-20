@@ -73,6 +73,11 @@ export async function toggleSongProgress(
             case 'both':
                 newValue = !studentSong.learnedBoth
                 updateData = { learnedBoth: newValue }
+                // If both hands are learned, also mark left and right as learned
+                if (newValue) {
+                    updateData.learnedLeft = true
+                    updateData.learnedRight = true
+                }
                 break
             case 'completed':
                 newValue = !studentSong.completed
@@ -86,7 +91,7 @@ export async function toggleSongProgress(
         })
 
         revalidatePath(`/students/${studentSong.studentId}`)
-        return { success: true, newValue }
+        return { success: true, newValue, updatedFields: updateData }
 
     } catch (error: any) {
         console.error("Error toggling progress:", error)
@@ -219,5 +224,36 @@ export async function uploadSongAudio(studentSongId: string, base64Data: string,
     } catch (error: any) {
         console.error("Error uploading audio:", error)
         return { error: "Error al subir el audio" }
+    }
+}
+
+export async function createCustomSong(bookId: string, data: { title: string, order: number, notes?: string, youtubeUrl?: string }) {
+    try {
+        const session = await getSession()
+        if (!session?.user?.id) {
+            return { error: "No autorizado" }
+        }
+
+        const book = await prisma.bookTemplate.findUnique({
+            where: { id: bookId }
+        })
+
+        if (!book || book.teacherId !== session.user.id) {
+            return { error: "No autorizado" }
+        }
+
+        const song = await prisma.songTemplate.create({
+            data: {
+                title: data.title,
+                order: data.order,
+                bookTemplateId: bookId,
+            }
+        })
+
+        revalidatePath(`/books/${bookId}`)
+        return { success: true, song }
+    } catch (error: any) {
+        console.error("Error creating custom song:", error)
+        return { error: "Error al crear la canción" }
     }
 }

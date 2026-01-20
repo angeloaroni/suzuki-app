@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname
 
     // Public paths that don't require authentication
-    const isPublicPath = path === '/login' || path === '/register' || path === '/'
+    const isPublicPath = path === '/login' || path === '/register' || path === '/' || path === '/forgot-password' || path === '/reset-password'
 
     const session = request.cookies.get('session')?.value
 

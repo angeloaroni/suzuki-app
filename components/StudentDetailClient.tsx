@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import SongCard from "@/components/SongCard"
 import AssignBookModal from "@/components/AssignBookModal"
 import AddSongModal from "@/components/AddSongModal"
 import EditBookModal from "@/components/EditBookModal"
 import { removeBookFromStudent, toggleBookGraduation } from "@/app/actions/book-assignment"
 import { BookOpen, Plus, Edit, Music, Trash2, GraduationCap } from "lucide-react"
+import BookSection from "@/components/BookSection"
 
 interface Book {
     id: string
@@ -72,14 +72,19 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
     }
 
     const handleToggleGraduation = async (assignmentId: string, bookTitle: string, currentStatus: boolean) => {
+        console.log("🖱️ [Client] handleToggleGraduation clicked", { assignmentId, bookTitle, currentStatus })
         const action = currentStatus ? "quitar la graduación" : "graduar"
         if (confirm(`¿Estás seguro de que deseas ${action} al estudiante del libro "${bookTitle}"?`)) {
+            console.log("✅ [Client] Confirmed. Calling server action...")
             const result = await toggleBookGraduation(assignmentId)
+            console.log("🔙 [Client] Server action result:", result)
             if (result.success) {
                 window.location.reload()
             } else {
                 alert(result.error || "Error al actualizar graduación")
             }
+        } else {
+            console.log("❌ [Client] Cancelled by user")
         }
     }
 
@@ -146,104 +151,15 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                     </div>
                 ) : (
                     student.books.map(book => (
-                        <div key={book.id} className="mb-12">
-                            {/* Book Header */}
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
-                                        <BookOpen className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                                            {book.title}
-                                            {book.isGraduated && (
-                                                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium flex items-center gap-1">
-                                                    <GraduationCap className="w-3 h-3" />
-                                                    Graduado
-                                                </span>
-                                            )}
-                                        </h2>
-                                        <p className="text-sm text-gray-600">
-                                            {book.songs.length} canciones
-                                            {book.isGraduated && book.graduationDate && (
-                                                <span className="ml-2 text-yellow-700">
-                                                    • {new Date(book.graduationDate).toLocaleDateString()}
-                                                </span>
-                                            )}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => handleToggleGraduation(book.id, book.title, book.isGraduated)}
-                                        className={`p-2 rounded-xl transition-all border ${book.isGraduated
-                                            ? 'bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-200'
-                                            : 'text-gray-400 hover:bg-gray-50 border-transparent hover:border-gray-200'}`}
-                                        title={book.isGraduated ? "Graduado (Click para deshacer)" : "Marcar como graduado"}
-                                    >
-                                        <GraduationCap className="w-5 h-5" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleRemoveBook(book.id, book.title)}
-                                        className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100"
-                                        title="Eliminar libro"
-                                    >
-                                        <Trash2 className="w-5 h-5" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleAddSong(book)}
-                                        className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl hover:bg-indigo-100 transition-all font-medium flex items-center gap-2"
-                                    >
-                                        <Plus className="w-4 h-4" />
-                                        Agregar Canción
-                                    </button>
-                                    <button
-                                        onClick={() => handleEditBook(book)}
-                                        className="px-4 py-2 bg-gray-50 text-gray-700 rounded-xl hover:bg-indigo-100 transition-all font-medium flex items-center gap-2"
-                                    >
-                                        <Edit className="w-4 h-4" />
-                                        Editar Libro
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Songs Grid */}
-                            {book.songs.length === 0 ? (
-                                <div className="bg-white rounded-xl border-2 border-dashed border-gray-200 p-8 text-center">
-                                    <Music className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                                    <p className="text-gray-600 mb-4">No hay canciones en este libro</p>
-                                    <button
-                                        onClick={() => handleAddSong(book)}
-                                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-                                    >
-                                        Agregar Primera Canción
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                    {book.songs.map(song => (
-                                        <SongCard
-                                            key={song.id}
-                                            studentId={student.id}
-                                            song={{
-                                                id: song.id,
-                                                templateId: song.templateId,
-                                                title: song.title,
-                                                imageUrl: song.imageUrl,
-                                                completed: song.completed,
-                                                learnedLeft: song.learnedLeft,
-                                                learnedRight: song.learnedRight,
-                                                learnedBoth: song.learnedBoth,
-                                                notes: song.notes,
-                                                youtubeUrl: song.youtubeUrl,
-                                                audioUrl: song.audioUrl,
-                                                progressNotesCount: song.progresses?.length ?? 0
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                        <BookSection
+                            key={book.id}
+                            book={book}
+                            studentId={student.id}
+                            onEditBook={handleEditBook}
+                            onAddSong={handleAddSong}
+                            onRemoveBook={handleRemoveBook}
+                            onToggleGraduation={handleToggleGraduation}
+                        />
                     ))
                 )}
             </div>

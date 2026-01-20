@@ -35,7 +35,17 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
         const context = studentId && song.templateId ? { studentId, templateId: song.templateId } : undefined
         const result = await toggleSongProgress(song.id, field, context)
         if (result.success) {
-            setProgress(prev => ({ ...prev, [field]: result.newValue }))
+            if (result.updatedFields) {
+                setProgress(prev => ({
+                    ...prev,
+                    left: result.updatedFields.learnedLeft !== undefined ? result.updatedFields.learnedLeft : prev.left,
+                    right: result.updatedFields.learnedRight !== undefined ? result.updatedFields.learnedRight : prev.right,
+                    both: result.updatedFields.learnedBoth !== undefined ? result.updatedFields.learnedBoth : prev.both
+                }))
+            } else {
+                // Fallback for older behavior if needed
+                setProgress(prev => ({ ...prev, [field]: result.newValue }))
+            }
         } else {
             setProgress(prev => ({ ...prev, [field]: !prev[field] }))
             alert(result.error)
