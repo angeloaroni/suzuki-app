@@ -31,6 +31,7 @@ model Student {
   teacher         User             @relation(fields: [teacherId], references: [id])
   bookAssignments BookAssignment[]
   studentSongs    StudentSong[]
+  attendances     Attendance[]
 }
 
 model BookTemplate {
@@ -106,6 +107,19 @@ model Progress {
   studentSong   StudentSong @relation(fields: [studentSongId], references: [id], onDelete: Cascade)
 }
 
+model Attendance {
+  id        String   @id @default(uuid())
+  studentId String
+  date      DateTime @db.Date
+  present   Boolean  @default(true)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, date])
+}
+
 model PasswordResetToken {
   id        String   @id @default(uuid())
   email     String
@@ -115,3 +129,4 @@ model PasswordResetToken {
 
   @@unique([email, token])
 }
+
