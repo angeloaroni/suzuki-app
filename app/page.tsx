@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { ArrowRight, Music, GraduationCap, BarChart3 } from "lucide-react";
 
+import { ThemeToggle } from "@/components/ThemeToggle";
+
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 flex flex-col font-sans transition-colors duration-500">
       {/* Header */}
-      <header className="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
+      <header className="fixed w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 border-b border-gray-100 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -17,9 +19,10 @@ export default function Home() {
               </span>
             </div>
             <nav className="flex items-center gap-2 sm:gap-4 ml-2">
+              <ThemeToggle />
               <Link
                 href="/login"
-                className="text-xs sm:text-sm md:text-base text-gray-600 hover:text-indigo-600 font-medium transition-colors whitespace-nowrap"
+                className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors whitespace-nowrap"
               >
                 Iniciar Sesión
               </Link>
@@ -38,7 +41,7 @@ export default function Home() {
       <main className="flex-1 pt-32 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 font-medium text-sm mb-8 animate-fade-in-up">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 font-medium text-sm mb-8 animate-fade-in-up">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
@@ -46,14 +49,14 @@ export default function Home() {
               Nuevo: Gestión de repertorio completa
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-8 tracking-tight leading-tight">
+            <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white mb-8 tracking-tight leading-tight">
               Domina el método <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">
                 Suzuki
               </span> paso a paso
             </h1>
 
-            <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
               La herramienta definitiva para profesores y alumnos. Gestiona el progreso,
               organiza el repertorio y celebra cada pequeña victoria en el camino musical.
             </p>
@@ -67,7 +70,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/about"
-                className="px-8 py-4 bg-white text-gray-700 text-lg font-semibold rounded-full hover:bg-gray-50 transition-all border border-gray-200 shadow-sm hover:shadow-md flex items-center gap-2"
+                className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-lg font-semibold rounded-full hover:bg-gray-50 dark:hover:bg-gray-700 transition-all border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md flex items-center gap-2"
               >
                 Saber más
               </Link>
@@ -99,15 +102,15 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-12">
+      <footer className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gray-900 rounded flex items-center justify-center">
+            <div className="w-6 h-6 bg-gray-900 dark:bg-indigo-600 rounded flex items-center justify-center">
               <Music className="w-3 h-3 text-white" />
             </div>
-            <span className="font-bold text-gray-900">SuzukiTracker</span>
+            <span className="font-bold text-gray-900 dark:text-white">SuzukiTracker</span>
           </div>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             © {new Date().getFullYear()} SuzukiTracker. Hecho con ❤️ para músicos.
           </p>
         </div>

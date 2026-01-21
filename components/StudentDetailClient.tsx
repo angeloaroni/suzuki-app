@@ -45,7 +45,10 @@ interface StudentDetailClientProps {
     student: Student
 }
 
+import { AnimatedList, AnimatedItem } from "@/components/AnimatedList"
+
 export default function StudentDetailClient({ student }: StudentDetailClientProps) {
+    // ... state and handlers ...
     const [showAssignBook, setShowAssignBook] = useState(false)
     const [showAddSong, setShowAddSong] = useState(false)
     const [showEditBook, setShowEditBook] = useState(false)
@@ -90,19 +93,19 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 transition-colors duration-500">
             {/* Header */}
-            <div className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-40">
+            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-40">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="min-w-0">
-                            <Link href="/dashboard" className="text-xs sm:text-sm text-indigo-600 hover:underline mb-1 sm:mb-2 block font-medium">
+                            <Link href="/dashboard" className="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 hover:underline mb-1 sm:mb-2 block font-medium">
                                 ← Volver al Dashboard
                             </Link>
                             <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate">
                                 {student.name}
                             </h1>
-                            <p className="text-sm sm:text-base text-gray-600 mt-1 line-clamp-2 sm:line-clamp-none">
+                            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 line-clamp-2 sm:line-clamp-none">
                                 {student.dob
                                     ? `Edad: ${Math.floor((Date.now() - new Date(student.dob).getTime()) / (365 * 24 * 60 * 60 * 1000))} años`
                                     : 'Sin fecha de nacimiento'}
@@ -119,7 +122,7 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                             </button>
                             <Link
                                 href={`/students/${student.id}/edit`}
-                                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 border-2 border-indigo-200 rounded-xl text-indigo-700 hover:bg-indigo-50 transition-all font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
+                                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 border-2 border-indigo-200 dark:border-indigo-900 rounded-xl text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
                             >
                                 <Edit className="w-4 h-4" />
                                 <span>Editar</span>
@@ -132,14 +135,14 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
             {/* Content */}
             <div className="max-w-7xl mx-auto px-6 py-8">
                 {student.books.length === 0 ? (
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-                        <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <BookOpen className="w-10 h-10 text-indigo-600" />
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
+                        <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/40 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <BookOpen className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                             No hay libros asignados
                         </h3>
-                        <p className="text-gray-500 mb-8 max-w-md mx-auto">
+                        <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
                             Asigna un libro Suzuki para comenzar a seguir el progreso
                         </p>
                         <button
@@ -151,17 +154,20 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                         </button>
                     </div>
                 ) : (
-                    student.books.map(book => (
-                        <BookSection
-                            key={book.id}
-                            book={book}
-                            studentId={student.id}
-                            onEditBook={handleEditBook}
-                            onAddSong={handleAddSong}
-                            onRemoveBook={handleRemoveBook}
-                            onToggleGraduation={handleToggleGraduation}
-                        />
-                    ))
+                    <AnimatedList className="space-y-8">
+                        {student.books.map(book => (
+                            <AnimatedItem key={book.id}>
+                                <BookSection
+                                    book={book}
+                                    studentId={student.id}
+                                    onEditBook={handleEditBook}
+                                    onAddSong={handleAddSong}
+                                    onRemoveBook={handleRemoveBook}
+                                    onToggleGraduation={handleToggleGraduation}
+                                />
+                            </AnimatedItem>
+                        ))}
+                    </AnimatedList>
                 )}
             </div>
 

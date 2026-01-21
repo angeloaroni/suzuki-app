@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import LogoutButton from "@/components/LogoutButton"
 import { Music, Users, TrendingUp, Award, Plus, ArrowRight, BookOpen } from "lucide-react"
+import { ThemeToggle } from "@/components/ThemeToggle"
+import { AnimatedList, AnimatedItem } from "@/components/AnimatedList"
 
 export const dynamic = 'force-dynamic'
 
@@ -67,17 +69,18 @@ export default async function Dashboard() {
                         <div className="flex items-center gap-2 sm:gap-4">
                             <Link
                                 href="/books"
-                                className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 rounded-lg hover:from-indigo-200 hover:to-purple-200 transition-all font-medium text-sm"
+                                className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/40 text-indigo-700 dark:text-indigo-300 rounded-lg hover:from-indigo-200 hover:to-purple-200 transition-all font-medium text-sm"
                             >
                                 <BookOpen className="w-4 h-4" />
                                 <span className="hidden sm:inline">Libros</span>
                             </Link>
                             <div className="text-right hidden md:block">
-                                <p className="text-xs text-gray-600">Bienvenido,</p>
-                                <p className="text-sm font-semibold text-gray-900 truncate max-w-[150px]">
+                                <p className="text-xs text-gray-600 dark:text-gray-400">Bienvenido,</p>
+                                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate max-w-[150px]">
                                     {session.user.name || session.user.email}
                                 </p>
                             </div>
+                            <ThemeToggle />
                             <LogoutButton />
                         </div>
                     </div>
@@ -146,14 +149,14 @@ export default async function Dashboard() {
                 </div>
 
                 {students.length === 0 ? (
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-                        <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Users className="w-10 h-10 text-indigo-600" />
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
+                        <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/40 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Users className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                             No tienes estudiantes aún
                         </h3>
-                        <p className="text-gray-500 mb-8 max-w-md mx-auto">
+                        <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
                             Comienza tu viaje musical añadiendo tu primer alumno y empieza a seguir su progreso
                         </p>
                         <Link
@@ -165,7 +168,7 @@ export default async function Dashboard() {
                         </Link>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <AnimatedList className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {students.map(student => {
                             const studentSongs = student.studentSongs
                             const completedCount = studentSongs.filter(s => s.completed).length
@@ -173,68 +176,69 @@ export default async function Dashboard() {
                             const progressPercentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
 
                             return (
-                                <Link
-                                    key={student.id}
-                                    href={`/students/${student.id}`}
-                                    className="group"
-                                >
-                                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-xl hover:border-indigo-100 transition-all duration-300 transform hover:-translate-y-1">
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div className="flex-1">
-                                                <h3 className="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors mb-1">
-                                                    {student.name}
-                                                </h3>
-                                                <p className="text-sm text-gray-500">
-                                                    {student.dob
-                                                        ? `${Math.floor((Date.now() - student.dob.getTime()) / (365 * 24 * 60 * 60 * 1000))} años`
-                                                        : 'Sin edad'}
-                                                </p>
+                                <AnimatedItem key={student.id}>
+                                    <Link
+                                        href={`/students/${student.id}`}
+                                        className="group block h-full"
+                                    >
+                                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl hover:border-indigo-100 dark:hover:border-indigo-500/50 transition-all duration-300 transform hover:-translate-y-1 h-full">
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-1 truncate">
+                                                        {student.name}
+                                                    </h3>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                        {student.dob
+                                                            ? `${Math.floor((Date.now() - student.dob.getTime()) / (365 * 24 * 60 * 60 * 1000))} años`
+                                                            : 'Sin edad'}
+                                                    </p>
+                                                </div>
+                                                <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/40 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                                                    <Music className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                                                </div>
                                             </div>
-                                            <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                <Music className="w-6 h-6 text-indigo-600" />
-                                            </div>
-                                        </div>
 
-                                        {/* Progress Bar */}
-                                        <div className="mb-4">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <span className="text-xs font-medium text-gray-600">Progreso</span>
-                                                <span className="text-xs font-bold text-indigo-600">
-                                                    {completedCount}/{totalCount}
-                                                </span>
+                                            {/* Progress Bar */}
+                                            <div className="mb-4">
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Progreso</span>
+                                                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                                                        {completedCount}/{totalCount}
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                                                    <div
+                                                        className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
+                                                        style={{ width: `${progressPercentage}%` }}
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                                                <div
-                                                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
-                                                    style={{ width: `${progressPercentage}%` }}
-                                                />
-                                            </div>
-                                        </div>
 
-                                        {/* Stats */}
-                                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                            <div className="text-center flex-1">
-                                                <p className="text-xs text-gray-500">Canciones</p>
-                                                <p className="text-lg font-bold text-gray-900">{totalCount}</p>
-                                            </div>
-                                            <div className="w-px h-8 bg-gray-200"></div>
-                                            <div className="text-center flex-1">
-                                                <p className="text-xs text-gray-500">Graduado</p>
-                                                <p className="text-lg font-bold text-gray-900 flex items-center justify-center gap-1">
-                                                    {student.bookAssignments.filter(a => a.isGraduated).length}
-                                                    {student.bookAssignments.some(a => a.isGraduated) && <Award className="w-3 h-3 text-yellow-500" />}
-                                                </p>
-                                            </div>
-                                            <div className="w-px h-8 bg-gray-200"></div>
-                                            <div className="flex-1 flex justify-center">
-                                                <ArrowRight className="w-5 h-5 text-indigo-600 group-hover:translate-x-1 transition-transform" />
+                                            {/* Stats */}
+                                            <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
+                                                <div className="text-center flex-1">
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Canciones</p>
+                                                    <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{totalCount}</p>
+                                                </div>
+                                                <div className="w-px h-8 bg-gray-200 dark:bg-gray-700"></div>
+                                                <div className="text-center flex-1">
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Graduado</p>
+                                                    <p className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-1">
+                                                        {student.bookAssignments.filter(a => a.isGraduated).length}
+                                                        {student.bookAssignments.some(a => a.isGraduated) && <Award className="w-3 h-3 text-yellow-500" />}
+                                                    </p>
+                                                </div>
+                                                <div className="w-px h-8 bg-gray-200 dark:bg-gray-700"></div>
+                                                <div className="flex-1 flex justify-center">
+                                                    <ArrowRight className="w-5 h-5 text-indigo-600 dark:text-indigo-400 group-hover:translate-x-1 transition-transform" />
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </Link>
+                                    </Link>
+                                </AnimatedItem>
                             )
                         })}
-                    </div>
+                    </AnimatedList>
                 )}
             </div>
         </div>

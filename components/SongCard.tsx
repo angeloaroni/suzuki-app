@@ -96,9 +96,9 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
 
     return (
         <>
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group relative flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group relative flex flex-col border border-gray-100 dark:border-gray-700">
                 {/* Image Section */}
-                <div className="relative h-48 w-full bg-gray-200 cursor-pointer group-hover:opacity-90 transition">
+                <div className="relative h-48 w-full bg-gray-200 dark:bg-gray-700 cursor-pointer group-hover:opacity-90 transition">
                     {song.imageUrl ? (
                         <Image
                             src={song.imageUrl}
@@ -109,7 +109,7 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
                         />
                     ) : (
                         <div
-                            className="flex items-center justify-center h-full text-gray-400"
+                            className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500"
                             onClick={() => setIsModalOpen(true)}
                         >
                             <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,18 +152,18 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
                     {/* Indicators (Bottom Left) */}
                     <div className="absolute bottom-2 left-2 flex space-x-1">
                         {(song.progressNotesCount ?? 0) > 0 && (
-                            <span className="bg-indigo-100 text-indigo-800 text-xs px-1.5 py-0.5 rounded shadow-sm font-semibold" title={`${song.progressNotesCount} notas de progreso`}>
+                            <span className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300 text-xs px-1.5 py-0.5 rounded shadow-sm font-semibold" title={`${song.progressNotesCount} notas de progreso`}>
                                 📊 {song.progressNotesCount}
                             </span>
                         )}
                         {song.notes && (
-                            <span className="bg-yellow-100 text-yellow-800 text-xs px-1.5 py-0.5 rounded shadow-sm" title="Tiene notas">📝</span>
+                            <span className="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-xs px-1.5 py-0.5 rounded shadow-sm" title="Tiene notas">📝</span>
                         )}
                         {song.youtubeUrl && (
-                            <span className="bg-red-100 text-red-800 text-xs px-1.5 py-0.5 rounded shadow-sm" title="Tiene video">▶️</span>
+                            <span className="bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs px-1.5 py-0.5 rounded shadow-sm" title="Tiene video">▶️</span>
                         )}
                         {song.audioUrl && (
-                            <span className="bg-blue-100 text-blue-800 text-xs px-1.5 py-0.5 rounded shadow-sm" title="Tiene audio">🎵</span>
+                            <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs px-1.5 py-0.5 rounded shadow-sm" title="Tiene audio">🎵</span>
                         )}
                     </div>
                 </div>
@@ -171,11 +171,11 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
                 {/* Content Section */}
                 <div className="p-4 flex-1 flex flex-col">
                     <div
-                        className="cursor-pointer hover:text-indigo-600 transition mb-3"
+                        className="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition mb-3"
                         onClick={() => setIsModalOpen(true)}
                     >
-                        <h3 className="font-bold text-gray-900 truncate" title={song.title}>{song.title}</h3>
-                        <p className="text-xs text-gray-500 mt-1">Click para ver detalles</p>
+                        <h3 className="font-bold text-gray-900 dark:text-gray-100 truncate" title={song.title}>{song.title}</h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Click para ver detalles</p>
                     </div>
 
                     <div className="mt-auto space-y-2">
@@ -185,21 +185,21 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
                                 label="✋ Izq"
                                 active={progress.left}
                                 onClick={() => handleToggle('left')}
-                                color="bg-blue-50 text-blue-600 hover:bg-blue-100"
+                                color="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40"
                                 activeColor="bg-blue-600 text-white hover:bg-blue-700"
                             />
                             <ProgressButton
                                 label="✋ Der"
                                 active={progress.right}
                                 onClick={() => handleToggle('right')}
-                                color="bg-green-50 text-green-600 hover:bg-green-100"
+                                color="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40"
                                 activeColor="bg-green-600 text-white hover:bg-green-700"
                             />
                             <ProgressButton
                                 label="👐 Ambas"
                                 active={progress.both}
                                 onClick={() => handleToggle('both')}
-                                color="bg-purple-50 text-purple-600 hover:bg-purple-100"
+                                color="bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40"
                                 activeColor="bg-purple-600 text-white hover:bg-purple-700"
                             />
                         </div>
@@ -212,7 +212,7 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
                             }}
                             className={`w-full py-2 px-3 rounded text-xs font-bold transition-colors duration-200 ${completed
                                 ? 'bg-green-600 text-white hover:bg-green-700'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
                                 }`}
                         >
                             {completed ? '✓ Completada' : 'Marcar como completada'}
