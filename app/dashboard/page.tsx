@@ -51,30 +51,30 @@ export default async function Dashboard() {
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
             {/* Header */}
             <nav className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-6 py-4">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                                <Music className="w-6 h-6 text-white" />
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+                    <div className="flex justify-between items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex-shrink-0 flex items-center justify-center shadow-lg">
+                                <Music className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             </div>
-                            <div>
-                                <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                            <div className="min-w-0">
+                                <h1 className="text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate">
                                     SuzukiTracker
                                 </h1>
-                                <p className="text-xs text-gray-500">Panel de Control</p>
+                                <p className="text-[10px] sm:text-xs text-gray-500 truncate">Panel de Control</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4">
                             <Link
                                 href="/books"
-                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 rounded-lg hover:from-indigo-200 hover:to-purple-200 transition-all font-medium"
+                                className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 rounded-lg hover:from-indigo-200 hover:to-purple-200 transition-all font-medium text-sm"
                             >
                                 <BookOpen className="w-4 h-4" />
                                 <span className="hidden sm:inline">Libros</span>
                             </Link>
-                            <div className="text-right hidden sm:block">
-                                <p className="text-sm text-gray-600">Bienvenido,</p>
-                                <p className="text-sm font-semibold text-gray-900">
+                            <div className="text-right hidden md:block">
+                                <p className="text-xs text-gray-600">Bienvenido,</p>
+                                <p className="text-sm font-semibold text-gray-900 truncate max-w-[150px]">
                                     {session.user.name || session.user.email}
                                 </p>
                             </div>

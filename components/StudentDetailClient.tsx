@@ -93,36 +93,36 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
             {/* Header */}
             <div className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-40">
-                <div className="max-w-7xl mx-auto px-6 py-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline mb-2 block font-medium">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="min-w-0">
+                            <Link href="/dashboard" className="text-xs sm:text-sm text-indigo-600 hover:underline mb-1 sm:mb-2 block font-medium">
                                 ← Volver al Dashboard
                             </Link>
-                            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                            <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate">
                                 {student.name}
                             </h1>
-                            <p className="text-gray-600 mt-1">
+                            <p className="text-sm sm:text-base text-gray-600 mt-1 line-clamp-2 sm:line-clamp-none">
                                 {student.dob
                                     ? `Edad: ${Math.floor((Date.now() - new Date(student.dob).getTime()) / (365 * 24 * 60 * 60 * 1000))} años`
                                     : 'Sin fecha de nacimiento'}
                                 {student.notes && ` • ${student.notes}`}
                             </p>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex gap-2 sm:gap-3">
                             <button
                                 onClick={() => setShowAssignBook(true)}
-                                className="px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all shadow-lg font-medium flex items-center gap-2"
+                                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all shadow-lg font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
                             >
                                 <BookOpen className="w-4 h-4" />
-                                Asignar Libro
+                                <span className="whitespace-nowrap">Asignar Libro</span>
                             </button>
                             <Link
                                 href={`/students/${student.id}/edit`}
-                                className="px-4 py-2.5 border-2 border-indigo-200 rounded-xl text-indigo-700 hover:bg-indigo-50 transition-all font-medium flex items-center gap-2"
+                                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 border-2 border-indigo-200 rounded-xl text-indigo-700 hover:bg-indigo-50 transition-all font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
                             >
                                 <Edit className="w-4 h-4" />
-                                Editar
+                                <span>Editar</span>
                             </Link>
                         </div>
                     </div>

@@ -64,29 +64,29 @@ export default function BookSection({
                 className={`p-6 cursor-pointer transition-colors ${isExpanded ? 'bg-gray-50/50' : 'hover:bg-gray-50'}`}
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${book.isGraduated
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex-shrink-0 flex items-center justify-center transition-colors ${book.isGraduated
                             ? 'bg-yellow-100 text-yellow-600'
                             : 'bg-gradient-to-br from-indigo-500 to-purple-500 text-white'
                             }`}>
-                            {book.isGraduated ? <GraduationCap className="w-6 h-6" /> : <BookOpen className="w-6 h-6" />}
+                            {book.isGraduated ? <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6" /> : <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />}
                         </div>
 
-                        <div>
-                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                {book.title}
+                        <div className="min-w-0">
+                            <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2 truncate">
+                                <span className="truncate">{book.title}</span>
                                 {book.isGraduated && (
-                                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium">
+                                    <span className="flex-shrink-0 text-[10px] sm:text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 sm:py-1 rounded-full font-medium">
                                         Graduado
                                     </span>
                                 )}
                             </h2>
 
                             {!isExpanded && (
-                                <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600">
                                     <div className="flex items-center gap-1.5" title="Progreso total">
-                                        <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                        <div className="w-16 sm:w-24 h-1.5 sm:h-2 bg-gray-200 rounded-full overflow-hidden">
                                             <div
                                                 className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
                                                 style={{ width: `${progressPercentage}%` }}
@@ -95,19 +95,19 @@ export default function BookSection({
                                         <span className="font-medium">{progressPercentage}%</span>
                                     </div>
 
-                                    <div className="w-px h-4 bg-gray-300" />
+                                    <div className="hidden sm:block w-px h-4 bg-gray-300" />
 
-                                    <div className="flex gap-3">
+                                    <div className="flex gap-2 sm:gap-3">
                                         <span className="flex items-center gap-1" title="Mano Derecha">
-                                            <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded">R</span>
+                                            <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded">R</span>
                                             {learnedRight}/{totalSongs}
                                         </span>
                                         <span className="flex items-center gap-1" title="Mano Izquierda">
-                                            <span className="text-xs font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded">L</span>
+                                            <span className="text-[10px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded">L</span>
                                             {learnedLeft}/{totalSongs}
                                         </span>
                                         <span className="flex items-center gap-1" title="Ambas Manos">
-                                            <span className="text-xs font-bold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded">👐</span>
+                                            <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded">👐</span>
                                             {learnedBoth}/{totalSongs}
                                         </span>
                                     </div>
@@ -116,7 +116,7 @@ export default function BookSection({
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-end gap-4">
                         {isExpanded ? (
                             <ChevronUp className="w-5 h-5 text-gray-400" />
                         ) : (
@@ -128,20 +128,20 @@ export default function BookSection({
 
             {/* Expanded Content */}
             {isExpanded && (
-                <div className="p-6 border-t border-gray-100 bg-white animate-in slide-in-from-top-2 duration-200">
+                <div className="p-4 sm:p-6 border-t border-gray-100 bg-white animate-in slide-in-from-top-2 duration-200">
                     {/* Actions Toolbar */}
-                    <div className="flex justify-end gap-2 mb-8">
+                    <div className="flex flex-wrap justify-start sm:justify-end gap-2 mb-6 sm:mb-8">
                         <button
                             onClick={(e) => {
                                 e.stopPropagation()
                                 onToggleGraduation(book.id, book.title, book.isGraduated)
                             }}
-                            className={`px-3 py-2 rounded-lg transition-all border flex items-center gap-2 text-sm font-medium ${book.isGraduated
+                            className={`flex-1 sm:flex-none px-3 py-2 rounded-lg transition-all border flex items-center justify-center gap-2 text-xs sm:text-sm font-medium ${book.isGraduated
                                 ? 'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100'
                                 : 'text-gray-600 hover:bg-gray-50 border-gray-200'}`}
                         >
                             <GraduationCap className="w-4 h-4" />
-                            {book.isGraduated ? "Deshacer Graduación" : "Graduar Libro"}
+                            <span className="whitespace-nowrap">{book.isGraduated ? "Deshacer" : "Graduar"}</span>
                         </button>
 
                         <button
@@ -149,10 +149,10 @@ export default function BookSection({
                                 e.stopPropagation()
                                 onEditBook(book)
                             }}
-                            className="px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium flex items-center gap-2 text-sm"
+                            className="flex-1 sm:flex-none px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium flex items-center justify-center gap-2 text-xs sm:text-sm"
                         >
                             <Edit className="w-4 h-4" />
-                            Editar
+                            <span>Editar</span>
                         </button>
 
                         <button
@@ -160,10 +160,10 @@ export default function BookSection({
                                 e.stopPropagation()
                                 onAddSong(book)
                             }}
-                            className="px-3 py-2 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg hover:bg-indigo-100 transition-all font-medium flex items-center gap-2 text-sm"
+                            className="flex-1 sm:flex-none px-3 py-2 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg hover:bg-indigo-100 transition-all font-medium flex items-center justify-center gap-2 text-xs sm:text-sm"
                         >
                             <Plus className="w-4 h-4" />
-                            Agregar Canción
+                            <span className="whitespace-nowrap">Agregar Canción</span>
                         </button>
 
                         <button
@@ -171,7 +171,7 @@ export default function BookSection({
                                 e.stopPropagation()
                                 onRemoveBook(book.id, book.title)
                             }}
-                            className="px-3 py-2 text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 rounded-lg transition-all"
+                            className="px-3 py-2 text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 rounded-lg transition-all flex items-center justify-center"
                             title="Eliminar libro"
                         >
                             <Trash2 className="w-4 h-4" />
