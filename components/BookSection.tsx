@@ -234,6 +234,3 @@ export default function BookSection({
         </div>
     )
 }
-        </div >
-    )
-}

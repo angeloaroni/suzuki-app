@@ -146,6 +146,3 @@ export function BookTemplateCard({ template }: BookTemplateCardProps) {
         </>
     )
 }
-        </>
-    )
-}
