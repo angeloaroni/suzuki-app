@@ -50,9 +50,9 @@ export default async function Dashboard() {
     ).length
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 transition-colors duration-300">
             {/* Header */}
-            <nav className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-50">
+            <nav className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
                     <div className="flex justify-between items-center gap-4">
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -63,7 +63,7 @@ export default async function Dashboard() {
                                 <h1 className="text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate">
                                     SuzukiTracker
                                 </h1>
-                                <p className="text-[10px] sm:text-xs text-gray-500 truncate">Panel de Control</p>
+                                <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate">Panel de Control</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-2 sm:gap-4">
@@ -91,10 +91,10 @@ export default async function Dashboard() {
             <div className="max-w-7xl mx-auto px-6 py-8">
                 {/* Welcome Section */}
                 <div className="mb-8">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                         ¡Hola de nuevo! 👋
                     </h2>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Aquí está el resumen de tu progreso musical
                     </p>
                 </div>
@@ -134,8 +134,8 @@ export default async function Dashboard() {
                 {/* Students Section */}
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Mis Estudiantes</h2>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Mis Estudiantes</h2>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                             {totalStudents} {totalStudents === 1 ? 'estudiante registrado' : 'estudiantes registrados'}
                         </p>
                     </div>
@@ -259,9 +259,9 @@ function StatCard({
     bgGradient: string
 }) {
     return (
-        <div className="group bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden">
+        <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden">
             {/* Background decoration */}
-            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${bgGradient} rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-150 transition-transform duration-500`}></div>
+            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${bgGradient} dark:opacity-20 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-150 transition-transform duration-500`}></div>
 
             <div className="relative">
                 <div className="flex items-center justify-between mb-4">
@@ -271,8 +271,8 @@ function StatCard({
                         </div>
                     </div>
                 </div>
-                <h3 className="text-sm font-medium text-gray-600 mb-1">{title}</h3>
-                <p className="text-3xl font-bold text-gray-900">{value}</p>
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{title}</h3>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
             </div>
         </div>
     )
