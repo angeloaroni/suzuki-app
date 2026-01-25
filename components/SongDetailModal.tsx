@@ -169,7 +169,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                                         type="text"
                                         value={song.title}
                                         readOnly
-                                        className="w-full rounded-lg border-gray-200 bg-gray-50 text-gray-500 p-3 border"
+                                        className="w-full rounded-lg border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 p-3 border"
                                     />
                                     <p className="text-xs text-gray-400 mt-1">El título se gestiona desde la plantilla del libro</p>
                                 </div>
@@ -180,7 +180,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                                     <textarea
                                         value={notes}
                                         onChange={(e) => setNotes(e.target.value)}
-                                        className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border text-gray-900"
+                                        className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700"
                                         rows={4}
                                         placeholder="Escribe aquí el progreso, tareas o comentarios..."
                                     />
@@ -193,7 +193,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                                         type="text"
                                         value={youtubeUrl}
                                         onChange={(e) => setYoutubeUrl(e.target.value)}
-                                        className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border mb-3 text-gray-900"
+                                        className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border mb-3 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700"
                                         placeholder="https://www.youtube.com/watch?v=..."
                                     />
                                     {embedUrl && (

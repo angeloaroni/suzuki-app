@@ -6,6 +6,7 @@ import {
     addSongToTemplate,
     updateSongTemplate,
     deleteSongTemplate,
+    moveSongTemplate,
 } from "@/app/actions/book-template"
 import { useRouter } from "next/navigation"
 
@@ -80,6 +81,18 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
         setIsSubmitting(false)
     }
 
+    const handleMoveSong = async (songId: string, direction: 'up' | 'down') => {
+        setIsSubmitting(true)
+        const result = await moveSongTemplate(songId, direction)
+
+        if (result.success) {
+            router.refresh()
+        } else {
+            alert(result.error)
+        }
+        setIsSubmitting(false)
+    }
+
     const startEdit = (song: Song) => {
         setEditingId(song.id)
         setEditTitle(song.title)
@@ -145,6 +158,24 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
                                     <>
                                         <span className="flex-1 text-slate-800">{song.title}</span>
                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex flex-col mr-2">
+                                                <button
+                                                    onClick={() => handleMoveSong(song.id, 'up')}
+                                                    disabled={isSubmitting || index === 0}
+                                                    className="p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded disabled:opacity-30"
+                                                    title="Mover arriba"
+                                                >
+                                                    <GripVertical className="w-3 h-3 rotate-90" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleMoveSong(song.id, 'down')}
+                                                    disabled={isSubmitting || index === songs.length - 1}
+                                                    className="p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded disabled:opacity-30"
+                                                    title="Mover abajo"
+                                                >
+                                                    <GripVertical className="w-3 h-3 -rotate-90" />
+                                                </button>
+                                            </div>
                                             <button
                                                 onClick={() => startEdit(song)}
                                                 className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"

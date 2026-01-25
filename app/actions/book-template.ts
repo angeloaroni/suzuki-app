@@ -409,10 +409,66 @@ export async function deleteSongTemplate(songId: string) {
             where: { id: songId }
         })
 
-        revalidatePath(`/books/${song.bookTemplateId}`)
         return { success: true }
     } catch (error) {
         console.error("Error deleting song:", error)
         return { success: false, error: "Error al eliminar la canción" }
+    }
+}
+
+/**
+ * Move a song up or down in the order
+ */
+export async function moveSongTemplate(songId: string, direction: 'up' | 'down') {
+    try {
+        const session = await getSession()
+        if (!session?.user?.id) {
+            return { success: false, error: "No autorizado" }
+        }
+
+        // Get the song and its book template
+        const song = await prisma.songTemplate.findUnique({
+            where: { id: songId },
+            include: { bookTemplate: true }
+        })
+
+        if (!song) {
+            return { success: false, error: "Canción no encontrada" }
+        }
+
+        // Find the adjacent song
+        const adjacentSong = await prisma.songTemplate.findFirst({
+            where: {
+                bookTemplateId: song.bookTemplateId,
+                order: direction === 'up'
+                    ? { lt: song.order } // Find closest smaller order
+                    : { gt: song.order } // Find closest larger order
+            },
+            orderBy: {
+                order: direction === 'up' ? 'desc' : 'asc'
+            }
+        })
+
+        if (!adjacentSong) {
+            return { success: false, error: "No se puede mover en esa dirección" }
+        }
+
+        // Swap orders using a transaction
+        await prisma.$transaction([
+            prisma.songTemplate.update({
+                where: { id: song.id },
+                data: { order: adjacentSong.order }
+            }),
+            prisma.songTemplate.update({
+                where: { id: adjacentSong.id },
+                data: { order: song.order }
+            })
+        ])
+
+        revalidatePath(`/books/${song.bookTemplateId}`)
+        return { success: true }
+    } catch (error) {
+        console.error("Error moving song:", error)
+        return { success: false, error: "Error al mover la canción" }
     }
 }

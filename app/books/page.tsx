@@ -16,7 +16,7 @@ export default async function BooksPage() {
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <h1 className="text-4xl font-bold text-slate-800 dark:text-slate-100 mb-2 flex items-center gap-3">
                                 <BookOpen className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
@@ -26,7 +26,7 @@ export default async function BooksPage() {
                                 Gestiona tus plantillas de libros globales
                             </p>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex flex-wrap gap-3">
                             <Link
                                 href="/dashboard"
                                 className="flex items-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 text-slate-600 dark:text-gray-300 rounded-xl hover:bg-slate-50 dark:hover:bg-gray-700 border border-slate-200 dark:border-gray-700 transition-all font-medium"
