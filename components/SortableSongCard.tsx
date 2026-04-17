@@ -23,8 +23,8 @@ export function SortableSongCard({ song, studentId }: { song: any, studentId: st
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-            <SongCard studentId={studentId} song={song} />
+        <div ref={setNodeRef} style={style}>
+            <SongCard studentId={studentId} song={song} dragHandleProps={{...attributes, ...listeners}} />
         </div>
     );
 }

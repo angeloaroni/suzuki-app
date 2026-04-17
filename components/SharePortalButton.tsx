@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Share2, Copy, Check, RefreshCw, ExternalLink } from 'lucide-react'
 import { generateAccessCode, regenerateAccessCode } from '@/app/actions/portal'
+import Link from 'next/link'
+import { createPortal } from 'react-dom'
 
 interface SharePortalButtonProps {
     studentId: string
@@ -15,6 +17,11 @@ export default function SharePortalButton({ studentId, studentName, existingCode
     const [code, setCode] = useState<string | null>(existingCode || null)
     const [isLoading, setIsLoading] = useState(false)
     const [copied, setCopied] = useState(false)
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     const handleGenerate = async () => {
         setIsLoading(true)
@@ -65,14 +72,16 @@ export default function SharePortalButton({ studentId, studentName, existingCode
             </button>
 
             {/* Modal */}
-            {isOpen && (
-                <div 
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                    onClick={(e) => {
-                        if (e.target === e.currentTarget) setIsOpen(false)
-                    }}
-                >
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in duration-200">
+            {mounted && isOpen && createPortal(
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div 
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setIsOpen(false)
+                        }}
+                    />
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in duration-200 relative z-10">
                         {/* Header */}
                         <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-6 text-white relative">
                             <div className="flex justify-between items-start pr-8">
@@ -84,7 +93,10 @@ export default function SharePortalButton({ studentId, studentName, existingCode
                                 </div>
                             </div>
                             <button
-                                onClick={() => setIsOpen(false)}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    setIsOpen(false)
+                                }}
                                 className="absolute top-4 right-4 p-2.5 bg-black/10 hover:bg-black/20 rounded-xl transition-colors flex items-center justify-center"
                                 aria-label="Cerrar modal"
                             >
@@ -125,15 +137,13 @@ export default function SharePortalButton({ studentId, studentName, existingCode
                                     </div>
 
                                     <div className="flex gap-2">
-                                        <a
-                                            href={getPortalUrl()}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
+                                        <Link
+                                            href={`/portal/${code}`}
                                             className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm transition-all"
                                         >
                                             <ExternalLink className="w-4 h-4" />
                                             Ver Portal
-                                        </a>
+                                        </Link>
                                         <button
                                             onClick={handleRegenerate}
                                             className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-medium text-sm transition-all"
@@ -150,7 +160,8 @@ export default function SharePortalButton({ studentId, studentName, existingCode
                             ) : null}
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     )

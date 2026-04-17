@@ -4,6 +4,7 @@ import { useState, useRef } from "react"
 import { toggleSongProgress, uploadSongImage } from "@/app/actions/song"
 import Image from "next/image"
 import SongDetailModal from "./SongDetailModal"
+import { GripVertical, ChevronDown, ChevronUp, Music, Image as ImageIcon } from "lucide-react"
 
 interface SongProps {
     id: string
@@ -18,14 +19,10 @@ interface SongProps {
     youtubeUrl?: string | null
     audioUrl?: string | null
     progressNotesCount?: number
-    lastProgressNote?: {
-        leftHand: number
-        rightHand: number
-        bothHands: number
-    } | null
 }
 
-export default function SongCard({ song, studentId }: { song: SongProps, studentId?: string }) {
+export default function SongCard({ song, studentId, dragHandleProps }: { song: SongProps, studentId?: string, dragHandleProps?: any }) {
+    const [isExpanded, setIsExpanded] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [progress, setProgress] = useState({
@@ -48,7 +45,6 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
                     both: result.updatedFields.learnedBoth !== undefined ? result.updatedFields.learnedBoth : prev.both
                 }))
             } else {
-                // Fallback for older behavior if needed
                 setProgress(prev => ({ ...prev, [field]: result.newValue }))
             }
         } else {
@@ -73,9 +69,7 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
         if (!file) return
 
         setIsUploading(true)
-
         try {
-            // Convert file to base64
             const reader = new FileReader()
             const base64Promise = new Promise<string>((resolve, reject) => {
                 reader.onload = () => resolve(reader.result as string)
@@ -84,7 +78,6 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
             })
 
             const base64Data = await base64Promise
-
             const result = await uploadSongImage(song.id, base64Data, file.name)
 
             if (result.success) {
@@ -99,169 +92,131 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
         setIsUploading(false)
     }
 
+    const progressPercent = Math.round(
+        progress.both ? 100 : (progress.left && progress.right ? 66 : (progress.left || progress.right ? 33 : 0))
+    )
+
     return (
         <>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group relative flex flex-col border border-gray-100 dark:border-gray-700">
-                {/* Image Section */}
-                <div className="relative h-48 w-full bg-gray-200 dark:bg-gray-700 cursor-pointer group-hover:opacity-90 transition">
-                    {song.imageUrl ? (
-                        <Image
-                            src={song.imageUrl}
-                            alt={song.title}
-                            fill
-                            className="object-cover"
-                            onClick={() => setIsModalOpen(true)}
-                        />
-                    ) : (
-                        <div
-                            className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500"
-                            onClick={() => setIsModalOpen(true)}
+            <div className={`bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 group flex flex-col border ${isExpanded ? 'border-indigo-300 dark:border-indigo-700 shadow-md ring-1 ring-indigo-500/20' : 'border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600'}`}>
+                
+                {/* Compact Header */}
+                <div 
+                    className="flex items-center p-3 gap-3 cursor-pointer"
+                    onClick={() => setIsExpanded(!isExpanded)}
+                >
+                    {/* Drag Handle */}
+                    {dragHandleProps && (
+                        <div 
+                            {...dragHandleProps} 
+                            className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                            </svg>
+                            <GripVertical className="w-5 h-5" />
                         </div>
                     )}
 
-                    {/* Edit Image Button (Top Right) */}
-                    <button
+                    {/* Thumbnail */}
+                    <div 
+                        className="relative w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex-shrink-0 overflow-hidden"
                         onClick={(e) => {
-                            e.stopPropagation()
-                            fileInputRef.current?.click()
+                            e.stopPropagation();
+                            setIsModalOpen(true);
                         }}
-                        className="absolute top-2 right-2 bg-black bg-opacity-50 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition hover:bg-opacity-70"
-                        title="Cambiar portada"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </button>
+                        {song.imageUrl ? (
+                            <Image src={song.imageUrl} alt={song.title} fill className="object-cover" />
+                        ) : (
+                            <Music className="w-5 h-5 m-auto text-gray-400 dark:text-gray-500 absolute inset-0 mt-[14px]" />
+                        )}
+                        {completed && (
+                            <div className="absolute top-0.5 right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-800" title="Completada" />
+                        )}
+                    </div>
 
-                    {/* Completed Badge (Top Left) */}
-                    {song.completed && (
-                        <div className="absolute top-2 left-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 z-10 transition-transform hover:scale-105">
-                            <span className="text-sm">🌟</span>
-                            <span>Completada</span>
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-sm text-gray-900 dark:text-gray-100 truncate">{song.title}</h3>
+                        
+                        <div className="flex items-center gap-2 mt-1">
+                            {completed ? (
+                                <span className="text-[10px] font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-md">Completada</span>
+                            ) : (
+                                <div className="flex items-center gap-2 w-full max-w-[120px]">
+                                    <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                        <div 
+                                            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500" 
+                                            style={{ width: `${progressPercent}%` }} 
+                                        />
+                                    </div>
+                                    <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400">{progressPercent}%</span>
+                                </div>
+                            )}
+
+                            {/* Icons Indicators */}
+                            <div className="hidden sm:flex gap-1 ml-auto">
+                                {(song.progressNotesCount ?? 0) > 0 && <span className="text-[10px] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 px-1 rounded flex items-center" title={`${song.progressNotesCount} notas`}>📊 {song.progressNotesCount}</span>}
+                                {song.notes && <span className="text-[10px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 px-1 rounded flex items-center" title="Tiene notas">📝</span>}
+                            </div>
                         </div>
-                    )}
-                    
-                    {/* In Progress Badge (Top Left) */}
-                    {!song.completed && (progress.left || progress.right || progress.both) && (
-                        <div className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 z-10">
-                            <span className="text-sm">🔥</span>
-                            <span>En Progreso</span>
-                        </div>
-                    )}
+                    </div>
 
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        className="hidden"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                    />
-
-                    {/* Indicators (Bottom Left) */}
-                    <div className="absolute bottom-2 left-2 flex space-x-1">
-                        {(song.progressNotesCount ?? 0) > 0 && (
-                            <span className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300 text-xs px-1.5 py-0.5 rounded shadow-sm font-semibold" title={`${song.progressNotesCount} notas de progreso`}>
-                                📊 {song.progressNotesCount}
-                            </span>
-                        )}
-                        {song.notes && (
-                            <span className="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 text-xs px-1.5 py-0.5 rounded shadow-sm" title="Tiene notas">📝</span>
-                        )}
-                        {song.youtubeUrl && (
-                            <span className="bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 text-xs px-1.5 py-0.5 rounded shadow-sm" title="Tiene video">▶️</span>
-                        )}
-                        {song.audioUrl && (
-                            <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs px-1.5 py-0.5 rounded shadow-sm" title="Tiene audio">🎵</span>
-                        )}
+                    {/* Expand Toggle */}
+                    <div className="p-1 text-gray-400 flex-shrink-0">
+                        {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                     </div>
                 </div>
 
-                {/* Content Section */}
-                <div className="p-4 flex-1 flex flex-col">
-                    <div
-                        className="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition mb-3"
-                        onClick={() => setIsModalOpen(true)}
-                    >
-                        <h3 className="font-bold text-gray-900 dark:text-gray-100 truncate" title={song.title}>{song.title}</h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Click para ver detalles</p>
-                    </div>
-
-                    <div className="mt-auto space-y-4">
-                        {/* Progress Bar Section */}
-                        {!completed && (
-                            <div className="space-y-1">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400">Progreso total</span>
-                                    <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">
-                                        {Math.round(
-                                            (progress.both ? 100 : (progress.left && progress.right ? 66 : (progress.left || progress.right ? 33 : 0)))
-                                        )}%
-                                    </span>
-                                </div>
-                                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                                    <div
-                                        className={`h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500 ${progress.left || progress.right || progress.both ? 'opacity-100' : 'opacity-0'
-                                            }`}
-                                        style={{
-                                            width: `${progress.both ? 100 : (progress.left && progress.right ? 66 : (progress.left || progress.right ? 33 : 0))}%`
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Progress Toggles */}
-                        <div className="flex justify-between space-x-2">
-                            <ProgressButton
-                                label="✋ Izq"
-                                active={progress.left}
-                                onClick={() => handleToggle('left')}
-                                color="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                                activeColor="bg-blue-600 text-white hover:bg-blue-700"
-                            />
-                            <ProgressButton
-                                label="✋ Der"
-                                active={progress.right}
-                                onClick={() => handleToggle('right')}
-                                color="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40"
-                                activeColor="bg-green-600 text-white hover:bg-green-700"
-                            />
-                            <ProgressButton
-                                label="👐 Ambas"
-                                active={progress.both}
-                                onClick={() => handleToggle('both')}
-                                color="bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40"
-                                activeColor="bg-purple-600 text-white hover:bg-purple-700"
-                            />
+                {/* Expanded Content */}
+                {isExpanded && (
+                    <div className="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex flex-col gap-4">
+                        
+                        {/* Action buttons */}
+                        <div className="flex justify-between items-center gap-3">
+                            <button 
+                                onClick={() => setIsModalOpen(true)}
+                                className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 text-left flex-1"
+                            >
+                                Ver Ficha Completa →
+                            </button>
+                            
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                            >
+                                {isUploading ? (
+                                    <span className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></span>
+                                ) : (
+                                    <ImageIcon className="w-3.5 h-3.5" />
+                                )}
+                                {song.imageUrl ? 'Cambiar Portada' : 'Añadir Portada'}
+                            </button>
+                            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
                         </div>
 
-                        {/* Completed Toggle */}
+                        {/* Toggles */}
+                        <div className="flex justify-between space-x-2">
+                            <ProgressButton label="✋ Izq" active={progress.left} onClick={() => handleToggle('left')} color="bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400" activeColor="bg-blue-600 text-white hover:bg-blue-700" />
+                            <ProgressButton label="✋ Der" active={progress.right} onClick={() => handleToggle('right')} color="bg-green-50 dark:bg-green-900/40 text-green-600 dark:text-green-400" activeColor="bg-green-600 text-white hover:bg-green-700" />
+                            <ProgressButton label="👐 Ambas" active={progress.both} onClick={() => handleToggle('both')} color="bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400" activeColor="bg-purple-600 text-white hover:bg-purple-700" />
+                        </div>
+
+                        {/* Completed button */}
                         <button
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                handleToggleCompleted()
-                            }}
-                            className={`w-full py-2 px-3 rounded text-xs font-bold transition-colors duration-200 ${completed
-                                ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-200 dark:shadow-none'
-                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            onClick={handleToggleCompleted}
+                            className={`w-full py-2 px-3 rounded-lg text-sm font-bold transition-colors duration-200 ${completed
+                                ? 'bg-green-600 text-white hover:bg-green-700 shadow-md shadow-green-200/50 dark:shadow-none'
+                                : 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                                 }`}
                         >
-                            {completed ? '✓ Completada' : 'Marcar como completada'}
+                            {completed ? '✓ Canción Completada' : 'Marcar como Completada'}
                         </button>
+
                     </div>
-                </div>
+                )}
             </div>
 
-            <SongDetailModal
-                song={song}
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-            />
+            <SongDetailModal song={song as any} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </>
     )
 }
@@ -273,7 +228,7 @@ function ProgressButton({ label, active, onClick, color, activeColor }: any) {
                 e.stopPropagation()
                 onClick()
             }}
-            className={`flex-1 py-1.5 px-1 rounded text-[10px] sm:text-xs font-bold transition-colors duration-200 ${active ? activeColor : color}`}
+            className={`flex-1 py-2 px-2 rounded-lg text-xs font-bold transition-all duration-200 border ${active ? activeColor + ' border-transparent' : color + ' border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'}`}
         >
             {label}
         </button>
