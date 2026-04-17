@@ -18,6 +18,11 @@ interface SongProps {
     youtubeUrl?: string | null
     audioUrl?: string | null
     progressNotesCount?: number
+    lastProgressNote?: {
+        leftHand: number
+        rightHand: number
+        bothHands: number
+    } | null
 }
 
 export default function SongCard({ song, studentId }: { song: SongProps, studentId?: string }) {
@@ -178,7 +183,30 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Click para ver detalles</p>
                     </div>
 
-                    <div className="mt-auto space-y-2">
+                    <div className="mt-auto space-y-4">
+                        {/* Progress Bar Section */}
+                        {!completed && (
+                            <div className="space-y-1">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400">Progreso total</span>
+                                    <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">
+                                        {Math.round(
+                                            (progress.both ? 100 : (progress.left && progress.right ? 66 : (progress.left || progress.right ? 33 : 0)))
+                                        )}%
+                                    </span>
+                                </div>
+                                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                                    <div
+                                        className={`h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500 ${progress.left || progress.right || progress.both ? 'opacity-100' : 'opacity-0'
+                                            }`}
+                                        style={{
+                                            width: `${progress.both ? 100 : (progress.left && progress.right ? 66 : (progress.left || progress.right ? 33 : 0))}%`
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         {/* Progress Toggles */}
                         <div className="flex justify-between space-x-2">
                             <ProgressButton
@@ -211,7 +239,7 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
                                 handleToggleCompleted()
                             }}
                             className={`w-full py-2 px-3 rounded text-xs font-bold transition-colors duration-200 ${completed
-                                ? 'bg-green-600 text-white hover:bg-green-700'
+                                ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-200 dark:shadow-none'
                                 : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
                                 }`}
                         >
