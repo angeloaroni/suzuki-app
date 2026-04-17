@@ -140,9 +140,17 @@ export default function SongCard({ song, studentId }: { song: SongProps, student
 
                     {/* Completed Badge (Top Left) */}
                     {song.completed && (
-                        <div className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg flex items-center space-x-1">
-                            <span>✓</span>
+                        <div className="absolute top-2 left-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 z-10 transition-transform hover:scale-105">
+                            <span className="text-sm">🌟</span>
                             <span>Completada</span>
+                        </div>
+                    )}
+                    
+                    {/* In Progress Badge (Top Left) */}
+                    {!song.completed && (progress.left || progress.right || progress.both) && (
+                        <div className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 z-10">
+                            <span className="text-sm">🔥</span>
+                            <span>En Progreso</span>
                         </div>
                     )}
 
