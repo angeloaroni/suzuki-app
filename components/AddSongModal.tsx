@@ -71,12 +71,12 @@ export default function AddSongModal({ isOpen, onClose, bookId, bookTitle, nextO
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full transform transition-all">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full transform transition-all">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
                     <div>
-                        <h3 className="text-2xl font-bold text-gray-900">Agregar Canción</h3>
-                        <p className="text-sm text-gray-600 mt-1">A {bookTitle}</p>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Agregar Canción</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">A {bookTitle}</p>
                     </div>
                     <button
                         onClick={handleClose}
@@ -103,14 +103,14 @@ export default function AddSongModal({ isOpen, onClose, bookId, bookTitle, nextO
 
                     {/* Title */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Título de la Canción *
                         </label>
                         <input
                             type="text"
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                             placeholder="Ej: Minuet in G"
                             required
                         />
@@ -118,14 +118,14 @@ export default function AddSongModal({ isOpen, onClose, bookId, bookTitle, nextO
 
                     {/* Order */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Orden
                         </label>
                         <input
                             type="number"
                             value={formData.order}
                             onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) })}
-                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                             min="1"
                         />
                         <p className="text-xs text-gray-500 mt-1">Posición de la canción en el libro</p>
@@ -133,27 +133,27 @@ export default function AddSongModal({ isOpen, onClose, bookId, bookTitle, nextO
 
                     {/* YouTube URL */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             URL de YouTube (opcional)
                         </label>
                         <input
                             type="url"
                             value={formData.youtubeUrl}
                             onChange={(e) => setFormData({ ...formData, youtubeUrl: e.target.value })}
-                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                             placeholder="https://youtube.com/watch?v=..."
                         />
                     </div>
 
                     {/* Notes */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Notas (opcional)
                         </label>
                         <textarea
                             value={formData.notes}
                             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
+                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                             rows={3}
                             placeholder="Notas sobre la canción..."
                         />
@@ -164,7 +164,7 @@ export default function AddSongModal({ isOpen, onClose, bookId, bookTitle, nextO
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                            className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                         >
                             Cancelar
                         </button>

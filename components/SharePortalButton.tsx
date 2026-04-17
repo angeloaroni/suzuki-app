@@ -66,24 +66,30 @@ export default function SharePortalButton({ studentId, studentName, existingCode
 
             {/* Modal */}
             {isOpen && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+                <div 
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) setIsOpen(false)
+                    }}
+                >
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in duration-200">
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-6 text-white">
-                            <div className="flex justify-between items-start">
+                        <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-6 text-white relative">
+                            <div className="flex justify-between items-start pr-8">
                                 <div>
                                     <h2 className="text-xl font-bold">Portal para Padres</h2>
                                     <p className="text-teal-100 text-sm mt-1">
                                         Comparte este enlace con los padres de {studentName}
                                     </p>
                                 </div>
-                                <button
-                                    onClick={() => setIsOpen(false)}
-                                    className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                                >
-                                    ✕
-                                </button>
                             </div>
+                            <button
+                                onClick={() => setIsOpen(false)}
+                                className="absolute top-4 right-4 p-2.5 bg-black/10 hover:bg-black/20 rounded-xl transition-colors flex items-center justify-center"
+                                aria-label="Cerrar modal"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            </button>
                         </div>
 
                         <div className="p-6 space-y-4">

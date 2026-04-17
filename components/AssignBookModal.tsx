@@ -62,19 +62,19 @@ export default function AssignBookModal({ isOpen, onClose, studentId, studentNam
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full transform transition-all max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full transform transition-all max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-100 p-6 rounded-t-2xl">
+                <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 p-6 rounded-t-2xl z-10">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-2xl font-bold text-gray-900">Asignar Libro</h3>
-                            <p className="text-sm text-gray-600 mt-1">Para {studentName}</p>
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Asignar Libro</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Para {studentName}</p>
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
-                            <X className="w-5 h-5 text-gray-500" />
+                            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                         </button>
                     </div>
                 </div>
@@ -96,11 +96,11 @@ export default function AssignBookModal({ isOpen, onClose, studentId, studentNam
 
                     {availableBooks.length === 0 ? (
                         <div className="text-center py-12">
-                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <BookOpen className="w-8 h-8 text-gray-400" />
+                            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <BookOpen className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                             </div>
-                            <p className="text-gray-600">No hay libros disponibles para asignar</p>
-                            <p className="text-sm text-gray-500 mt-2">Todos los libros ya han sido asignados a este estudiante</p>
+                            <p className="text-gray-600 dark:text-gray-300">No hay libros disponibles para asignar</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Todos los libros ya han sido asignados a este estudiante</p>
                         </div>
                     ) : (
                         <div className="grid gap-4">
@@ -109,28 +109,28 @@ export default function AssignBookModal({ isOpen, onClose, studentId, studentNam
                                     key={book.id}
                                     onClick={() => handleAssignBook(book.id)}
                                     disabled={loading}
-                                    className="group text-left p-6 border-2 border-gray-200 rounded-xl hover:border-indigo-300 hover:bg-indigo-50/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="group text-left p-6 border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <div className="flex items-start gap-4">
                                         <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                                             <BookOpen className="w-6 h-6 text-white" />
                                         </div>
                                         <div className="flex-1">
-                                            <h4 className="font-bold text-gray-900 mb-1">{book.title}</h4>
-                                            <p className="text-sm text-gray-600 mb-2">
+                                            <h4 className="font-bold text-gray-900 dark:text-gray-100 mb-1">{book.title}</h4>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                                                 {book.songs.length} canciones incluidas
                                             </p>
                                             <div className="flex flex-wrap gap-2">
                                                 {book.songs.slice(0, 3).map((song, idx) => (
                                                     <span
                                                         key={idx}
-                                                        className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-lg"
+                                                        className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg"
                                                     >
                                                         {song.title}
                                                     </span>
                                                 ))}
                                                 {book.songs.length > 3 && (
-                                                    <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-lg">
+                                                    <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg">
                                                         +{book.songs.length - 3} más
                                                     </span>
                                                 )}
@@ -144,10 +144,10 @@ export default function AssignBookModal({ isOpen, onClose, studentId, studentNam
                 </div>
 
                 {/* Footer */}
-                <div className="border-t border-gray-100 p-6">
+                <div className="border-t border-gray-100 dark:border-gray-700 p-6">
                     <button
                         onClick={onClose}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                        className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                     >
                         Cerrar
                     </button>

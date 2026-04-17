@@ -71,20 +71,20 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
     return (
         <>
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full transform transition-all">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full transform transition-all">
                     {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                    <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
                                 <BookOpen className="w-5 h-5 text-white" />
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-900">Editar Libro</h3>
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Editar Libro</h3>
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
-                            <X className="w-5 h-5 text-gray-500" />
+                            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                         </button>
                     </div>
 
@@ -105,28 +105,28 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
 
                         {/* Title */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Título del Libro
                             </label>
                             <input
                                 type="text"
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                                 required
                             />
                         </div>
 
                         {/* Number */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Número del Libro
                             </label>
                             <input
                                 type="number"
                                 value={formData.number}
                                 onChange={(e) => setFormData({ ...formData, number: parseInt(e.target.value) })}
-                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                                 min="1"
                                 required
                             />
@@ -137,7 +137,7 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                                className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                             >
                                 Cancelar
                             </button>
@@ -152,10 +152,10 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
                     </form>
 
                     {/* Delete Section */}
-                    <div className="border-t border-gray-100 p-6">
-                        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                            <h4 className="font-semibold text-red-900 mb-2">Zona de Peligro</h4>
-                            <p className="text-sm text-red-700 mb-4">
+                    <div className="border-t border-gray-100 dark:border-gray-700 p-6">
+                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-xl p-4">
+                            <h4 className="font-semibold text-red-900 dark:text-red-400 mb-2">Zona de Peligro</h4>
+                            <p className="text-sm text-red-700 dark:text-red-300 mb-4">
                                 Eliminar este libro también eliminará todas las {book.songCount} canciones asociadas. Esta acción no se puede deshacer.
                             </p>
                             <button
