@@ -79,6 +79,7 @@ model StudentSong {
   id             String       @id @default(uuid())
   studentId      String
   songTemplateId String
+  order          Int?         // Custom order for this student's song
   imageUrl       String?
   notes          String?
   youtubeUrl     String?

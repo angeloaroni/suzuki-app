@@ -72,7 +72,7 @@ export default async function StudentDetailPage({ params }: { params: { id: stri
                     id: studentSong?.id || songTemplate.id, // Use studentSong id if exists, else template id (though it should exist)
                     templateId: songTemplate.id,
                     title: songTemplate.title,
-                    order: songTemplate.order,
+                    order: studentSong?.order ?? songTemplate.order,
                     imageUrl: studentSong?.imageUrl || null,
                     completed: studentSong?.completed || false,
                     learnedLeft: studentSong?.learnedLeft || false,
@@ -83,7 +83,7 @@ export default async function StudentDetailPage({ params }: { params: { id: stri
                     audioUrl: studentSong?.audioUrl || null,
                     progresses: studentSong?.progresses || []
                 }
-            })
+            }).sort((a, b) => a.order - b.order)
 
             return {
                 id: assignment.id, // Use assignment ID as book ID for the view

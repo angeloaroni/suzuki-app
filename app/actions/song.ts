@@ -257,3 +257,45 @@ export async function createCustomSong(bookId: string, data: { title: string, or
         return { error: "Error al crear la canción" }
     }
 }
+
+export async function updateStudentSongOrders(studentId: string, updates: { templateId: string, order: number }[]) {
+    try {
+        const session = await getSession()
+        if (!session?.user?.id) {
+            return { error: "No autorizado" }
+        }
+
+        const student = await prisma.student.findUnique({
+            where: { id: studentId }
+        })
+
+        if (!student || student.teacherId !== session.user.id) {
+            return { error: "No autorizado" }
+        }
+
+        for (const update of updates) {
+            await prisma.studentSong.upsert({
+                where: {
+                    studentId_songTemplateId: {
+                        studentId,
+                        songTemplateId: update.templateId
+                    }
+                },
+                create: {
+                    studentId,
+                    songTemplateId: update.templateId,
+                    order: update.order
+                },
+                update: {
+                    order: update.order
+                }
+            })
+        }
+
+        revalidatePath(`/students/${studentId}`)
+        return { success: true }
+    } catch (error: any) {
+        console.error("Error updating song orders:", error)
+        return { error: "Error al actualizar el orden de las canciones" }
+    }
+}

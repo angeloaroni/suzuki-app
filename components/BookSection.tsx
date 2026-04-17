@@ -38,7 +38,25 @@ interface BookSectionProps {
     onToggleGraduation: (assignmentId: string, bookTitle: string, currentStatus: boolean) => void
 }
 
+import { useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import { SortableSongCard } from "./SortableSongCard"
+import { updateStudentSongOrders } from "@/app/actions/song"
 
 export default function BookSection({
     book,
@@ -49,15 +67,55 @@ export default function BookSection({
     onToggleGraduation
 }: BookSectionProps) {
     const [isExpanded, setIsExpanded] = useState(false)
+    const [songs, setSongs] = useState(book.songs)
+
+    useEffect(() => {
+        setSongs(book.songs)
+    }, [book.songs])
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: { distance: 5 } // 5px tolerance before drag starts
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            setSongs((items) => {
+                const oldIndex = items.findIndex(item => item.id === active.id);
+                const newIndex = items.findIndex(item => item.id === over.id);
+
+                const newSongs = arrayMove(items, oldIndex, newIndex);
+                
+                // create updates array
+                const updates = newSongs.map((song, index) => ({
+                    templateId: song.templateId as string,
+                    order: index + 1
+                }));
+
+                // update server in background
+                updateStudentSongOrders(studentId, updates).catch(err => {
+                    console.error("Failed to save new order:", err);
+                });
+
+                return newSongs;
+            });
+        }
+    };
 
     // Calculate stats
-    const totalSongs = book.songs.length
-    const completedSongs = book.songs.filter(s => s.completed).length
+    const totalSongs = songs.length
+    const completedSongs = songs.filter(s => s.completed).length
     const progressPercentage = totalSongs > 0 ? Math.round((completedSongs / totalSongs) * 100) : 0
 
-    const learnedRight = book.songs.filter(s => s.learnedRight).length
-    const learnedLeft = book.songs.filter(s => s.learnedLeft).length
-    const learnedBoth = book.songs.filter(s => s.learnedBoth).length
+    const learnedRight = songs.filter(s => s.learnedRight).length
+    const learnedLeft = songs.filter(s => s.learnedLeft).length
+    const learnedBoth = songs.filter(s => s.learnedBoth).length
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mb-6 transition-all duration-200 hover:shadow-md">
@@ -189,7 +247,7 @@ export default function BookSection({
                             </div>
 
                             {/* Songs Grid */}
-                            {book.songs.length === 0 ? (
+                            {songs.length === 0 ? (
                                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 p-8 text-center">
                                     <Music className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
                                     <p className="text-gray-600 dark:text-gray-400 mb-4">No hay canciones en este libro</p>
@@ -204,28 +262,39 @@ export default function BookSection({
                                     </button>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                    {book.songs.map(song => (
-                                        <SongCard
-                                            key={song.id}
-                                            studentId={studentId}
-                                            song={{
-                                                id: song.id,
-                                                templateId: song.templateId,
-                                                title: song.title,
-                                                imageUrl: song.imageUrl,
-                                                completed: song.completed,
-                                                learnedLeft: song.learnedLeft,
-                                                learnedRight: song.learnedRight,
-                                                learnedBoth: song.learnedBoth,
-                                                notes: song.notes,
-                                                youtubeUrl: song.youtubeUrl,
-                                                audioUrl: song.audioUrl,
-                                                progressNotesCount: song.progresses?.length ?? 0
-                                            }}
-                                        />
-                                    ))}
-                                </div>
+                                <DndContext
+                                    sensors={sensors}
+                                    collisionDetection={closestCenter}
+                                    onDragEnd={handleDragEnd}
+                                >
+                                    <SortableContext
+                                        items={songs.map(s => s.id)}
+                                        strategy={rectSortingStrategy}
+                                    >
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                            {songs.map(song => (
+                                                <SortableSongCard
+                                                    key={song.id}
+                                                    studentId={studentId}
+                                                    song={{
+                                                        id: song.id,
+                                                        templateId: song.templateId,
+                                                        title: song.title,
+                                                        imageUrl: song.imageUrl,
+                                                        completed: song.completed,
+                                                        learnedLeft: song.learnedLeft,
+                                                        learnedRight: song.learnedRight,
+                                                        learnedBoth: song.learnedBoth,
+                                                        notes: song.notes,
+                                                        youtubeUrl: song.youtubeUrl,
+                                                        audioUrl: song.audioUrl,
+                                                        progressNotesCount: song.progresses?.length ?? 0
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </SortableContext>
+                                </DndContext>
                             )}
                         </div>
                     </motion.div>
