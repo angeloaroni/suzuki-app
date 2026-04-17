@@ -8,6 +8,8 @@ import ProgressHistoryTimeline from "./ProgressHistoryTimeline"
 import AddProgressNoteModal from "./AddProgressNoteModal"
 import { Trash2, FileText, TrendingUp, Plus } from "lucide-react"
 
+import { createPortal } from "react-dom"
+
 interface SongDetailModalProps {
     song: {
         id: string
@@ -41,7 +43,12 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
     const [showAddProgressModal, setShowAddProgressModal] = useState(false)
     const [progressHistory, setProgressHistory] = useState<ProgressNote[]>([])
     const [isLoadingProgress, setIsLoadingProgress] = useState(false)
+    const [isMounted, setIsMounted] = useState(false)
     const audioInputRef = useRef<HTMLInputElement>(null)
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
 
     // Load progress history when switching to progress tab
     useEffect(() => {
@@ -50,6 +57,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
         }
     }, [activeTab, isOpen])
 
+    // (skip rest of the methods until return)
     const loadProgressHistory = async () => {
         setIsLoadingProgress(true)
         const result = await getSongProgressHistory(song.id)
@@ -113,10 +121,10 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
 
     const embedUrl = getYoutubeEmbedUrl(youtubeUrl)
 
-    return (
+    const modalContent = (
         <>
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6">
                         <div className="flex justify-between items-start mb-4">
@@ -164,7 +172,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                             <div className="space-y-6">
                                 {/* Title Section - Read Only */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Título de la Canción</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Título de la Canción</label>
                                     <input
                                         type="text"
                                         value={song.title}
@@ -176,7 +184,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
 
                                 {/* Notes Section */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Notas / Observaciones</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notas / Observaciones</label>
                                     <textarea
                                         value={notes}
                                         onChange={(e) => setNotes(e.target.value)}
@@ -188,7 +196,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
 
                                 {/* YouTube Section */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Video de YouTube</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Video de YouTube</label>
                                     <input
                                         type="text"
                                         value={youtubeUrl}
@@ -197,7 +205,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                                         placeholder="https://www.youtube.com/watch?v=..."
                                     />
                                     {embedUrl && (
-                                        <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden bg-gray-100">
+                                        <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
                                             <iframe
                                                 src={embedUrl}
                                                 title="YouTube video player"
@@ -212,12 +220,12 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
 
                                 {/* Audio Section */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Audio (MP3)</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Audio (MP3)</label>
                                     <div className="flex items-center space-x-4">
                                         <button
                                             onClick={() => audioInputRef.current?.click()}
                                             disabled={isUploadingAudio}
-                                            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center"
+                                            className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center shadow-sm"
                                         >
                                             {isUploadingAudio ? 'Subiendo...' : '📂 Subir Audio'}
                                         </button>
@@ -229,7 +237,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                                             onChange={handleAudioUpload}
                                         />
                                         {song.audioUrl && (
-                                            <audio controls className="flex-1 h-10">
+                                            <audio controls className="flex-1 h-10 rounded-lg overflow-hidden">
                                                 <source src={song.audioUrl} type="audio/mpeg" />
                                                 Tu navegador no soporta el elemento de audio.
                                             </audio>
@@ -240,7 +248,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                         ) : (
                             <div>
                                 <div className="flex justify-between items-center mb-6">
-                                    <h3 className="text-lg font-semibold text-gray-900">
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                         Registro de Progreso
                                     </h3>
                                     <button
@@ -268,12 +276,12 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
 
                     {/* Footer - only show on details tab */}
                     {activeTab === 'details' && (
-                        <div className="border-t border-gray-200 p-6 bg-gray-50">
+                        <div className="border-t border-gray-200 dark:border-gray-700 p-6 bg-gray-50 dark:bg-gray-900/50">
                             <div className="flex justify-end items-center">
                                 <div className="flex space-x-3">
                                     <button
                                         onClick={onClose}
-                                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                     >
                                         Cancelar
                                     </button>
@@ -291,8 +299,6 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                 </div>
             </div>
 
-
-
             <AddProgressNoteModal
                 songId={song.id}
                 songTitle={song.title}
@@ -301,5 +307,9 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                 onSuccess={loadProgressHistory}
             />
         </>
-    )
+    );
+
+    if (!isMounted) return null;
+
+    return createPortal(modalContent, document.body);
 }

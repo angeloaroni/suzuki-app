@@ -82,15 +82,35 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
     }
 
     const handleMoveSong = async (songId: string, direction: 'up' | 'down') => {
-        setIsSubmitting(true)
-        const result = await moveSongTemplate(songId, direction)
+        setIsSubmitting(true);
+        // Optimistic update
+        setSongs(currentSongs => {
+            const index = currentSongs.findIndex(s => s.id === songId);
+            if (index < 0) return currentSongs;
+            if (direction === 'up' && index === 0) return currentSongs;
+            if (direction === 'down' && index === currentSongs.length - 1) return currentSongs;
+            
+            const newSongs = [...currentSongs];
+            const swapIndex = direction === 'up' ? index - 1 : index + 1;
+            
+            // Swap orders
+            const tempOrder = newSongs[index].order;
+            newSongs[index].order = newSongs[swapIndex].order;
+            newSongs[swapIndex].order = tempOrder;
+            
+            return newSongs;
+        });
+
+        const result = await moveSongTemplate(songId, direction);
 
         if (result.success) {
-            router.refresh()
+            router.refresh();
         } else {
-            alert(result.error)
+            alert(result.error);
+            // Revert state on error by refreshing from server
+            router.refresh();
         }
-        setIsSubmitting(false)
+        setIsSubmitting(false);
     }
 
     const startEdit = (song: Song) => {
@@ -108,7 +128,7 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
             {/* Songs List */}
             <div className="space-y-2 mb-4">
                 {songs.length === 0 ? (
-                    <div className="text-center py-12 text-slate-500">
+                    <div className="text-center py-12 text-slate-500 dark:text-slate-400">
                         <p className="mb-2">No hay canciones todavía</p>
                         <p className="text-sm">Añade la primera canción para empezar</p>
                     </div>
@@ -118,11 +138,11 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
                         .map((song, index) => (
                             <div
                                 key={song.id}
-                                className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors group"
+                                className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-gray-800 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-750 transition-colors group border border-transparent dark:border-gray-700"
                             >
-                                <GripVertical className="w-5 h-5 text-slate-400" />
+                                <GripVertical className="w-5 h-5 text-slate-400 dark:text-gray-500" />
 
-                                <span className="text-sm font-medium text-slate-500 w-8">
+                                <span className="text-sm font-medium text-slate-500 dark:text-gray-400 w-8">
                                     {index + 1}.
                                 </span>
 
@@ -132,7 +152,7 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
                                             type="text"
                                             value={editTitle}
                                             onChange={(e) => setEditTitle(e.target.value)}
-                                            className="flex-1 px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900"
+                                            className="flex-1 px-3 py-2 border border-indigo-300 dark:border-indigo-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white text-slate-900"
                                             autoFocus
                                             onKeyDown={(e) => {
                                                 if (e.key === "Enter") handleUpdateSong(song.id)
@@ -142,27 +162,27 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
                                         <button
                                             onClick={() => handleUpdateSong(song.id)}
                                             disabled={isSubmitting}
-                                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                            className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
                                         >
                                             <Save className="w-4 h-4" />
                                         </button>
                                         <button
                                             onClick={cancelEdit}
                                             disabled={isSubmitting}
-                                            className="p-2 text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
+                                            className="p-2 text-slate-600 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
                                         >
                                             <X className="w-4 h-4" />
                                         </button>
                                     </>
                                 ) : (
                                     <>
-                                        <span className="flex-1 text-slate-800">{song.title}</span>
-                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="flex-1 text-slate-800 dark:text-gray-200">{song.title}</span>
+                                        <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                             <div className="flex flex-col mr-2">
                                                 <button
                                                     onClick={() => handleMoveSong(song.id, 'up')}
                                                     disabled={isSubmitting || index === 0}
-                                                    className="p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded disabled:opacity-30"
+                                                    className="p-1 text-slate-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded disabled:opacity-30"
                                                     title="Mover arriba"
                                                 >
                                                     <GripVertical className="w-3 h-3 rotate-90" />
@@ -170,7 +190,7 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
                                                 <button
                                                     onClick={() => handleMoveSong(song.id, 'down')}
                                                     disabled={isSubmitting || index === songs.length - 1}
-                                                    className="p-1 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded disabled:opacity-30"
+                                                    className="p-1 text-slate-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded disabled:opacity-30"
                                                     title="Mover abajo"
                                                 >
                                                     <GripVertical className="w-3 h-3 -rotate-90" />
@@ -178,14 +198,14 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
                                             </div>
                                             <button
                                                 onClick={() => startEdit(song)}
-                                                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                                className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
                                             >
                                                 <Edit2 className="w-4 h-4" />
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteSong(song.id)}
                                                 disabled={isSubmitting}
-                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
@@ -199,15 +219,15 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
 
             {/* Add New Song */}
             {isAdding ? (
-                <div className="flex items-center gap-3 p-4 bg-indigo-50 rounded-lg border-2 border-indigo-200">
-                    <span className="text-sm font-medium text-slate-500 w-8">
+                <div className="flex items-center gap-3 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border-2 border-indigo-200 dark:border-indigo-800">
+                    <span className="text-sm font-medium text-slate-500 dark:text-gray-400 w-8">
                         {songs.length + 1}.
                     </span>
                     <input
                         type="text"
                         value={newSongTitle}
                         onChange={(e) => setNewSongTitle(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900"
+                        className="flex-1 px-3 py-2 border border-indigo-300 dark:border-indigo-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-white text-slate-900"
                         placeholder="Título de la canción"
                         autoFocus
                         onKeyDown={(e) => {
@@ -231,7 +251,7 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
                             setNewSongTitle("")
                         }}
                         disabled={isSubmitting}
-                        className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors"
+                        className="px-4 py-2 bg-slate-200 dark:bg-gray-700 text-slate-700 dark:text-gray-300 rounded-lg hover:bg-slate-300 dark:hover:bg-gray-600 transition-colors"
                     >
                         <X className="w-4 h-4" />
                     </button>
@@ -239,7 +259,7 @@ export function SongTemplateList({ bookTemplateId, songs: initialSongs }: SongTe
             ) : (
                 <button
                     onClick={() => setIsAdding(true)}
-                    className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-slate-300 rounded-lg text-slate-600 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+                    className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-slate-300 dark:border-gray-600 rounded-lg text-slate-600 dark:text-gray-400 hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all font-medium"
                 >
                     <PlusCircle className="w-5 h-5" />
                     Añadir Canción

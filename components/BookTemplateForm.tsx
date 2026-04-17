@@ -206,27 +206,31 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
     }
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
-            {/* ... (keep error display) */}
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-slate-200 dark:border-gray-700 transition-colors">
+            {error && (
+                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm font-medium">
+                    {error}
+                </div>
+            )}
 
             {/* Basic Info */}
             <div className="space-y-6 mb-8">
                 <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                         Título del Libro
                     </label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
+                        className="w-full px-4 py-3 border border-slate-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 dark:text-white bg-white dark:bg-gray-700"
                         placeholder="Ej: Suzuki Piano School Vol. 1"
                         required
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                         Número de Volumen
                     </label>
                     <div className="relative">
@@ -234,21 +238,21 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
                             type="number"
                             value={number}
                             onChange={(e) => setNumber(parseInt(e.target.value) || 0)}
-                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent transition-all text-slate-900 ${numberError
-                                ? 'border-red-300 focus:ring-red-500 bg-red-50'
-                                : 'border-slate-300 focus:ring-indigo-500'
+                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent transition-all text-slate-900 dark:text-white bg-white dark:bg-gray-700 ${numberError
+                                ? 'border-red-300 focus:ring-red-500 dark:bg-red-900/20'
+                                : 'border-slate-300 dark:border-gray-600 focus:ring-indigo-500'
                                 }`}
                             min="1"
                             required
                         />
                         {checkingNumber && (
                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
                             </div>
                         )}
                     </div>
                     {numberError && (
-                        <p className="mt-1 text-sm text-red-600 font-medium">
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-400 font-medium">
                             {numberError}
                         </p>
                     )}
@@ -256,7 +260,7 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
 
 
                 <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                         Imagen de Portada
                     </label>
 
@@ -265,8 +269,8 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
                             type="button"
                             onClick={() => setImageMode('url')}
                             className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${imageMode === 'url'
-                                ? 'bg-indigo-100 text-indigo-700 border border-indigo-200'
-                                : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
+                                ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800'
+                                : 'bg-slate-50 dark:bg-gray-700 text-slate-600 dark:text-gray-300 border border-slate-200 dark:border-gray-600 hover:bg-slate-100 dark:hover:bg-gray-600'
                                 }`}
                         >
                             <LinkIcon className="w-4 h-4" />
@@ -276,8 +280,8 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
                             type="button"
                             onClick={() => setImageMode('upload')}
                             className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${imageMode === 'upload'
-                                ? 'bg-indigo-100 text-indigo-700 border border-indigo-200'
-                                : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
+                                ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800'
+                                : 'bg-slate-50 dark:bg-gray-700 text-slate-600 dark:text-gray-300 border border-slate-200 dark:border-gray-600 hover:bg-slate-100 dark:hover:bg-gray-600'
                                 }`}
                         >
                             <Upload className="w-4 h-4" />
@@ -289,17 +293,17 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
                         <div className="flex-1 relative">
                             {imageMode === 'url' ? (
                                 <>
-                                    <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                    <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-gray-500" />
                                     <input
                                         type="url"
                                         value={coverImage}
                                         onChange={(e) => setCoverImage(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
+                                        className="w-full pl-10 pr-4 py-3 border border-slate-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 dark:text-white bg-white dark:bg-gray-700"
                                         placeholder="https://ejemplo.com/portada.jpg"
                                     />
                                 </>
                             ) : (
-                                <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center hover:bg-slate-50 transition-colors relative">
+                                <div className="border-2 border-dashed border-slate-300 dark:border-gray-600 rounded-lg p-4 text-center hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors relative">
                                     <input
                                         type="file"
                                         accept="image/*"
@@ -309,11 +313,11 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
                                     />
                                     <div className="flex flex-col items-center gap-2">
                                         {uploading ? (
-                                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+                                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
                                         ) : (
-                                            <Upload className="w-6 h-6 text-slate-400" />
+                                            <Upload className="w-6 h-6 text-slate-400 dark:text-gray-500" />
                                         )}
-                                        <p className="text-sm text-slate-600">
+                                        <p className="text-sm text-slate-600 dark:text-gray-400">
                                             {uploading ? "Subiendo..." : "Click o arrastra para subir imagen"}
                                         </p>
                                     </div>
@@ -321,7 +325,7 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
                             )}
                         </div>
                         {coverImage && (
-                            <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-300 relative group">
+                            <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-gray-600 relative group">
                                 <img src={coverImage} alt="Preview" className="w-full h-full object-cover" />
                                 <button
                                     type="button"
@@ -340,13 +344,13 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
             {!isEdit && (
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-4">
-                        <label className="block text-sm font-semibold text-slate-700">
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">
                             Canciones
                         </label>
                         <button
                             type="button"
                             onClick={addSong}
-                            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors"
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
                         >
                             <PlusCircle className="w-4 h-4" />
                             Añadir Canción
@@ -361,21 +365,21 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
                                         type="button"
                                         onClick={() => moveSong(index, "up")}
                                         disabled={index === 0}
-                                        className="p-1 hover:bg-slate-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="p-1 hover:bg-slate-100 dark:hover:bg-gray-700 rounded disabled:opacity-30 disabled:cursor-not-allowed"
                                     >
-                                        <GripVertical className="w-4 h-4 text-slate-400 rotate-90" />
+                                        <GripVertical className="w-4 h-4 text-slate-400 dark:text-gray-500 rotate-90" />
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => moveSong(index, "down")}
                                         disabled={index === songs.length - 1}
-                                        className="p-1 hover:bg-slate-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="p-1 hover:bg-slate-100 dark:hover:bg-gray-700 rounded disabled:opacity-30 disabled:cursor-not-allowed"
                                     >
-                                        <GripVertical className="w-4 h-4 text-slate-400 -rotate-90" />
+                                        <GripVertical className="w-4 h-4 text-slate-400 dark:text-gray-500 -rotate-90" />
                                     </button>
                                 </div>
 
-                                <span className="text-sm font-medium text-slate-500 w-8">
+                                <span className="text-sm font-medium text-slate-500 dark:text-gray-400 w-8">
                                     {index + 1}.
                                 </span>
 
@@ -383,14 +387,14 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
                                     type="text"
                                     value={song.title}
                                     onChange={(e) => updateSong(index, e.target.value)}
-                                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900"
+                                    className="flex-1 px-4 py-2 border border-slate-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 dark:text-white bg-white dark:bg-gray-700"
                                     placeholder="Título de la canción"
                                 />
 
                                 <button
                                     type="button"
                                     onClick={() => removeSong(index)}
-                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                    className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                                     disabled={songs.length === 1}
                                 >
                                     <X className="w-4 h-4" />
@@ -400,7 +404,7 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
                     </div>
 
                     {isEdit && (
-                        <p className="text-sm text-slate-500 mt-4">
+                        <p className="text-sm text-slate-500 dark:text-gray-400 mt-4">
                             Las canciones se gestionan desde la página de detalles del libro
                         </p>
                     )}
@@ -408,11 +412,11 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
             )}
 
             {/* Actions */}
-            <div className="flex gap-3 pt-6 border-t border-slate-200">
+            <div className="flex gap-3 pt-6 border-t border-slate-200 dark:border-gray-700">
                 <button
                     type="button"
                     onClick={() => router.back()}
-                    className="flex-1 px-6 py-3 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors font-medium"
+                    className="flex-1 px-6 py-3 bg-slate-100 dark:bg-gray-700 text-slate-700 dark:text-gray-300 rounded-lg hover:bg-slate-200 dark:hover:bg-gray-600 transition-colors font-medium border border-transparent dark:border-gray-600"
                     disabled={isSubmitting}
                 >
                     Cancelar
