@@ -59,13 +59,13 @@ export default function ProgressHistoryTimeline({ progressHistory, onUpdate }: P
     if (progressHistory.length === 0) {
         return (
             <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <TrendingUp className="w-8 h-8 text-gray-400" />
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <TrendingUp className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                     Sin notas de progreso aún
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                     Agrega tu primera nota para comenzar a registrar el avance
                 </p>
             </div>
@@ -78,11 +78,11 @@ export default function ProgressHistoryTimeline({ progressHistory, onUpdate }: P
                 {progressHistory.map((progress, index) => (
                     <div
                         key={progress.id}
-                        className="group relative bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 border border-gray-200 hover:border-indigo-200 hover:shadow-md transition-all duration-200"
+                        className="group relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-850 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-500/50 hover:shadow-md transition-all duration-200"
                     >
                         {/* Timeline connector */}
                         {index < progressHistory.length - 1 && (
-                            <div className="absolute left-6 top-full w-0.5 h-4 bg-gradient-to-b from-indigo-200 to-transparent" />
+                            <div className="absolute left-6 top-full w-0.5 h-4 bg-gradient-to-b from-indigo-200 to-transparent dark:from-indigo-900/50 dark:to-transparent" />
                         )}
 
                         {/* Header with date and delete button */}
@@ -92,10 +92,10 @@ export default function ProgressHistoryTimeline({ progressHistory, onUpdate }: P
                                     <Clock className="w-5 h-5 text-white" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-semibold text-gray-900">
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                                         {formatDate(progress.date)}
                                     </p>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
                                         {formatTime(progress.date)}
                                     </p>
                                 </div>
@@ -103,7 +103,7 @@ export default function ProgressHistoryTimeline({ progressHistory, onUpdate }: P
 
                             <button
                                 onClick={() => setDeleteId(progress.id)}
-                                className="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                className="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
                                 title="Eliminar nota"
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -131,8 +131,8 @@ export default function ProgressHistoryTimeline({ progressHistory, onUpdate }: P
 
                         {/* Note */}
                         {progress.note && (
-                            <div className="bg-white rounded-lg p-3 border border-gray-100">
-                                <p className="text-sm text-gray-700 leading-relaxed">
+                            <div className="bg-white dark:bg-gray-700/50 rounded-lg p-3 border border-gray-100 dark:border-gray-600">
+                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                                     {progress.note}
                                 </p>
                             </div>
@@ -158,10 +158,10 @@ function ProgressBar({ label, value, color }: { label: string; value: number; co
     return (
         <div>
             <div className="flex justify-between items-center mb-1">
-                <span className="text-xs font-medium text-gray-600">{label}</span>
-                <span className="text-xs font-bold text-gray-900">{value}%</span>
+                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{label}</span>
+                <span className="text-xs font-bold text-gray-900 dark:text-gray-100">{value}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                 <div
                     className={`h-full bg-gradient-to-r ${color} rounded-full transition-all duration-500`}
                     style={{ width: `${value}%` }}
