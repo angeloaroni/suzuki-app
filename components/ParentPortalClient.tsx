@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { Music, BookOpen, CheckCircle, Clock, Flame, Star, ChevronDown, ChevronUp } from 'lucide-react'
 import PracticeTimer from './PracticeTimer'
 import PracticeCalendar from './PracticeCalendar'
-import { calculateStreak } from '@/app/actions/practice'
+import { calculateStreak } from '@/lib/practice-utils'
 import { ThemeToggle } from './ThemeToggle'
 
 interface Song {
