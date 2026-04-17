@@ -8,6 +8,7 @@ import EditBookModal from "@/components/EditBookModal"
 import { removeBookFromStudent, toggleBookGraduation } from "@/app/actions/book-assignment"
 import { BookOpen, Plus, Edit, Music, Trash2, GraduationCap } from "lucide-react"
 import BookSection from "@/components/BookSection"
+import SharePortalButton from "@/components/SharePortalButton"
 
 interface Book {
     id: string
@@ -38,6 +39,7 @@ interface Student {
     name: string
     dob: Date | null
     notes: string | null
+    accessCode: string | null
     books: Book[]
 }
 
@@ -112,7 +114,12 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                                 {student.notes && ` • ${student.notes}`}
                             </p>
                         </div>
-                        <div className="flex gap-2 sm:gap-3">
+                        <div className="flex gap-2 sm:gap-3 flex-wrap">
+                            <SharePortalButton
+                                studentId={student.id}
+                                studentName={student.name}
+                                existingCode={student.accessCode}
+                            />
                             <button
                                 onClick={() => setShowAssignBook(true)}
                                 className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all shadow-lg font-medium flex items-center justify-center gap-2 text-sm sm:text-base"

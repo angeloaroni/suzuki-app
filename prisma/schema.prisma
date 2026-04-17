@@ -21,17 +21,19 @@ model User {
 }
 
 model Student {
-  id              String           @id @default(uuid())
-  name            String
-  dob             DateTime?
-  notes           String?
-  teacherId       String
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  teacher         User             @relation(fields: [teacherId], references: [id])
-  bookAssignments BookAssignment[]
-  studentSongs    StudentSong[]
-  attendances     Attendance[]
+  id               String             @id @default(uuid())
+  name             String
+  dob              DateTime?
+  notes            String?
+  accessCode       String?            @unique // Unique code for parent portal access
+  teacherId        String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  teacher          User               @relation(fields: [teacherId], references: [id])
+  bookAssignments  BookAssignment[]
+  studentSongs     StudentSong[]
+  attendances      Attendance[]
+  practiceSessions PracticeSession[]
 }
 
 model BookTemplate {
@@ -106,6 +108,18 @@ model Progress {
   note          String?
   date          DateTime    @default(now())
   studentSong   StudentSong @relation(fields: [studentSongId], references: [id], onDelete: Cascade)
+}
+
+model PracticeSession {
+  id        String   @id @default(uuid())
+  studentId String
+  date      DateTime @db.Date
+  duration  Int      @default(0) // Duration in minutes
+  notes     String?
+  createdAt DateTime @default(now())
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, date])
 }
 
 model Attendance {

@@ -59,6 +59,7 @@ export default async function StudentDetailPage({ params }: { params: { id: stri
     // Transform data to match StudentDetailClient interface
     const student = {
         ...studentData,
+        accessCode: studentData.accessCode || null,
         books: studentData.bookAssignments.map(assignment => {
             const template = assignment.bookTemplate
 
