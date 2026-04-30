@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Check, X, Calendar as CalendarIcon, User, Search, Filter, TrendingUp, CalendarDays } from 'lucide-react'
-import { toggleAttendance, getAttendanceByMonth, deleteAttendance } from '@/app/actions/attendance'
+import { ChevronLeft, ChevronRight, Check, X, Calendar as CalendarIcon, User, Search, Filter, TrendingUp, CalendarDays, ArrowRight, Settings2 } from 'lucide-react'
+import { toggleAttendance, getAttendanceByRange, deleteAttendance } from '@/app/actions/attendance'
 
 interface Student {
     id: string
@@ -29,10 +29,12 @@ const MONTHS = [
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 ]
 
-const YEARS = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i)
-
 const formatDateKey = (year: number, month: number, day: number) => {
     return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+const formatDateDisplay = (date: Date) => {
+    return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 export function AttendanceCalendar({
@@ -41,47 +43,36 @@ export function AttendanceCalendar({
     initialYear,
     initialMonth
 }: AttendanceCalendarProps) {
-    const [year, setYear] = useState(initialYear)
-    const [month, setMonth] = useState(initialMonth)
+    const [range, setRange] = useState({
+        start: new Date(initialYear, initialMonth, 1),
+        end: new Date(initialYear, initialMonth + 1, 0),
+        label: 'Este mes'
+    })
     const [attendances, setAttendances] = useState<AttendanceRecord[]>(initialAttendances)
     const [loading, setLoading] = useState<string | null>(null)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
-    const [isUpdatingAll, setIsUpdatingAll] = useState(false)
-    const [showDatePicker, setShowDatePicker] = useState(false)
+    const [showRangePicker, setShowRangePicker] = useState(false)
+
+    // Helper for date equality
+    const isSameDate = (d1: Date, d2: Date) => 
+        d1.getFullYear() === d2.getFullYear() && 
+        d1.getMonth() === d2.getMonth() && 
+        d1.getDate() === d2.getDate();
 
     useEffect(() => {
         const fetchAttendance = async () => {
-            setIsUpdatingAll(true)
-            const result = await getAttendanceByMonth(year, month)
+            const start = range.start.toISOString()
+            const end = range.end.toISOString()
+            const result = await getAttendanceByRange(start,end)
             if (result.data) {
                 setAttendances(result.data as AttendanceRecord[])
             }
-            setIsUpdatingAll(false)
         }
         
-        if (year !== initialYear || month !== initialMonth) {
-            fetchAttendance()
-        }
-    }, [year, month, initialYear, initialMonth])
-
-    const navigateMonth = (direction: 'prev' | 'next') => {
-        if (direction === 'prev') {
-            if (month === 0) {
-                setMonth(11)
-                setYear(year - 1)
-            } else {
-                setMonth(month - 1)
-            }
-        } else {
-            if (month === 11) {
-                setMonth(0)
-                setYear(year + 1)
-            } else {
-                setMonth(month + 1)
-            }
-        }
-    }
+        // Initial set is from props, only fetch if range changes from default
+        fetchAttendance()
+    }, [range])
 
     const filteredStudents = students.filter(s => 
         s.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -106,35 +97,26 @@ export function AttendanceCalendar({
         }
     }, [attendances])
 
-    const handleToggleAttendance = async (studentId: string, day: number) => {
-        const dateStr = formatDateKey(year, month, day)
+    const handleToggleAttendance = async (studentId: string, day: number, currentMonth: number, currentYear: number) => {
+        const dateStr = formatDateKey(currentYear, currentMonth, day)
         const key = `${studentId}-${day}`
-
         setLoading(key)
 
         const existingAttendance = attendances.find(a => 
             a.studentId === studentId && a.date.startsWith(dateStr)
         )
 
-        // Cycle logic: None -> Present -> Absent -> None
         if (existingAttendance && !existingAttendance.present) {
-            // If it was "Absent", delete it to leave it "Clean"
             const result = await deleteAttendance(studentId, dateStr)
             if (result.success) {
-                setAttendances(prev => prev.filter(a => 
-                    !(a.studentId === studentId && a.date.startsWith(dateStr))
-                ))
+                setAttendances(prev => prev.filter(a => !(a.studentId === studentId && a.date.startsWith(dateStr))))
             }
         } else {
-            // If it was "None" -> "Present", or "Present" -> "Absent"
             const newPresent = existingAttendance ? !existingAttendance.present : true
             const result = await toggleAttendance(studentId, dateStr, newPresent)
-
             if (result.success && result.attendance) {
                 setAttendances(prev => {
-                    const filtered = prev.filter(a =>
-                        !(a.studentId === studentId && a.date.startsWith(dateStr))
-                    )
+                    const filtered = prev.filter(a => !(a.studentId === studentId && a.date.startsWith(dateStr)))
                     return [...filtered, {
                         id: result.attendance.id,
                         studentId: result.attendance.studentId,
@@ -144,206 +126,241 @@ export function AttendanceCalendar({
                 })
             }
         }
-
         setLoading(null)
     }
 
+    const predefinedRanges = [
+        { label: 'Hoy', getValue: () => ({ start: new Date(), end: new Date() }) },
+        { label: 'Ayer', getValue: () => {
+            const d = new Date(); d.setDate(d.getDate() - 1);
+            return { start: new Date(d), end: new Date(d) }
+        }},
+        { label: 'Esta semana', getValue: () => {
+            const now = new Date();
+            const start = new Date(now);
+            start.setDate(now.getDate() - now.getDay());
+            return { start, end: now }
+        }},
+        { label: 'Este mes', getValue: () => ({
+            start: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            end: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
+        })},
+        { label: 'Este año', getValue: () => ({
+            start: new Date(new Date().getFullYear(), 0, 1),
+            end: new Date(new Date().getFullYear(), 11, 31)
+        })},
+        { label: 'Últimos 7 días', getValue: () => {
+            const end = new Date();
+            const start = new Date(); start.setDate(end.getDate() - 7);
+            return { start, end }
+        }},
+        { label: 'Últimos 30 días', getValue: () => {
+            const end = new Date();
+            const start = new Date(); start.setDate(end.getDate() - 30);
+            return { start, end }
+        }},
+        { label: 'Últimos 90 días', getValue: () => {
+            const end = new Date();
+            const start = new Date(); start.setDate(end.getDate() - 90);
+            return { start, end }
+        }},
+        { label: 'Todo el tiempo', getValue: () => ({
+            start: new Date(2020, 0, 1),
+            end: new Date()
+        })}
+    ]
+
     return (
-        <div className="space-y-6 sm:space-y-8">
-            {/* General Summary Card - Compact Version */}
-            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-4 sm:p-6 text-white shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -mr-24 -mt-24 blur-3xl opacity-50"></div>
-                <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6">
+        <div className="space-y-6">
+            {/* Range Picker Button & Summary */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 transition-all">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div className="flex flex-col">
                         <div className="flex items-center gap-2 mb-1">
-                            <TrendingUp className="w-4 h-4 text-indigo-200" />
-                            <span className="text-indigo-100 font-bold uppercase tracking-widest text-[9px] sm:text-xs">Resumen Mensual</span>
+                            <CalendarIcon className="w-4 h-4 text-indigo-500" />
+                            <span className="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest">Periodo Seleccionado</span>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <h2 className="text-xl sm:text-3xl font-black truncate">
-                                {MONTHS[month]} {year}
-                            </h2>
-                            <button 
-                                onClick={() => setShowDatePicker(!showDatePicker)}
-                                className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-all border border-white/10"
-                            >
-                                <CalendarDays className="w-4 h-4 sm:w-5 h-5" />
-                            </button>
-                        </div>
-                        
-                        {/* Inline Quick Selector */}
-                        {showDatePicker && (
-                            <div className="mt-4 p-3 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 grid grid-cols-3 gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                                <select 
-                                    value={month} 
-                                    onChange={(e) => { setMonth(Number(e.target.value)); setShowDatePicker(false); }}
-                                    className="bg-indigo-900/40 border-none rounded-lg text-xs font-bold py-1 px-2 focus:ring-0"
-                                >
-                                    {MONTHS.map((m, i) => <option key={m} value={i} className="text-gray-900">{m}</option>)}
-                                </select>
-                                <select 
-                                    value={year} 
-                                    onChange={(e) => { setYear(Number(e.target.value)); setShowDatePicker(false); }}
-                                    className="bg-indigo-900/40 border-none rounded-lg text-xs font-bold py-1 px-2 focus:ring-0"
-                                >
-                                    {YEARS.map(y => <option key={y} value={y} className="text-gray-900">{y}</option>)}
-                                </select>
-                                <button 
-                                    onClick={() => setShowDatePicker(false)}
-                                    className="bg-white/20 hover:bg-white/30 rounded-lg text-[10px] font-black uppercase transition-all"
-                                >
-                                    Cerrar
-                                </button>
-                            </div>
-                        )}
+                        <button 
+                            onClick={() => setShowRangePicker(!showRangePicker)}
+                            className="flex items-center gap-3 bg-gray-50 dark:bg-gray-900 px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-900 transition-all group"
+                        >
+                            <span className="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100">
+                                {range.label === 'Personalizado' ? `${formatDateDisplay(range.start)} - ${formatDateDisplay(range.end)}` : range.label}
+                            </span>
+                            <ChevronRight className={`w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-transform ${showRangePicker ? 'rotate-90' : ''}`} />
+                        </button>
                     </div>
-                    
-                    <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4">
-                        <div className="bg-white/10 backdrop-blur-md rounded-xl p-2.5 sm:p-4 border border-white/10 flex-1 sm:flex-none text-center sm:text-left min-w-[70px] sm:min-w-[100px]">
-                            <p className="text-indigo-100 text-[8px] sm:text-[10px] font-black uppercase mb-0.5">Asistió</p>
-                            <p className="text-lg sm:text-2xl font-black">{totalStats.present}</p>
+
+                    <div className="flex gap-4 w-full md:w-auto">
+                        <div className="flex-1 md:flex-none bg-green-50 dark:bg-green-900/20 px-4 py-2 rounded-xl border border-green-100 dark:border-green-800/30">
+                            <p className="text-[10px] font-black text-green-600 dark:text-green-400 uppercase tracking-tighter">Asistencias</p>
+                            <p className="text-xl font-black text-green-700 dark:text-green-300">{totalStats.present}</p>
                         </div>
-                        <div className="bg-white/10 backdrop-blur-md rounded-xl p-2.5 sm:p-4 border border-white/10 flex-1 sm:flex-none text-center sm:text-left min-w-[70px] sm:min-w-[100px]">
-                            <p className="text-indigo-100 text-[8px] sm:text-[10px] font-black uppercase mb-0.5">Falta</p>
-                            <p className="text-lg sm:text-2xl font-black">{totalStats.absent}</p>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <button 
-                                onClick={() => navigateMonth('next')} 
-                                className="p-1 px-3 bg-white/20 hover:bg-white/30 rounded-lg transition-all border border-white/10"
-                            >
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                            <button 
-                                onClick={() => navigateMonth('prev')} 
-                                className="p-1 px-3 bg-white/20 hover:bg-white/30 rounded-lg transition-all border border-white/10"
-                            >
-                                <ChevronLeft className="w-5 h-5" />
-                            </button>
+                        <div className="flex-1 md:flex-none bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-xl border border-red-100 dark:border-red-800/30">
+                            <p className="text-[10px] font-black text-red-600 dark:text-red-400 uppercase tracking-tighter">Faltas</p>
+                            <p className="text-xl font-black text-red-700 dark:text-red-300">{totalStats.absent}</p>
                         </div>
                     </div>
                 </div>
+
+                {/* Dropdown Range Picker */}
+                {showRangePicker && (
+                    <div className="mt-6 p-4 bg-gray-50/50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-700 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                            {predefinedRanges.map((r) => (
+                                <button
+                                    key={r.label}
+                                    onClick={() => {
+                                        const values = r.getValue()
+                                        setRange({ ...values, label: r.label })
+                                        setShowRangePicker(false)
+                                    }}
+                                    className={`px-3 py-2 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-tighter transition-all border ${
+                                        range.label === r.label 
+                                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' 
+                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
+                                    }`}
+                                >
+                                    {r.label}
+                                </button>
+                            ))}
+                        </div>
+                        
+                        <div className="mt-6 flex flex-col sm:flex-row items-center gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center gap-3 w-full">
+                                <div className="flex-1">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Desde</label>
+                                    <input 
+                                        type="date" 
+                                        value={range.start.toISOString().split('T')[0]}
+                                        onChange={(e) => setRange(prev => ({ ...prev, start: new Date(e.target.value), label: 'Personalizado' }))}
+                                        className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg text-sm px-3 py-2"
+                                    />
+                                </div>
+                                <ArrowRight className="w-4 h-4 text-gray-400 mt-5" />
+                                <div className="flex-1">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Hasta</label>
+                                    <input 
+                                        type="date" 
+                                        value={range.end.toISOString().split('T')[0]}
+                                        onChange={(e) => setRange(prev => ({ ...prev, end: new Date(e.target.value), label: 'Personalizado' }))}
+                                        className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg text-sm px-3 py-2"
+                                    />
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setShowRangePicker(false)}
+                                className="w-full sm:w-auto px-8 py-2 bg-indigo-600 text-white rounded-xl font-bold text-sm"
+                            >
+                                Aplicar
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Student List View */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                <div className="bg-gray-50/50 dark:bg-gray-900/50 p-3 sm:p-4 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-                    <div className="relative flex-1">
+                {/* (Search bar same as before) */}
+                <div className="bg-gray-50/50 dark:bg-gray-900/50 p-4 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    <div className="relative w-full sm:w-64">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input 
                             type="text" 
                             placeholder="Buscar estudiante..." 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 transition-all border"
+                            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 transition-all border font-medium"
                         />
-                    </div>
-                    <div className="flex items-center justify-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">
-                        <Filter className="w-3 h-3" />
-                        {filteredStudents.length} Alumnos
                     </div>
                 </div>
 
                 <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                    {filteredStudents.length === 0 ? (
-                        <div className="p-12 text-center text-gray-500 text-sm">
-                            No se encontraron estudiantes
-                        </div>
-                    ) : (
-                        filteredStudents.map(student => (
-                            <div key={student.id} className="p-3 sm:p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors group">
-                                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                                    <div className="w-9 h-9 sm:w-10 sm:h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
-                                        <User className="w-5 h-5" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <h3 className="font-bold text-gray-900 dark:text-gray-100 truncate text-sm sm:text-base">{student.name}</h3>
-                                        <div className="flex items-center gap-2 mt-0.5">
-                                            <span className="text-[9px] sm:text-[10px] font-black text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-0.5 rounded-full flex items-center gap-1 uppercase">
-                                                <Check className="w-2.5 h-2.5" /> {studentStats[student.id].present}
-                                            </span>
-                                            <span className="text-[9px] sm:text-[10px] font-black text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-full flex items-center gap-1 uppercase">
-                                                <X className="w-2.5 h-2.5" /> {studentStats[student.id].absent}
-                                            </span>
-                                        </div>
+                    {filteredStudents.map(student => (
+                        <div key={student.id} className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all duration-200">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
+                                    {student.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 dark:text-gray-100">{student.name}</h3>
+                                    <div className="flex gap-3 mt-1">
+                                        <span className="text-[10px] font-black text-green-600 dark:text-green-400 bg-green-100/50 dark:bg-green-900/20 px-2 py-0.5 rounded-full uppercase">Asistencias: {studentStats[student.id].present}</span>
+                                        <span className="text-[10px] font-black text-red-600 dark:text-red-400 bg-red-100/50 dark:bg-red-900/20 px-2 py-0.5 rounded-full uppercase">Faltas: {studentStats[student.id].absent}</span>
                                     </div>
                                 </div>
-                                <button 
-                                    onClick={() => setSelectedStudent(student)}
-                                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-[10px] sm:text-xs font-black text-indigo-600 dark:text-indigo-400 hover:shadow-md transition-all uppercase tracking-tighter"
-                                >
-                                    Registro
-                                </button>
                             </div>
-                        ))
-                    )}
+                            <button 
+                                onClick={() => setSelectedStudent(student)}
+                                className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-indigo-600 hover:text-white transition-all font-bold text-xs uppercase"
+                            >
+                                <Settings2 className="w-4 h-4" />
+                                Gestionar
+                            </button>
+                        </div>
+                    ))}
                 </div>
             </div>
 
-            {/* Attendance Detail Modal - Improved for Mobile */}
+            {/* Attendance Detail Modal with Month Swiper */}
             {selectedStudent && (
-                <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-300">
-                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col border border-gray-100 dark:border-gray-700 overflow-hidden transform animate-in zoom-in-95 duration-300">
-                        <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 p-5 sm:p-6 text-white relative flex-shrink-0">
-                            <button 
-                                onClick={() => setSelectedStudent(null)}
-                                className="absolute right-4 top-4 p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                                    <CalendarIcon className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <h2 className="text-lg sm:text-xl font-black line-clamp-1">{selectedStudent.name}</h2>
-                                    <p className="text-indigo-100 text-[10px] font-bold uppercase tracking-widest">
-                                        Asistencia • {MONTHS[month]} {year}
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            {/* Modal Stats Summary */}
-                            <div className="grid grid-cols-2 gap-3 mt-4">
-                                <div className="bg-indigo-900/30 rounded-xl p-2 flex items-center gap-3 border border-white/5">
-                                    <div className="w-7 h-7 bg-green-500 rounded-lg flex items-center justify-center shadow-lg"><Check className="w-4 h-4 text-white" /></div>
-                                    <div>
-                                        <p className="text-[8px] font-black uppercase opacity-60">Asistencias</p>
-                                        <p className="text-sm font-black">{studentStats[selectedStudent.id].present}</p>
-                                    </div>
-                                </div>
-                                <div className="bg-indigo-900/30 rounded-xl p-2 flex items-center gap-3 border border-white/5">
-                                    <div className="w-7 h-7 bg-red-500 rounded-lg flex items-center justify-center shadow-lg"><X className="w-4 h-4 text-white" /></div>
-                                    <div>
-                                        <p className="text-[8px] font-black uppercase opacity-60">Faltas</p>
-                                        <p className="text-sm font-black">{studentStats[selectedStudent.id].absent}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <StudentAttendanceModal 
+                    student={selectedStudent}
+                    attendances={attendances}
+                    onClose={() => setSelectedStudent(null)}
+                    onToggle={handleToggleAttendance}
+                    loading={loading}
+                />
+            )}
+        </div>
+    )
+}
 
-                        <div className="flex-1 overflow-y-auto p-4 sm:p-6 no-scrollbar">
-                            <CalendarGrid 
-                                year={year}
-                                month={month}
-                                studentId={selectedStudent.id}
-                                attendances={attendances}
-                                loading={loading}
-                                onToggle={handleToggleAttendance}
-                            />
-                        </div>
+function StudentAttendanceModal({ student, attendances, onClose, onToggle, loading }: any) {
+    // Current view month within the modal
+    const [viewMonth, setViewMonth] = useState(new Date().getMonth())
+    const [viewYear, setViewYear] = useState(new Date().getFullYear())
 
-                        <div className="p-4 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-sm border-t border-gray-100 dark:border-gray-700 flex justify-end flex-shrink-0">
-                            <button 
-                                onClick={() => setSelectedStudent(null)}
-                                className="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:shadow-xl transition-all active:scale-95"
-                            >
-                                Finalizar
-                            </button>
+    const navigate = (dir: 'prev' | 'next') => {
+        if (dir === 'prev') {
+            if (viewMonth === 0) { setViewMonth(11); setViewYear(viewYear - 1); }
+            else setViewMonth(viewMonth - 1);
+        } else {
+            if (viewMonth === 11) { setViewMonth(0); setViewYear(viewYear + 1); }
+            else setViewMonth(viewMonth + 1);
+        }
+    }
+
+    return (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-3 sm:p-4">
+             <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-6 text-white relative">
+                    <button onClick={onClose} className="absolute right-4 top-4 p-2 hover:bg-white/20 rounded-xl transition-all"><X className="w-6 h-6" /></button>
+                    <h2 className="text-xl font-black mb-1">{student.name}</h2>
+                    <div className="flex items-center gap-4 mt-4 bg-white/10 p-3 rounded-2xl border border-white/10">
+                        <button onClick={() => navigate('prev')} className="hover:bg-white/20 p-2 rounded-lg"><ChevronLeft className="w-5 h-5" /></button>
+                        <div className="flex-1 text-center font-black uppercase tracking-widest text-sm">
+                            {MONTHS[viewMonth]} {viewYear}
                         </div>
+                        <button onClick={() => navigate('next')} className="hover:bg-white/20 p-2 rounded-lg"><ChevronRight className="w-5 h-5" /></button>
                     </div>
                 </div>
-            )}
+
+                <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
+                    <CalendarGrid 
+                        year={viewYear}
+                        month={viewMonth}
+                        studentId={student.id}
+                        attendances={attendances}
+                        onToggle={(sId: string, d: number) => onToggle(sId, d, viewMonth, viewYear)}
+                        loading={loading}
+                    />
+                </div>
+
+                <div className="p-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 flex justify-end">
+                    <button onClick={onClose} className="px-8 py-3 bg-indigo-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl">Listo</button>
+                </div>
+            </div>
         </div>
     )
 }
@@ -353,33 +370,23 @@ function CalendarGrid({ year, month, studentId, attendances, loading, onToggle }
     const firstDayOfMonth = new Date(year, month, 1).getDay()
 
     const calendarDays: (number | null)[] = []
-    for (let i = 0; i < firstDayOfMonth; i++) {
-        calendarDays.push(null)
-    }
-    for (let day = 1; day <= daysInMonth; day++) {
-        calendarDays.push(day)
-    }
+    for (let i = 0; i < firstDayOfMonth; i++) calendarDays.push(null)
+    for (let day = 1; day <= daysInMonth; day++) calendarDays.push(day)
 
     const today = new Date()
-    const isToday = (day: number) =>
-        day === today.getDate() &&
-        month === today.getMonth() &&
-        year === today.getFullYear()
+    const isToday = (day: number) => day === today.getDate() && month === today.getMonth() && year === today.getFullYear()
 
     return (
-        <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+        <div className="grid grid-cols-7 gap-2">
             {DAYS_OF_WEEK.map(day => (
-                <div key={day} className="text-center text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase pb-2">
+                <div key={day} className="text-center text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase pb-2">
                     {day}
                 </div>
             ))}
             {calendarDays.map((day, idx) => {
                 if (day === null) return <div key={`empty-${idx}`} />
-
                 const dateStr = formatDateKey(year, month, day)
-                const attendance = attendances.find((a: any) => 
-                    a.studentId === studentId && a.date.startsWith(dateStr)
-                )
+                const attendance = attendances.find((a: any) => a.studentId === studentId && a.date.startsWith(dateStr))
                 const isLoadingCell = loading === `${studentId}-${day}`
 
                 return (
@@ -387,21 +394,18 @@ function CalendarGrid({ year, month, studentId, attendances, loading, onToggle }
                         key={day}
                         onClick={() => onToggle(studentId, day)}
                         disabled={isLoadingCell}
-                        className={`relative aspect-square rounded-xl sm:rounded-2xl flex flex-col items-center justify-center transition-all border-2 ${
+                        className={`relative aspect-square rounded-xl flex flex-col items-center justify-center transition-all border-2 ${
                             isLoadingCell ? 'bg-gray-100 dark:bg-gray-700 animate-pulse' :
-                            attendance?.present ? 'bg-green-500 border-green-500 text-white shadow-lg z-10' :
-                            attendance && !attendance.present ? 'bg-red-500 border-red-500 text-white shadow-lg z-10' :
-                            isToday(day) ? 'bg-white dark:bg-gray-800 border-indigo-500 text-indigo-600 dark:text-indigo-400 shadow-sm' :
-                            'bg-gray-50 dark:bg-gray-900 border-transparent text-gray-600 dark:text-gray-400 hover:border-gray-200 dark:hover:border-gray-700'
+                            attendance?.present ? 'bg-green-500 border-green-500 text-white shadow-lg' :
+                            attendance && !attendance.present ? 'bg-red-500 border-red-500 text-white shadow-lg' :
+                            isToday(day) ? 'bg-white dark:bg-gray-800 border-indigo-500 text-indigo-600 shadow-sm' :
+                            'bg-gray-50 dark:bg-gray-900 border-transparent text-gray-600 dark:text-gray-400'
                         }`}
                     >
-                        <span className="text-[11px] sm:text-sm font-black">{day}</span>
+                        <span className="text-sm font-black">{day}</span>
                         {!isLoadingCell && attendance && (
-                            <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 bg-white/20 rounded-full p-0.5">
-                                {attendance.present ? 
-                                    <Check className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-white" /> : 
-                                    <X className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-white" />
-                                }
+                            <div className="absolute top-1 right-1 bg-white/20 rounded-full p-0.5">
+                                {attendance.present ? <Check className="w-2.5 h-2.5 text-white" /> : <X className="w-2.5 h-2.5 text-white" />}
                             </div>
                         )}
                     </button>

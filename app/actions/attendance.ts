@@ -52,6 +52,54 @@ export async function toggleAttendance(studentId: string, date: string, present:
     }
 }
 
+export async function getAttendanceByRange(startDateIso: string, endDateIso: string) {
+    const session = await getSession()
+    if (!session) {
+        return { error: 'No autorizado', data: [] }
+    }
+
+    try {
+        const startDate = new Date(startDateIso)
+        const endDate = new Date(endDateIso)
+        endDate.setHours(23, 59, 59, 999)
+
+        const attendances = await prisma.attendance.findMany({
+            where: {
+                student: {
+                    teacherId: session.user.id
+                },
+                date: {
+                    gte: startDate,
+                    lte: endDate
+                }
+            },
+            include: {
+                student: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            },
+            orderBy: {
+                date: 'asc'
+            }
+        })
+
+        return {
+            data: attendances.map(a => ({
+                ...a,
+                date: a.date.toISOString(),
+                createdAt: a.createdAt.toISOString(),
+                updatedAt: a.updatedAt.toISOString()
+            }))
+        }
+    } catch (error) {
+        console.error('Error fetching attendance:', error)
+        return { error: 'Error al obtener asistencia', data: [] }
+    }
+}
+
 export async function getAttendanceByMonth(year: number, month: number) {
     const session = await getSession()
     if (!session) {
