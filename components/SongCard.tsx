@@ -110,6 +110,7 @@ export default function SongCard({ song, studentId, dragHandleProps }: { song: S
                         <div 
                             {...dragHandleProps} 
                             className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+                            style={{ touchAction: 'none' }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             <GripVertical className="w-5 h-5" />

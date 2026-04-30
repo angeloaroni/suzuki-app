@@ -329,16 +329,16 @@ function StatCard({
             {/* Background decoration */}
             <div className={`absolute top-0 right-0 w-20 h-20 sm:w-32 sm:h-32 bg-gradient-to-br ${bgGradient} dark:opacity-20 rounded-full -mr-10 -mt-10 sm:-mr-16 sm:-mt-16 opacity-50 group-hover:scale-150 transition-transform duration-500`}></div>
 
-            <div className="relative">
-                <div className="flex items-center justify-between mb-2 sm:mb-4">
-                    <div className={`w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br ${gradient} rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                        <div className="text-white scale-75 sm:scale-100">
-                            {icon}
-                        </div>
+            <div className="relative flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                    <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1 truncate uppercase tracking-tight">{title}</h3>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
+                </div>
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${gradient} rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform flex-shrink-0`}>
+                    <div className="text-white scale-90 sm:scale-100">
+                        {icon}
                     </div>
                 </div>
-                <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1 truncate">{title}</h3>
-                <p className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
             </div>
         </div>
     )

@@ -79,15 +79,16 @@ export default async function Dashboard() {
             <nav className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
                     <div className="flex justify-between items-center gap-4">
-                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex-shrink-0 flex items-center justify-center shadow-lg">
-                                <Music className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1.5 sm:gap-3 min-w-0">
+                            <div className="w-10 h-10 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex-shrink-0 flex items-center justify-center shadow-lg">
+                                <Music className="w-6 h-6 sm:w-6 sm:h-6 text-white" />
                             </div>
-                            <div className="min-w-0">
-                                <h1 className="text-lg sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate">
+                            <div className="flex flex-row sm:flex-col items-center sm:items-start gap-1.5 sm:gap-0 min-w-0">
+                                <h1 className="text-sm sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate uppercase tracking-wider sm:normal-case sm:tracking-normal">
                                     SuzukiTracker
                                 </h1>
-                                <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate">Panel de Control</p>
+                                <span className="sm:hidden text-[10px] text-gray-400 dark:text-gray-600 font-bold">•</span>
+                                <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate font-medium sm:font-normal">Panel de Control</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-2 sm:gap-4">
