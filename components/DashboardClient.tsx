@@ -86,23 +86,23 @@ export function DashboardClient({ students, books }: DashboardClientProps) {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-6 mb-10">
                 <StatCard
-                    title="Total Estudiantes"
+                    title="Total"
                     value={stats.totalStudents}
                     icon={<Users className="w-6 h-6" />}
                     gradient="from-blue-500 to-blue-600"
                     bgGradient="from-blue-50 to-blue-100"
                 />
                 <StatCard
-                    title="En Progreso"
+                    title="Progreso"
                     value={stats.inProgressSongs}
                     icon={<TrendingUp className="w-6 h-6" />}
                     gradient="from-amber-500 to-orange-600"
                     bgGradient="from-amber-50 to-orange-100"
                 />
                 <StatCard
-                    title="Completadas"
+                    title="Hecho"
                     value={stats.completedSongs}
                     icon={<Award className="w-6 h-6" />}
                     gradient="from-green-500 to-emerald-600"
@@ -325,20 +325,20 @@ function StatCard({
     bgGradient: string
 }) {
     return (
-        <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden">
+        <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden h-full">
             {/* Background decoration */}
-            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${bgGradient} dark:opacity-20 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-150 transition-transform duration-500`}></div>
+            <div className={`absolute top-0 right-0 w-20 h-20 sm:w-32 sm:h-32 bg-gradient-to-br ${bgGradient} dark:opacity-20 rounded-full -mr-10 -mt-10 sm:-mr-16 sm:-mt-16 opacity-50 group-hover:scale-150 transition-transform duration-500`}></div>
 
             <div className="relative">
-                <div className="flex items-center justify-between mb-4">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                        <div className="text-white">
+                <div className="flex items-center justify-between mb-2 sm:mb-4">
+                    <div className={`w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br ${gradient} rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                        <div className="text-white scale-75 sm:scale-100">
                             {icon}
                         </div>
                     </div>
                 </div>
-                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{title}</h3>
-                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
+                <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1 truncate">{title}</h3>
+                <p className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
             </div>
         </div>
     )

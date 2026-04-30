@@ -100,21 +100,58 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
             <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-40">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                             <Link href="/dashboard" className="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 hover:underline mb-1 sm:mb-2 block font-medium">
                                 ← Volver al Dashboard
                             </Link>
                             <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate">
                                 {student.name}
                             </h1>
-                            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 line-clamp-2 sm:line-clamp-none">
+                            
+                            {/* Mobile-only compact info row */}
+                            <div className="flex sm:hidden items-center gap-2 mt-2">
+                                <div className="flex gap-1.5 flex-shrink-0">
+                                    <SharePortalButton
+                                        studentId={student.id}
+                                        studentName={student.name}
+                                        existingCode={student.accessCode}
+                                        compact
+                                    />
+                                    <button
+                                        onClick={() => setShowAssignBook(true)}
+                                        className="p-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg shadow-sm"
+                                        title="Asignar Libro"
+                                    >
+                                        <BookOpen className="w-4 h-4" />
+                                    </button>
+                                    <Link
+                                        href={`/students/${student.id}/edit`}
+                                        className="p-2 border border-indigo-200 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-lg bg-indigo-50 dark:bg-indigo-900/30"
+                                        title="Editar"
+                                    >
+                                        <Edit className="w-4 h-4" />
+                                    </Link>
+                                </div>
+                                <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-0.5"></div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    {student.dob
+                                        ? `${Math.floor((Date.now() - new Date(student.dob).getTime()) / (365 * 24 * 60 * 60 * 1000))} años`
+                                        : 'Sin edad'}
+                                    {student.notes && ` • ${student.notes}`}
+                                </p>
+                            </div>
+
+                            {/* Desktop-only description */}
+                            <p className="hidden sm:block text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
                                 {student.dob
                                     ? `Edad: ${Math.floor((Date.now() - new Date(student.dob).getTime()) / (365 * 24 * 60 * 60 * 1000))} años`
                                     : 'Sin fecha de nacimiento'}
                                 {student.notes && ` • ${student.notes}`}
                             </p>
                         </div>
-                        <div className="flex gap-2 sm:gap-3 flex-wrap">
+
+                        {/* Desktop buttons Section (hidden on mobile) */}
+                        <div className="hidden sm:flex gap-3 flex-wrap">
                             <SharePortalButton
                                 studentId={student.id}
                                 studentName={student.name}
@@ -122,14 +159,14 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                             />
                             <button
                                 onClick={() => setShowAssignBook(true)}
-                                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all shadow-lg font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
+                                className="px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all shadow-lg font-medium flex items-center justify-center gap-2"
                             >
                                 <BookOpen className="w-4 h-4" />
                                 <span className="whitespace-nowrap">Asignar Libro</span>
                             </button>
                             <Link
                                 href={`/students/${student.id}/edit`}
-                                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 border-2 border-indigo-200 dark:border-indigo-900 rounded-xl text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
+                                className="px-4 py-2.5 border-2 border-indigo-200 dark:border-indigo-900 rounded-xl text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all font-medium flex items-center justify-center gap-2"
                             >
                                 <Edit className="w-4 h-4" />
                                 <span>Editar</span>

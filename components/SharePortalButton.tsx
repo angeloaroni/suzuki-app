@@ -10,9 +10,10 @@ interface SharePortalButtonProps {
     studentId: string
     studentName: string
     existingCode?: string | null
+    compact?: boolean
 }
 
-export default function SharePortalButton({ studentId, studentName, existingCode }: SharePortalButtonProps) {
+export default function SharePortalButton({ studentId, studentName, existingCode, compact }: SharePortalButtonProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [code, setCode] = useState<string | null>(existingCode || null)
     const [isLoading, setIsLoading] = useState(false)
@@ -64,11 +65,19 @@ export default function SharePortalButton({ studentId, studentName, existingCode
                     setIsOpen(true)
                     if (!code) handleGenerate()
                 }}
-                className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white rounded-xl transition-all shadow-lg font-medium text-sm"
+                className={compact 
+                    ? "p-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-lg transition-all shadow-md flex items-center justify-center"
+                    : "flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white rounded-xl transition-all shadow-lg font-medium text-sm"
+                }
+                title="Compartir Portal"
             >
-                <Share2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Portal Padres</span>
-                <span className="sm:hidden">Portal</span>
+                <Share2 className={compact ? "w-4 h-4" : "w-4 h-4"} />
+                {!compact && (
+                    <>
+                        <span className="hidden sm:inline">Portal Padres</span>
+                        <span className="sm:hidden">Portal</span>
+                    </>
+                )}
             </button>
 
             {/* Modal */}
