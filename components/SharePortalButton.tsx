@@ -11,9 +11,10 @@ interface SharePortalButtonProps {
     studentName: string
     existingCode?: string | null
     compact?: boolean
+    showLabel?: boolean // New prop
 }
 
-export default function SharePortalButton({ studentId, studentName, existingCode, compact }: SharePortalButtonProps) {
+export default function SharePortalButton({ studentId, studentName, existingCode, compact, showLabel }: SharePortalButtonProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [code, setCode] = useState<string | null>(existingCode || null)
     const [isLoading, setIsLoading] = useState(false)
@@ -66,18 +67,18 @@ export default function SharePortalButton({ studentId, studentName, existingCode
                     if (!code) handleGenerate()
                 }}
                 className={compact 
-                    ? "p-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-lg transition-all shadow-md flex items-center justify-center"
+                    ? `p-2 ${showLabel ? 'flex-1 gap-2 px-3' : ''} bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-xl transition-all shadow-md flex items-center justify-center`
                     : "flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white rounded-xl transition-all shadow-lg font-medium text-sm"
                 }
                 title="Compartir Portal"
             >
-                <Share2 className={compact ? "w-4 h-4" : "w-4 h-4"} />
-                {!compact && (
-                    <>
-                        <span className="hidden sm:inline">Portal Padres</span>
-                        <span className="sm:hidden">Portal</span>
-                    </>
+                <Share2 className="w-4 h-4 flex-shrink-0" />
+                {(showLabel || !compact) && (
+                    <span className={compact ? "text-[10px] font-black uppercase tracking-tight" : "hidden sm:inline sm:text-sm"}>
+                        Portal
+                    </span>
                 )}
+                {!compact && <span className="hidden sm:inline">Padres</span>}
             </button>
 
             {/* Modal */}

@@ -118,28 +118,29 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                             
                             {/* Mobile-only compact actions row - Full width with titles */}
                             <div className="flex sm:hidden flex-wrap items-center gap-2 mt-4">
-                                <div className="flex gap-2 w-full">
+                                <div className="grid grid-cols-2 gap-2 w-full">
                                     <SharePortalButton
                                         studentId={student.id}
                                         studentName={student.name}
                                         existingCode={student.accessCode}
                                         compact
+                                        showLabel
                                     />
                                     <button
                                         onClick={() => setShowAssignBook(true)}
-                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl shadow-md text-[10px] font-black uppercase tracking-tight"
+                                        className="flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl shadow-md text-[10px] font-black uppercase tracking-tight"
                                     >
-                                        <Plus className="w-4 h-4" />
+                                        <Plus className="w-4 h-4 flex-shrink-0" />
                                         <span>Asignar Libro</span>
                                     </button>
-                                    <Link
-                                        href={`/students/${student.id}/edit`}
-                                        className="p-2.5 border-2 border-indigo-200 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center"
-                                        title="Editar"
-                                    >
-                                        <Edit className="w-5 h-5" />
-                                    </Link>
                                 </div>
+                                <Link
+                                    href={`/students/${student.id}/edit`}
+                                    className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-indigo-200 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 shadow-sm"
+                                >
+                                    <Edit className="w-4 h-4" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Editar Perfil del Alumno</span>
+                                </Link>
                             </div>
                         </div>
 
