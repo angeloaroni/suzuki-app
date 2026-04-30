@@ -104,13 +104,21 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                             <Link href="/dashboard" className="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 hover:underline mb-1 sm:mb-2 block font-medium">
                                 ← Volver al Dashboard
                             </Link>
-                            <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate">
-                                {student.name}
-                            </h1>
+                            <div className="flex flex-col min-[450px]:flex-row min-[450px]:items-baseline gap-1 sm:gap-3">
+                                <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate">
+                                    {student.name}
+                                </h1>
+                                <p className="text-xs sm:text-base text-gray-500 dark:text-gray-400 font-medium">
+                                    {student.dob
+                                        ? `${Math.floor((Date.now() - new Date(student.dob).getTime()) / (365 * 24 * 60 * 60 * 1000))} años`
+                                        : 'Sin edad'}
+                                    {student.notes && ` • ${student.notes}`}
+                                </p>
+                            </div>
                             
-                            {/* Mobile-only compact info row */}
-                            <div className="flex sm:hidden items-center gap-2 mt-2">
-                                <div className="flex gap-1.5 flex-shrink-0">
+                            {/* Mobile-only compact actions row - Full width with titles */}
+                            <div className="flex sm:hidden flex-wrap items-center gap-2 mt-4">
+                                <div className="flex gap-2 w-full">
                                     <SharePortalButton
                                         studentId={student.id}
                                         studentName={student.name}
@@ -119,35 +127,20 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                                     />
                                     <button
                                         onClick={() => setShowAssignBook(true)}
-                                        className="p-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg shadow-sm"
-                                        title="Asignar Libro"
+                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl shadow-md text-[10px] font-black uppercase tracking-tight"
                                     >
-                                        <BookOpen className="w-4 h-4" />
+                                        <Plus className="w-4 h-4" />
+                                        <span>Asignar Libro</span>
                                     </button>
                                     <Link
                                         href={`/students/${student.id}/edit`}
-                                        className="p-2 border border-indigo-200 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-lg bg-indigo-50 dark:bg-indigo-900/30"
+                                        className="p-2.5 border-2 border-indigo-200 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center"
                                         title="Editar"
                                     >
-                                        <Edit className="w-4 h-4" />
+                                        <Edit className="w-5 h-5" />
                                     </Link>
                                 </div>
-                                <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-0.5"></div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    {student.dob
-                                        ? `${Math.floor((Date.now() - new Date(student.dob).getTime()) / (365 * 24 * 60 * 60 * 1000))} años`
-                                        : 'Sin edad'}
-                                    {student.notes && ` • ${student.notes}`}
-                                </p>
                             </div>
-
-                            {/* Desktop-only description */}
-                            <p className="hidden sm:block text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
-                                {student.dob
-                                    ? `Edad: ${Math.floor((Date.now() - new Date(student.dob).getTime()) / (365 * 24 * 60 * 60 * 1000))} años`
-                                    : 'Sin fecha de nacimiento'}
-                                {student.notes && ` • ${student.notes}`}
-                            </p>
                         </div>
 
                         {/* Desktop buttons Section (hidden on mobile) */}

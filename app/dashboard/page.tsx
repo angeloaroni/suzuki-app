@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import LogoutButton from "@/components/LogoutButton"
-import { Music, BookOpen } from "lucide-react"
+import { Music, BookOpen, CalendarCheck } from "lucide-react"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { DashboardClient } from "@/components/DashboardClient"
 
@@ -112,7 +112,7 @@ export default async function Dashboard() {
                                 className="flex items-center gap-2 px-2.5 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-orange-100 to-amber-100 dark:from-orange-900/40 dark:to-amber-900/40 text-orange-700 dark:text-orange-300 rounded-lg hover:from-orange-200 hover:to-amber-200 dark:hover:from-orange-800/40 dark:hover:to-amber-800/40 transition-all font-medium text-sm flex-shrink-0"
                                 title="Asistencia"
                             >
-                                <BookOpen className="w-4 h-4" />
+                                <CalendarCheck className="w-4 h-4" />
                                 <span className="hidden lg:inline">Asistencia</span>
                             </Link>
                             <div className="text-right hidden md:block">
