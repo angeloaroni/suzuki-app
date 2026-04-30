@@ -18,9 +18,12 @@ type ProgressNote = {
 type ProgressHistoryTimelineProps = {
     progressHistory: ProgressNote[]
     onUpdate: () => void
+    onEdit: (progress: ProgressNote) => void
 }
 
-export default function ProgressHistoryTimeline({ progressHistory, onUpdate }: ProgressHistoryTimelineProps) {
+import { Edit3 } from "lucide-react"
+
+export default function ProgressHistoryTimeline({ progressHistory, onUpdate, onEdit }: ProgressHistoryTimelineProps) {
     const [deleteId, setDeleteId] = useState<string | null>(null)
     const [isDeleting, setIsDeleting] = useState(false)
 
@@ -74,40 +77,49 @@ export default function ProgressHistoryTimeline({ progressHistory, onUpdate }: P
 
     return (
         <>
-            <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 no-scrollbar">
                 {progressHistory.map((progress, index) => (
                     <div
                         key={progress.id}
-                        className="group relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-850 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-500/50 hover:shadow-md transition-all duration-200"
+                        className="group relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-800/50 dark:to-gray-900/50 rounded-xl p-3 sm:p-4 border border-gray-100 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-500/30 hover:shadow-lg transition-all duration-300"
                     >
                         {/* Timeline connector */}
                         {index < progressHistory.length - 1 && (
-                            <div className="absolute left-6 top-full w-0.5 h-4 bg-gradient-to-b from-indigo-200 to-transparent dark:from-indigo-900/50 dark:to-transparent" />
+                            <div className="absolute left-5 sm:left-6 top-full w-0.5 h-4 bg-gradient-to-b from-indigo-200 to-transparent dark:from-indigo-900/30 dark:to-transparent" />
                         )}
 
-                        {/* Header with date and delete button */}
-                        <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
-                                    <Clock className="w-5 h-5 text-white" />
+                        {/* Header with date and actions */}
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-md flex-shrink-0">
+                                    <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                                 </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                <div className="min-w-0">
+                                    <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
                                         {formatDate(progress.date)}
                                     </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
                                         {formatTime(progress.date)}
                                     </p>
                                 </div>
                             </div>
 
-                            <button
-                                onClick={() => setDeleteId(progress.id)}
-                                className="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
-                                title="Eliminar nota"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </button>
+                            <div className="flex items-center gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                    onClick={() => onEdit(progress)}
+                                    className="p-1.5 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"
+                                    title="Editar nota"
+                                >
+                                    <Edit3 className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => setDeleteId(progress.id)}
+                                    className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
+                                    title="Eliminar nota"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Progress bars */}

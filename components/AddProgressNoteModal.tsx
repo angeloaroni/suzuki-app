@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from "react"
-import { createProgressNote } from "@/app/actions/progress"
-import { X, Save, TrendingUp } from "lucide-react"
+import { useState, useEffect } from "react"
+import { createProgressNote, updateProgressNote } from "@/app/actions/progress"
+import { X, Save, TrendingUp, Edit3 } from "lucide-react"
 
 type AddProgressNoteModalProps = {
     songId: string
@@ -10,6 +10,13 @@ type AddProgressNoteModalProps = {
     isOpen: boolean
     onClose: () => void
     onSuccess: () => void
+    initialData?: {
+        id: string
+        leftHand: number
+        rightHand: number
+        bothHands: number
+        note: string | null
+    }
 }
 
 export default function AddProgressNoteModal({
@@ -17,34 +24,58 @@ export default function AddProgressNoteModal({
     songTitle,
     isOpen,
     onClose,
-    onSuccess
+    onSuccess,
+    initialData
 }: AddProgressNoteModalProps) {
+    const isEditing = !!initialData
     const [leftHand, setLeftHand] = useState(0)
     const [rightHand, setRightHand] = useState(0)
     const [bothHands, setBothHands] = useState(0)
     const [note, setNote] = useState("")
     const [isSaving, setIsSaving] = useState(false)
 
+    // Reset values when initialData changes or modal opens
+    useEffect(() => {
+        if (isOpen) {
+            if (initialData) {
+                setLeftHand(initialData.leftHand)
+                setRightHand(initialData.rightHand)
+                setBothHands(initialData.bothHands)
+                setNote(initialData.note ?? "")
+            } else {
+                setLeftHand(0)
+                setRightHand(0)
+                setBothHands(0)
+                setNote("")
+            }
+        }
+    }, [isOpen, initialData])
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSaving(true)
 
-        const result = await createProgressNote({
-            studentSongId: songId,
-            leftHand,
-            rightHand,
-            bothHands,
-            note: note.trim() || undefined
-        })
+        let result;
+        if (isEditing && initialData) {
+            result = await updateProgressNote(initialData.id, {
+                leftHand,
+                rightHand,
+                bothHands,
+                note: note.trim() || undefined
+            })
+        } else {
+            result = await createProgressNote({
+                studentSongId: songId,
+                leftHand,
+                rightHand,
+                bothHands,
+                note: note.trim() || undefined
+            })
+        }
 
         setIsSaving(false)
 
         if (result.success) {
-            // Reset form
-            setLeftHand(0)
-            setRightHand(0)
-            setBothHands(0)
-            setNote("")
             onSuccess()
             onClose()
         } else {
@@ -55,23 +86,25 @@ export default function AddProgressNoteModal({
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[70] p-3 sm:p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] overflow-y-auto border border-gray-100 dark:border-gray-700">
                 {/* Header */}
-                <div className="sticky top-0 bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-t-2xl">
+                <div className="sticky top-0 bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 sm:p-6 rounded-t-2xl z-10">
                     <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                                <TrendingUp className="w-6 h-6" />
+                        <div className="flex items-center gap-3 sm:gap-4">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
+                                {isEditing ? <Edit3 className="w-5 h-5 sm:w-6 sm:h-6" /> : <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />}
                             </div>
-                            <div>
-                                <h2 className="text-2xl font-bold">Nueva Nota de Progreso</h2>
-                                <p className="text-indigo-100 text-sm mt-1">{songTitle}</p>
+                            <div className="min-w-0">
+                                <h2 className="text-xl sm:text-2xl font-bold truncate">
+                                    {isEditing ? 'Editar Nota' : 'Nueva Nota'}
+                                </h2>
+                                <p className="text-indigo-100/80 text-xs sm:text-sm mt-0.5 truncate">{songTitle}</p>
                             </div>
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                            className="p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors"
                             disabled={isSaving}
                         >
                             <X className="w-6 h-6" />
@@ -80,10 +113,10 @@ export default function AddProgressNoteModal({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} className="p-4 sm:p-8 space-y-6 sm:space-y-8">
                     {/* Progress Sliders */}
-                    <div className="space-y-5">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    <div className="space-y-6">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-700 pb-2">
                             Nivel de Progreso
                         </h3>
 
@@ -111,36 +144,33 @@ export default function AddProgressNoteModal({
 
                     {/* Note textarea */}
                     <div>
-                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                        <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">
                             Notas y Observaciones
-                            <span className="text-gray-400 font-normal ml-2">(opcional)</span>
+                            <span className="text-gray-400 dark:text-gray-500 font-normal ml-2">(opcional)</span>
                         </label>
                         <textarea
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
-                            placeholder="Escribe observaciones sobre la práctica, dificultades encontradas, logros, etc..."
+                            placeholder="Escribe observaciones sobre la práctica..."
                             rows={4}
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-400"
+                            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent resize-none text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-500"
                         />
-                        <p className="text-xs text-gray-500 mt-1">
-                            {note.length} caracteres
-                        </p>
                     </div>
 
                     {/* Action buttons */}
-                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    <div className="flex gap-3 pt-6 border-t border-gray-100 dark:border-gray-700">
                         <button
                             type="button"
                             onClick={onClose}
                             disabled={isSaving}
-                            className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50"
+                            className="flex-1 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={isSaving}
-                            className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="flex-[2] px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center justify-center gap-2"
                         >
                             {isSaving ? (
                                 <>
@@ -150,7 +180,7 @@ export default function AddProgressNoteModal({
                             ) : (
                                 <>
                                     <Save className="w-5 h-5" />
-                                    Guardar Nota
+                                    {isEditing ? 'Actualizar Nota' : 'Guardar Nota'}
                                 </>
                             )}
                         </button>
@@ -178,24 +208,18 @@ function SliderInput({
         purple: 'from-purple-400 to-purple-600'
     }
 
-    const thumbColors = {
-        blue: 'bg-blue-500',
-        green: 'bg-green-500',
-        purple: 'bg-purple-500'
-    }
-
     return (
         <div>
             <div className="flex justify-between items-center mb-2">
-                <label className="text-sm font-medium text-gray-700">{label}</label>
-                <span className="text-lg font-bold text-gray-900 min-w-[3rem] text-right">
+                <label className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">{label}</label>
+                <span className="text-xl font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-0.5 rounded-lg min-w-[3.5rem] text-center shadow-sm">
                     {value}%
                 </span>
             </div>
-            <div className="relative">
-                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div className="relative group">
+                <div className="w-full bg-gray-100 dark:bg-gray-900 rounded-full h-4 overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">
                     <div
-                        className={`h-full bg-gradient-to-r ${colorClasses[color]} rounded-full transition-all duration-200`}
+                        className={`h-full bg-gradient-to-r ${colorClasses[color]} rounded-full transition-all duration-300 shadow-lg`}
                         style={{ width: `${value}%` }}
                     />
                 </div>
@@ -205,7 +229,7 @@ function SliderInput({
                     max="100"
                     value={value}
                     onChange={(e) => onChange(Number(e.target.value))}
-                    className="absolute inset-0 w-full h-3 opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-4 opacity-0 cursor-pointer z-20"
                 />
             </div>
         </div>

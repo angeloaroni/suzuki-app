@@ -144,3 +144,64 @@ export async function deleteProgressNote(progressId: string) {
         return { success: false, error: "Error al eliminar la nota de progreso: " + error.message }
     }
 }
+
+/**
+ * Update an existing progress note
+ */
+export async function updateProgressNote(progressId: string, data: {
+    leftHand: number
+    rightHand: number
+    bothHands: number
+    note?: string
+}) {
+    try {
+        const session = await getSession()
+
+        if (!session?.user?.id) {
+            return { success: false, error: "No autorizado" }
+        }
+
+        // Verify the note belongs to this teacher
+        const progress = await prisma.progress.findUnique({
+            where: { id: progressId },
+            include: {
+                studentSong: {
+                    include: {
+                        student: true
+                    }
+                }
+            }
+        })
+
+        if (!progress || progress.studentSong.student.teacherId !== session.user.id) {
+            return { success: false, error: "Nota no encontrada o no autorizada" }
+        }
+
+        // Validate values
+        if (
+            data.leftHand < 0 || data.leftHand > 100 ||
+            data.rightHand < 0 || data.rightHand > 100 ||
+            data.bothHands < 0 || data.bothHands > 100
+        ) {
+            return { success: false, error: "Valores inválidos" }
+        }
+
+        // Update
+        const updated = await prisma.progress.update({
+            where: { id: progressId },
+            data: {
+                leftHand: data.leftHand,
+                rightHand: data.rightHand,
+                bothHands: data.bothHands,
+                note: data.note || null
+            }
+        })
+
+        revalidatePath(`/students/${progress.studentSong.studentId}`)
+        return { success: true, progress: updated }
+
+    } catch (error: any) {
+        console.error("Error updating progress note:", error)
+        return { success: false, error: "Error al actualizar la nota" }
+    }
+}

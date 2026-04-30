@@ -41,6 +41,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
     const [isUploadingAudio, setIsUploadingAudio] = useState(false)
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
     const [showAddProgressModal, setShowAddProgressModal] = useState(false)
+    const [editingNote, setEditingNote] = useState<ProgressNote | null>(null)
     const [progressHistory, setProgressHistory] = useState<ProgressNote[]>([])
     const [isLoadingProgress, setIsLoadingProgress] = useState(false)
     const [isMounted, setIsMounted] = useState(false)
@@ -57,14 +58,18 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
         }
     }, [activeTab, isOpen])
 
-    // (skip rest of the methods until return)
     const loadProgressHistory = async () => {
         setIsLoadingProgress(true)
         const result = await getSongProgressHistory(song.id)
         if (result.success) {
-            setProgressHistory(result.data)
+            setProgressHistory(result.data as ProgressNote[])
         }
         setIsLoadingProgress(false)
+    }
+
+    const handleEditProgress = (progress: ProgressNote) => {
+        setEditingNote(progress)
+        setShowAddProgressModal(true)
     }
 
     if (!isOpen) return null
@@ -252,7 +257,10 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                                         Registro de Progreso
                                     </h3>
                                     <button
-                                        onClick={() => setShowAddProgressModal(true)}
+                                        onClick={() => {
+                                            setEditingNote(null)
+                                            setShowAddProgressModal(true)
+                                        }}
                                         className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg font-medium"
                                     >
                                         <Plus className="w-4 h-4" />
@@ -268,6 +276,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                                     <ProgressHistoryTimeline
                                         progressHistory={progressHistory}
                                         onUpdate={loadProgressHistory}
+                                        onEdit={handleEditProgress}
                                     />
                                 )}
                             </div>
@@ -303,7 +312,17 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                 songId={song.id}
                 songTitle={song.title}
                 isOpen={showAddProgressModal}
-                onClose={() => setShowAddProgressModal(false)}
+                initialData={editingNote ? {
+                    id: editingNote.id,
+                    leftHand: editingNote.leftHand,
+                    rightHand: editingNote.rightHand,
+                    bothHands: editingNote.bothHands,
+                    note: editingNote.note
+                } : undefined}
+                onClose={() => {
+                    setShowAddProgressModal(false)
+                    setEditingNote(null)
+                }}
                 onSuccess={loadProgressHistory}
             />
         </>
