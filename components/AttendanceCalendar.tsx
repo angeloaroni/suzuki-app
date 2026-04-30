@@ -206,7 +206,7 @@ export function AttendanceCalendar({
                 {/* Dropdown Range Picker */}
                 {showRangePicker && (
                     <div className="mt-6 p-4 bg-gray-50/50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-700 animate-in fade-in slide-in-from-top-2 duration-300">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                        <div className="flex flex-wrap gap-2">
                             {predefinedRanges.map((r) => (
                                 <button
                                     key={r.label}
@@ -215,7 +215,7 @@ export function AttendanceCalendar({
                                         setRange({ ...values, label: r.label })
                                         setShowRangePicker(false)
                                     }}
-                                    className={`px-3 py-2 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-tighter transition-all border ${
+                                    className={`flex-1 min-w-[120px] sm:min-w-[140px] px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-tighter transition-all border text-center ${
                                         range.label === r.label 
                                         ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' 
                                         : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
@@ -226,33 +226,35 @@ export function AttendanceCalendar({
                             ))}
                         </div>
                         
-                        <div className="mt-6 flex flex-col sm:flex-row items-center gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                            <div className="flex items-center gap-3 w-full">
-                                <div className="flex-1">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Desde</label>
+                        <div className="mt-6 flex flex-col items-stretch gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-center gap-3">
+                                <div>
+                                    <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Desde</label>
                                     <input 
                                         type="date" 
                                         value={range.start.toISOString().split('T')[0]}
                                         onChange={(e) => setRange(prev => ({ ...prev, start: new Date(e.target.value), label: 'Personalizado' }))}
-                                        className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg text-sm px-3 py-2"
+                                        className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg text-xs px-3 py-2.5 focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
                                     />
                                 </div>
-                                <ArrowRight className="w-4 h-4 text-gray-400 mt-5" />
-                                <div className="flex-1">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Hasta</label>
+                                <div className="hidden sm:block mt-4">
+                                    <ArrowRight className="w-4 h-4 text-gray-400" />
+                                </div>
+                                <div>
+                                    <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Hasta</label>
                                     <input 
                                         type="date" 
                                         value={range.end.toISOString().split('T')[0]}
                                         onChange={(e) => setRange(prev => ({ ...prev, end: new Date(e.target.value), label: 'Personalizado' }))}
-                                        className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg text-sm px-3 py-2"
+                                        className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg text-xs px-3 py-2.5 focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
                                     />
                                 </div>
                             </div>
                             <button 
                                 onClick={() => setShowRangePicker(false)}
-                                className="w-full sm:w-auto px-8 py-2 bg-indigo-600 text-white rounded-xl font-bold text-sm"
+                                className="w-full px-8 py-3 bg-indigo-600 text-white rounded-xl font-black uppercase text-xs tracking-widest hover:bg-indigo-700 transition-all shadow-lg active:scale-[0.98]"
                             >
-                                Aplicar
+                                Aplicar Periodo
                             </button>
                         </div>
                     </div>
@@ -261,7 +263,6 @@ export function AttendanceCalendar({
 
             {/* Student List View */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-                {/* (Search bar same as before) */}
                 <div className="bg-gray-50/50 dark:bg-gray-900/50 p-4 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row gap-4 items-center justify-between">
                     <div className="relative w-full sm:w-64">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -276,29 +277,33 @@ export function AttendanceCalendar({
                 </div>
 
                 <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                    {filteredStudents.map(student => (
-                        <div key={student.id} className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all duration-200">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
-                                    {student.name.charAt(0)}
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900 dark:text-gray-100">{student.name}</h3>
-                                    <div className="flex gap-3 mt-1">
-                                        <span className="text-[10px] font-black text-green-600 dark:text-green-400 bg-green-100/50 dark:bg-green-900/20 px-2 py-0.5 rounded-full uppercase">Asistencias: {studentStats[student.id].present}</span>
-                                        <span className="text-[10px] font-black text-red-600 dark:text-red-400 bg-red-100/50 dark:bg-red-900/20 px-2 py-0.5 rounded-full uppercase">Faltas: {studentStats[student.id].absent}</span>
+                    {filteredStudents.length === 0 ? (
+                        <div className="p-12 text-center text-gray-500 text-sm">No se encontraron estudiantes</div>
+                    ) : (
+                        filteredStudents.map(student => (
+                            <div key={student.id} className="p-4 flex flex-col min-[420px]:flex-row items-start min-[420px]:items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all duration-200 gap-4">
+                                <div className="flex items-center gap-3 sm:gap-4 min-w-0 w-full min-[420px]:w-auto">
+                                    <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold flex-shrink-0">
+                                        {student.name.charAt(0)}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <h3 className="font-bold text-gray-900 dark:text-gray-100 truncate">{student.name}</h3>
+                                        <div className="flex flex-wrap gap-2 mt-1">
+                                            <span className="text-[9px] font-black text-green-600 dark:text-green-400 bg-green-100/50 dark:bg-green-900/20 px-2 py-0.5 rounded-full uppercase whitespace-nowrap tracking-tighter">ASI: {studentStats[student.id].present}</span>
+                                            <span className="text-[9px] font-black text-red-600 dark:text-red-400 bg-red-100/50 dark:bg-red-900/20 px-2 py-0.5 rounded-full uppercase whitespace-nowrap tracking-tighter">FAL: {studentStats[student.id].absent}</span>
+                                        </div>
                                     </div>
                                 </div>
+                                <button 
+                                    onClick={() => setSelectedStudent(student)}
+                                    className="w-full min-[420px]:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-indigo-600 hover:text-white transition-all font-bold text-[10px] uppercase tracking-tighter shadow-sm flex-shrink-0"
+                                >
+                                    <Settings2 className="w-4 h-4" />
+                                    Gestionar
+                                </button>
                             </div>
-                            <button 
-                                onClick={() => setSelectedStudent(student)}
-                                className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-indigo-600 hover:text-white transition-all font-bold text-xs uppercase"
-                            >
-                                <Settings2 className="w-4 h-4" />
-                                Gestionar
-                            </button>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
             </div>
 
