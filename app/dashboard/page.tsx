@@ -83,12 +83,11 @@ export default async function Dashboard() {
                             <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex-shrink-0 flex items-center justify-center shadow-lg">
                                 <Music className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             </div>
-                            <div className="flex flex-row sm:flex-col items-center sm:items-start gap-1 sm:gap-0 min-w-0">
+                            <div className="flex flex-col items-center sm:items-start gap-0 min-w-0">
                                 <h1 className="text-[11px] sm:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate uppercase tracking-tighter sm:tracking-normal sm:normal-case leading-none">
                                     SuzukiTracker
                                 </h1>
-                                <span className="sm:hidden text-[10px] text-gray-400 dark:text-gray-600 font-bold">•</span>
-                                <p className="text-[9px] sm:text-xs text-gray-500 dark:text-gray-400 truncate font-bold sm:font-normal uppercase sm:normal-case opacity-80 sm:opacity-100">Panel de Control</p>
+                                <p className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 truncate font-bold sm:font-normal uppercase sm:normal-case opacity-80 sm:opacity-100 mt-0.5 sm:mt-0">Panel de Control</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-1.5 sm:gap-4 overflow-x-auto no-scrollbar py-1">

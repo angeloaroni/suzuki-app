@@ -133,7 +133,7 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                     {/* Header */}
                     <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6">
                         <div className="flex justify-between items-start mb-4">
-                            <h2 className="text-2xl font-bold">{song.title}</h2>
+                            <h2 className="text-xl sm:text-2xl font-bold line-clamp-2 pr-8">{song.title}</h2>
                             <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition-colors">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

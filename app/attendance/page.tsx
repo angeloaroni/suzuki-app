@@ -97,45 +97,8 @@ export default async function AttendancePage() {
             </nav>
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-6 py-8">
-                {/* Stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-                                <Users className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Total Estudiantes</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{students.length}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                                <Calendar className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Asistencias este mes</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{presentCount}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center">
-                                <Calendar className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Faltas este mes</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{absentCount}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Calendar */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+                {/* Calendar / Manager */}
                 {students.length === 0 ? (
                     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
                         <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/40 dark:to-amber-900/40 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -155,14 +118,12 @@ export default async function AttendancePage() {
                         </Link>
                     </div>
                 ) : (
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                        <AttendanceCalendar
-                            students={students}
-                            initialAttendances={serializedAttendances}
-                            initialYear={year}
-                            initialMonth={month}
-                        />
-                    </div>
+                    <AttendanceCalendar
+                        students={students}
+                        initialAttendances={serializedAttendances}
+                        initialYear={year}
+                        initialMonth={month}
+                    />
                 )}
             </div>
         </div>

@@ -96,10 +96,10 @@ export default function AddProgressNoteModal({
                                 {isEditing ? <Edit3 className="w-5 h-5 sm:w-6 sm:h-6" /> : <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />}
                             </div>
                             <div className="min-w-0">
-                                <h2 className="text-xl sm:text-2xl font-bold truncate">
+                                <h2 className="text-xl sm:text-2xl font-bold line-clamp-1">
                                     {isEditing ? 'Editar Nota' : 'Nueva Nota'}
                                 </h2>
-                                <p className="text-indigo-100/80 text-xs sm:text-sm mt-0.5 truncate">{songTitle}</p>
+                                <p className="text-indigo-100/80 text-[10px] sm:text-sm mt-0.5 leading-tight">{songTitle}</p>
                             </div>
                         </div>
                         <button
