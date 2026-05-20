@@ -4,7 +4,8 @@ import { useState, useRef } from "react"
 import { toggleSongProgress, uploadSongImage } from "@/app/actions/song"
 import Image from "next/image"
 import SongDetailModal from "./SongDetailModal"
-import { GripVertical, ChevronDown, ChevronUp, Music, Image as ImageIcon } from "lucide-react"
+import { GripVertical, ChevronDown, ChevronUp, Music, Image as ImageIcon, Star } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface SongProps {
     id: string
@@ -31,6 +32,7 @@ export default function SongCard({ song, studentId, dragHandleProps }: { song: S
         both: song.learnedBoth
     })
     const [completed, setCompleted] = useState(song.completed)
+    const [showCelebration, setShowCelebration] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     async function handleToggle(field: 'left' | 'right' | 'both') {
@@ -58,6 +60,11 @@ export default function SongCard({ song, studentId, dragHandleProps }: { song: S
         const result = await toggleSongProgress(song.id, 'completed', context)
         if (result.success) {
             setCompleted(result.newValue as boolean)
+            if (result.newValue) {
+                // Show celebration
+                setShowCelebration(true)
+                setTimeout(() => setShowCelebration(false), 3000)
+            }
         } else {
             setCompleted(!completed)
             alert(result.error)
@@ -218,6 +225,49 @@ export default function SongCard({ song, studentId, dragHandleProps }: { song: S
             </div>
 
             <SongDetailModal song={song as any} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+            {/* Celebration Overlay */}
+            <AnimatePresence>
+                {showCelebration && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 pointer-events-none z-[100] flex items-center justify-center overflow-hidden"
+                    >
+                        <div className="relative">
+                            {[...Array(12)].map((_, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ scale: 0, x: 0, y: 0 }}
+                                    animate={{ 
+                                        scale: [0, 1.2, 0],
+                                        x: (Math.random() - 0.5) * 400,
+                                        y: (Math.random() - 0.5) * 400,
+                                        rotate: Math.random() * 360
+                                    }}
+                                    transition={{ duration: 1.5, ease: "easeOut" }}
+                                    className="absolute"
+                                >
+                                    {i % 2 === 0 ? (
+                                        <Music className="w-8 h-8 text-indigo-500 fill-current" />
+                                    ) : (
+                                        <Star className="w-8 h-8 text-yellow-400 fill-current" />
+                                    )}
+                                </motion.div>
+                            ))}
+                            <motion.div
+                                initial={{ scale: 0, rotate: -20 }}
+                                animate={{ scale: [0, 1.5, 1], rotate: 0 }}
+                                className="bg-white dark:bg-gray-800 px-8 py-4 rounded-3xl shadow-2xl border-4 border-indigo-500 text-center"
+                            >
+                                <h4 className="text-2xl font-black text-indigo-600 dark:text-indigo-400">¡PIEZA LOGRADA! 🎻</h4>
+                                <p className="text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-xs mt-1">Sigue así</p>
+                            </motion.div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     )
 }

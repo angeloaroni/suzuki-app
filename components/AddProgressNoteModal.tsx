@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { createProgressNote, updateProgressNote } from "@/app/actions/progress"
 import { X, Save, TrendingUp, Edit3 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 type AddProgressNoteModalProps = {
     songId: string
@@ -18,6 +19,15 @@ type AddProgressNoteModalProps = {
         note: string | null
     }
 }
+
+const QUICK_PHRASES = [
+    "¡Excelente postura!",
+    "Repasar ritmo lento",
+    "Cuidar afinación",
+    "Manos relajadas",
+    "Buen sonido",
+    "Pieza terminada 🎻"
+]
 
 export default function AddProgressNoteModal({
     songId,
@@ -144,10 +154,25 @@ export default function AddProgressNoteModal({
 
                     {/* Note textarea */}
                     <div>
-                        <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">
+                        <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-3">
                             Notas y Observaciones
                             <span className="text-gray-400 dark:text-gray-500 font-normal ml-2">(opcional)</span>
                         </label>
+                        
+                        {/* Quick Phrases */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            {QUICK_PHRASES.map((phrase) => (
+                                <button
+                                    key={phrase}
+                                    type="button"
+                                    onClick={() => setNote(prev => prev ? `${prev}. ${phrase}` : phrase)}
+                                    className="text-[10px] sm:text-xs font-semibold px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800 rounded-full hover:bg-indigo-600 hover:text-white transition-all active:scale-95"
+                                >
+                                    {phrase}
+                                </button>
+                            ))}
+                        </div>
+
                         <textarea
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
@@ -212,9 +237,14 @@ function SliderInput({
         <div>
             <div className="flex justify-between items-center mb-2">
                 <label className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">{label}</label>
-                <span className="text-xl font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-0.5 rounded-lg min-w-[3.5rem] text-center shadow-sm">
+                <motion.span 
+                    key={value}
+                    initial={{ scale: 0.8, opacity: 0.5 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="text-xl font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-0.5 rounded-lg min-w-[3.5rem] text-center shadow-sm"
+                >
                     {value}%
-                </span>
+                </motion.span>
             </div>
             <div className="relative group">
                 <div className="w-full bg-gray-100 dark:bg-gray-900 rounded-full h-4 overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">

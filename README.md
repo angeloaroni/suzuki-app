@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎻 SuzukiTracker 2.0
 
-## Getting Started
+¡Bienvenido a **SuzukiTracker**, la plataforma definitiva para la gestión de la enseñanza del Método Suzuki! Esta aplicación ha sido diseñada para ofrecer una experiencia premium, dinámica y eficiente tanto para profesores como para padres.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Características Principales
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **👨‍🎓 Gestión de Estudiantes**: Seguimiento detallado de cada alumno, su progreso y niveles.
+- **📅 Control de Asistencia**: Interfaz intuitiva y rápida para marcar la asistencia diaria con visualización de calendario.
+- **🎵 Repertorio y Canciones**: Sistema de tarjetas interactivas (tipo acordeón) para gestionar las canciones de cada libro de Suzuki.
+- **📝 Notas de Progreso**: Registro de avances y observaciones detalladas por cada sesión.
+- **🌐 Portal para Padres**: Acceso directo y simplificado para que los padres sigan el progreso de sus hijos sin complicaciones de login.
+- **🎨 Diseño Premium**: Interfaz moderna con animaciones fluidas (Framer Motion), modo oscuro y optimización total para dispositivos móviles.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Stack Tecnológico
 
-## Learn More
+SuzukiTracker utiliza las tecnologías más modernas para garantizar velocidad y escalabilidad:
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework**: [Next.js 13.5 (App Router)](https://nextjs.org/)
+- **Base de Datos**: [Prisma ORM](https://www.prisma.io/)
+- **Estilos**: [Tailwind CSS](https://tailwindcss.com/)
+- **Animaciones**: [Framer Motion](https://www.framer.com/motion/)
+- **Autenticación**: [NextAuth.js](https://next-auth.js.org/)
+- **Iconos**: [Lucide React](https://lucide.dev/)
+- **Manejo de Formularios/Esquemas**: [Zod](https://zod.dev/)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Instalación y Desarrollo
 
-## Deploy on Vercel
+Para ejecutar el proyecto localmente:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone https://github.com/angeloaroni/suzuki-app.git
+    cd suzuki-app
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2.  **Instalar dependencias:**
+    ```bash
+    npm install
+    ```
+
+3.  **Configurar variables de entorno:**
+    Crea un archivo `.env` en la raíz (ver `.env.example`).
+
+4.  **Ejecutar base de datos (Prisma):**
+    ```bash
+    npx prisma generate
+    npx prisma db push
+    ```
+
+5.  **Iniciar servidor de desarrollo:**
+    ```bash
+    npm run dev
+    ```
+
+---
+
+## 🤖 Antigravity 2.0 - Agentes
+
+Este proyecto está optimizado para trabajar con el ecosistema de **Antigravity**. Contiene flujos de trabajo personalizados y habilidades para acelerar el desarrollo:
+
+- **Workflows**: Ubicados en `_agents/workflows/`
+  - `/mobile-optimization`: Optimización para UX móvil.
+  - `/nextjs-best-practices`: Estándares de nivel PRO para Next.js.
+  - `/ui-ux-design`: Pautas de diseño premium.
+
+---
+
+## 📄 Licencia
+
+Este proyecto es privado. Todos los derechos reservados.
+
+---
+*Desarrollado con ❤️ por Angelo Aroni con la ayuda de Antigravity 2.0*

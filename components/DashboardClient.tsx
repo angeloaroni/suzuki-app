@@ -325,16 +325,16 @@ function StatCard({
     bgGradient: string
 }) {
     return (
-        <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden h-full">
+        <div className="group bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 transform hover:-translate-y-1 relative overflow-hidden h-full">
             {/* Background decoration */}
-            <div className={`absolute top-0 right-0 w-20 h-20 sm:w-32 sm:h-32 bg-gradient-to-br ${bgGradient} dark:opacity-20 rounded-full -mr-10 -mt-10 sm:-mr-16 sm:-mt-16 opacity-50 group-hover:scale-150 transition-transform duration-500`}></div>
+            <div className={`absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br ${bgGradient} dark:opacity-10 rounded-full -mr-12 -mt-12 sm:-mr-16 sm:-mt-16 opacity-30 group-hover:scale-[2] transition-transform duration-700 ease-in-out`}></div>
 
             <div className="relative flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                    <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1 truncate uppercase tracking-tight">{title}</h3>
-                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
+                    <h3 className="text-[10px] sm:text-xs font-black text-gray-400 dark:text-gray-500 mb-0.5 sm:mb-1 truncate uppercase tracking-[0.2em]">{title}</h3>
+                    <p className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-gray-100 tabular-nums">{value}</p>
                 </div>
-                <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${gradient} rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform flex-shrink-0`}>
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-all duration-300 flex-shrink-0`}>
                     <div className="text-white scale-90 sm:scale-100">
                         {icon}
                     </div>
