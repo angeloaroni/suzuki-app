@@ -26,13 +26,32 @@ export default async function Dashboard() {
         where: {
             teacherId: session.user.id
         },
-        include: {
+        select: {
+            id: true,
+            name: true,
+            dob: true,
             bookAssignments: {
-                include: {
-                    bookTemplate: true
+                select: {
+                    id: true,
+                    isGraduated: true,
+                    bookTemplate: {
+                        select: {
+                            id: true,
+                            title: true,
+                            number: true,
+                        }
+                    }
                 }
             },
-            studentSongs: true
+            studentSongs: {
+                select: {
+                    id: true,
+                    completed: true,
+                    learnedLeft: true,
+                    learnedRight: true,
+                    learnedBoth: true,
+                }
+            }
         },
         orderBy: {
             createdAt: 'desc'
@@ -58,24 +77,10 @@ export default async function Dashboard() {
     const serializedStudents = students.map(student => ({
         ...student,
         dob: student.dob ? student.dob.toISOString() : null,
-        createdAt: student.createdAt.toISOString(),
-        updatedAt: student.updatedAt.toISOString(),
         bookAssignments: student.bookAssignments.map(ba => ({
             ...ba,
-            createdAt: ba.createdAt.toISOString(),
-            updatedAt: ba.updatedAt.toISOString(),
-            graduationDate: ba.graduationDate ? ba.graduationDate.toISOString() : null,
-            bookTemplate: {
-                ...ba.bookTemplate,
-                createdAt: ba.bookTemplate.createdAt.toISOString(),
-                updatedAt: ba.bookTemplate.updatedAt.toISOString()
-            }
         })),
-        studentSongs: student.studentSongs.map(ss => ({
-            ...ss,
-            createdAt: ss.createdAt.toISOString(),
-            updatedAt: ss.updatedAt.toISOString()
-        }))
+        studentSongs: student.studentSongs.map(ss => ({ ...ss }))
     }))
 
     return (

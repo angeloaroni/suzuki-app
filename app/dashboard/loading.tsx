@@ -33,7 +33,7 @@ export default function DashboardLoading() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 mb-10">
                     {[1, 2, 3, 4].map((i) => (
                         <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
                             <Skeleton className="w-12 h-12 rounded-xl mb-4" />

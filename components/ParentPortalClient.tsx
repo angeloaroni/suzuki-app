@@ -360,7 +360,7 @@ function StatCard({ icon, label, value, suffix, gradient, bgColor }: {
     bgColor: string
 }) {
     return (
-        <div className={`${bgColor} rounded-xl p-4 border border-gray-100 dark:border-gray-700 transition-colors`}>
+        <div className={`${bgColor} rounded-xl p-4 border border-gray-100 dark:border-gray-700 transition-all hover:shadow-md hover:-translate-y-0.5`}>
             <div className={`w-8 h-8 bg-gradient-to-br ${gradient} rounded-lg flex items-center justify-center text-white mb-2`}>
                 {icon}
             </div>
