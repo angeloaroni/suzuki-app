@@ -111,6 +111,15 @@ export async function getStudentByAccessCode(code: string) {
                 practiceSessions: {
                     orderBy: { date: 'desc' },
                     take: 30
+                },
+                attendances: {
+                    orderBy: { date: 'desc' },
+                    take: 30,
+                    select: {
+                        id: true,
+                        date: true,
+                        present: true,
+                    }
                 }
             }
         })

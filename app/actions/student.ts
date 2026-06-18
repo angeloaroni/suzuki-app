@@ -28,6 +28,33 @@ export async function createStudent(data: { name: string; dob?: string; notes?: 
             }
         })
 
+        // Auto-assign Book 1 if it exists
+        const book1 = await prisma.bookTemplate.findFirst({
+            where: {
+                teacherId: session.user.id,
+                number: 1
+            },
+            include: { songs: true }
+        })
+
+        if (book1) {
+            await prisma.bookAssignment.create({
+                data: {
+                    studentId: student.id,
+                    bookTemplateId: book1.id
+                }
+            })
+
+            if (book1.songs.length > 0) {
+                await prisma.studentSong.createMany({
+                    data: book1.songs.map(song => ({
+                        studentId: student.id,
+                        songTemplateId: song.id
+                    }))
+                })
+            }
+        }
+
         revalidatePath('/dashboard')
         return { success: true, student }
 

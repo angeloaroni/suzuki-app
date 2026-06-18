@@ -7,7 +7,7 @@ import AddSongModal from "@/components/AddSongModal"
 import EditBookModal from "@/components/EditBookModal"
 import { removeBookFromStudent, toggleBookGraduation } from "@/app/actions/book-assignment"
 import { useRouter } from "next/navigation"
-import { BookOpen, Plus, Edit, Music, Trash2, GraduationCap } from "lucide-react"
+import { BookOpen, Plus, Edit, Music, Trash2, GraduationCap, CalendarCheck, Clock } from "lucide-react"
 import BookSection from "@/components/BookSection"
 import SharePortalButton from "@/components/SharePortalButton"
 
@@ -42,6 +42,18 @@ interface Student {
     notes: string | null
     accessCode: string | null
     books: Book[]
+    attendances?: Array<{
+        id: string
+        date: string
+        present: boolean
+        notes?: string | null
+    }>
+    practiceSessions?: Array<{
+        id: string
+        date: string
+        duration: number
+        notes?: string | null
+    }>
 }
 
 interface StudentDetailClientProps {
@@ -207,6 +219,84 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                             </AnimatedItem>
                         ))}
                     </AnimatedList>
+                )}
+
+                {/* Attendance History */}
+                {student.attendances && student.attendances.length > 0 && (
+                    <div className="mt-8">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                            <CalendarCheck className="w-5 h-5 text-indigo-600" />
+                            Asistencia Reciente
+                        </h3>
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                            <div className="grid grid-cols-7 gap-1">
+                                {student.attendances.slice(0, 28).map((a) => (
+                                    <div
+                                        key={a.id}
+                                        className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium ${
+                                            a.present
+                                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                                        }`}
+                                        title={`${new Date(a.date).toLocaleDateString('es-ES')} - ${a.present ? 'Presente' : 'Ausente'}${a.notes ? ` (${a.notes})` : ''}`}
+                                    >
+                                        {new Date(a.date).getDate()}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex items-center gap-4 mt-4 text-sm">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 bg-green-100 dark:bg-green-900/30 rounded"></div>
+                                    <span className="text-gray-600 dark:text-gray-400">Presente</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 bg-red-100 dark:bg-red-900/30 rounded"></div>
+                                    <span className="text-gray-600 dark:text-gray-400">Ausente</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Practice History */}
+                {student.practiceSessions && student.practiceSessions.length > 0 && (
+                    <div className="mt-8">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                            <Clock className="w-5 h-5 text-amber-600" />
+                            Práctica Reciente
+                        </h3>
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                            <div className="grid grid-cols-7 gap-1 mb-4">
+                                {student.practiceSessions.slice(0, 28).map((p) => (
+                                    <div
+                                        key={p.id}
+                                        className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium ${
+                                            p.duration > 0
+                                                ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
+                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-400'
+                                        }`}
+                                        title={`${new Date(p.date).toLocaleDateString('es-ES')} - ${p.duration} min${p.notes ? ` (${p.notes})` : ''}`}
+                                    >
+                                        {new Date(p.date).getDate()}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex items-center gap-6 text-sm">
+                                <div>
+                                    <span className="text-gray-500 dark:text-gray-400">Total: </span>
+                                    <span className="font-bold text-gray-900 dark:text-gray-100">
+                                        {student.practiceSessions.reduce((acc, p) => acc + p.duration, 0)} min
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 dark:text-gray-400">Sesiones: </span>
+                                    <span className="font-bold text-gray-900 dark:text-gray-100">
+                                        {student.practiceSessions.filter(p => p.duration > 0).length}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
 

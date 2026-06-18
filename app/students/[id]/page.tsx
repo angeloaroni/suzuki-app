@@ -39,6 +39,26 @@ export default async function StudentDetailPage({ params }: { params: { id: stri
                         select: { id: true }
                     }
                 }
+            },
+            attendances: {
+                orderBy: { date: 'desc' },
+                take: 30,
+                select: {
+                    id: true,
+                    date: true,
+                    present: true,
+                    notes: true
+                }
+            },
+            practiceSessions: {
+                orderBy: { date: 'desc' },
+                take: 30,
+                select: {
+                    id: true,
+                    date: true,
+                    duration: true,
+                    notes: true
+                }
             }
         }
     })
@@ -60,6 +80,16 @@ export default async function StudentDetailPage({ params }: { params: { id: stri
     const student = {
         ...studentData,
         accessCode: studentData.accessCode || null,
+        attendances: studentData.attendances.map(a => ({
+            ...a,
+            date: a.date.toISOString(),
+            notes: a.notes || null
+        })),
+        practiceSessions: studentData.practiceSessions.map(p => ({
+            ...p,
+            date: p.date.toISOString(),
+            notes: p.notes || null
+        })),
         books: studentData.bookAssignments.map(assignment => {
             const template = assignment.bookTemplate
 

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Check, X, Calendar as CalendarIcon, User, Search, Filter, TrendingUp, CalendarDays, ArrowRight, Settings2 } from 'lucide-react'
-import { toggleAttendance, getAttendanceByRange, deleteAttendance } from '@/app/actions/attendance'
+import { toggleAttendance, getAttendanceByRange, deleteAttendance, markAllAttendance } from '@/app/actions/attendance'
 
 interface Student {
     id: string
@@ -14,6 +14,7 @@ interface AttendanceRecord {
     studentId: string
     date: string
     present: boolean
+    notes?: string | null
 }
 
 interface AttendanceCalendarProps {
@@ -53,6 +54,7 @@ export function AttendanceCalendar({
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
     const [showRangePicker, setShowRangePicker] = useState(false)
+    const [markAllLoading, setMarkAllLoading] = useState(false)
 
     // Helper for date equality
     const isSameDate = (d1: Date, d2: Date) => 
@@ -97,7 +99,7 @@ export function AttendanceCalendar({
         }
     }, [attendances])
 
-    const handleToggleAttendance = async (studentId: string, day: number, currentMonth: number, currentYear: number) => {
+    const handleToggleAttendance = async (studentId: string, day: number, currentMonth: number, currentYear: number, notes?: string) => {
         const dateStr = formatDateKey(currentYear, currentMonth, day)
         const key = `${studentId}-${day}`
         setLoading(key)
@@ -113,7 +115,7 @@ export function AttendanceCalendar({
             }
         } else {
             const newPresent = existingAttendance ? !existingAttendance.present : true
-            const result = await toggleAttendance(studentId, dateStr, newPresent)
+            const result = await toggleAttendance(studentId, dateStr, newPresent, notes)
             if (result.success && result.attendance) {
                 setAttendances(prev => {
                     const filtered = prev.filter(a => !(a.studentId === studentId && a.date.startsWith(dateStr)))
@@ -121,7 +123,8 @@ export function AttendanceCalendar({
                         id: result.attendance.id,
                         studentId: result.attendance.studentId,
                         date: result.attendance.date.toISOString?.() || dateStr,
-                        present: result.attendance.present
+                        present: result.attendance.present,
+                        notes: result.attendance.notes
                     }]
                 })
             }
@@ -274,6 +277,30 @@ export function AttendanceCalendar({
                             className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 transition-all border font-medium"
                         />
                     </div>
+                    <button
+                        onClick={async () => {
+                            const today = new Date()
+                            const dateStr = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate())
+                            setMarkAllLoading(true)
+                            await markAllAttendance(dateStr, true)
+                            const start = range.start.toISOString()
+                            const end = range.end.toISOString()
+                            const result = await getAttendanceByRange(start, end)
+                            if (result.data) {
+                                setAttendances(result.data as AttendanceRecord[])
+                            }
+                            setMarkAllLoading(false)
+                        }}
+                        disabled={markAllLoading}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all font-bold text-[10px] uppercase tracking-tighter shadow-sm disabled:opacity-50"
+                    >
+                        {markAllLoading ? (
+                            <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                        ) : (
+                            <Check className="w-4 h-4" />
+                        )}
+                        Marcar todos presentes
+                    </button>
                 </div>
 
                 <div className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -325,7 +352,7 @@ interface StudentAttendanceModalProps {
     student: Student
     attendances: AttendanceRecord[]
     onClose: () => void
-    onToggle: (studentId: string, day: number, month: number, year: number) => void
+    onToggle: (studentId: string, day: number, month: number, year: number, notes?: string) => void
     loading: string | null
 }
 
@@ -333,6 +360,7 @@ function StudentAttendanceModal({ student, attendances, onClose, onToggle, loadi
     // Current view month within the modal
     const [viewMonth, setViewMonth] = useState(new Date().getMonth())
     const [viewYear, setViewYear] = useState(new Date().getFullYear())
+    const [notes, setNotes] = useState('')
 
     const navigate = (dir: 'prev' | 'next') => {
         if (dir === 'prev') {
@@ -365,9 +393,19 @@ function StudentAttendanceModal({ student, attendances, onClose, onToggle, loadi
                         month={viewMonth}
                         studentId={student.id}
                         attendances={attendances}
-                        onToggle={(sId: string, d: number) => onToggle(sId, d, viewMonth, viewYear)}
+                        onToggle={(sId: string, d: number) => onToggle(sId, d, viewMonth, viewYear, notes)}
                         loading={loading}
                     />
+                    <div className="mt-4">
+                        <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase block mb-1">Notas</label>
+                        <input
+                            type="text"
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder="Agregar notas..."
+                            className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
+                        />
+                    </div>
                 </div>
 
                 <div className="p-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 flex justify-end">

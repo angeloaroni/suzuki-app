@@ -36,6 +36,7 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
     const [title, setTitle] = useState(initialData?.title || "")
     const [number, setNumber] = useState(initialData?.number || initialNumber)
     const [coverImage, setCoverImage] = useState(initialData?.coverImage || "")
+    const [coverFile, setCoverFile] = useState<File | null>(null)
     const [imageMode, setImageMode] = useState<'url' | 'upload'>('url')
     const [uploading, setUploading] = useState(false)
     const [songs, setSongs] = useState<Song[]>(
@@ -78,6 +79,7 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
         const file = e.target.files?.[0]
         if (!file) return
 
+        setCoverFile(file)
         setUploading(true)
         setError("")
 

@@ -38,7 +38,7 @@ export async function logPracticeSession(data: {
                 }
             },
             update: {
-                duration: validatedData.duration,
+                duration: { increment: validatedData.duration },
                 notes: validatedData.notes || null
             },
             create: {
@@ -75,6 +75,37 @@ export async function getPracticeSessions(accessCode: string) {
         }
 
         return { success: true, data: student.practiceSessions }
+    } catch (error) {
+        return { success: false, error: "Error al obtener sesiones", data: [] }
+    }
+}
+
+/**
+ * Get practice sessions for a student by ID (teacher auth required)
+ */
+export async function getPracticeSessionsByStudentId(studentId: string) {
+    try {
+        const { getSession } = await import("@/lib/session")
+        const session = await getSession()
+        if (!session?.user?.id) {
+            return { success: false, error: "No autorizado", data: [] }
+        }
+
+        const student = await prisma.student.findUnique({
+            where: { id: studentId }
+        })
+
+        if (!student || student.teacherId !== session.user.id) {
+            return { success: false, error: "Estudiante no encontrado", data: [] }
+        }
+
+        const practiceSessions = await prisma.practiceSession.findMany({
+            where: { studentId },
+            orderBy: { date: 'desc' },
+            take: 60
+        })
+
+        return { success: true, data: practiceSessions }
     } catch (error) {
         return { success: false, error: "Error al obtener sesiones", data: [] }
     }

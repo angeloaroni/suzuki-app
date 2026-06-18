@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Music, BookOpen, CheckCircle, Clock, Flame, Star, ChevronDown, ChevronUp } from 'lucide-react'
+import { Music, BookOpen, CheckCircle, Clock, Flame, Star, ChevronDown, ChevronUp, CalendarCheck } from 'lucide-react'
 import PracticeTimer from './PracticeTimer'
 import PracticeCalendar from './PracticeCalendar'
 import { calculateStreak } from '@/lib/practice-utils'
@@ -39,11 +39,18 @@ interface PracticeSessionData {
     notes: string | null
 }
 
+interface AttendanceData {
+    id: string
+    date: string
+    present: boolean
+}
+
 interface ParentPortalData {
     name: string
     accessCode: string
     books: Book[]
     practiceSessions: PracticeSessionData[]
+    attendances?: AttendanceData[]
 }
 
 export default function ParentPortalClient({ data }: { data: ParentPortalData }) {
@@ -257,6 +264,56 @@ export default function ParentPortalClient({ data }: { data: ParentPortalData })
                         <PracticeCalendar sessions={data.practiceSessions} streak={stats.streak} />
                     </div>
                 </section>
+
+                {/* Attendance Section */}
+                {data.attendances && data.attendances.length > 0 && (() => {
+                    const presentCount = data.attendances.filter(a => a.present).length
+                    const percentage = Math.round((presentCount / data.attendances.length) * 100)
+                    return (
+                        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                            <div className="p-5 border-b border-gray-100 dark:border-gray-700">
+                                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                    <CalendarCheck className="w-5 h-5 text-indigo-600" />
+                                    Asistencia
+                                </h2>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    Últimas {Math.min(data.attendances.length, 28)} clases · {percentage}% asistencia
+                                </p>
+                            </div>
+                            <div className="p-5">
+                                <div className="grid grid-cols-7 gap-1">
+                                    {data.attendances.slice(0, 28).map((a) => (
+                                        <div
+                                            key={a.id}
+                                            className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium ${
+                                                a.present
+                                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                                                    : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                                            }`}
+                                            title={`${new Date(a.date).toLocaleDateString('es-ES')} - ${a.present ? 'Presente' : 'Ausente'}`}
+                                        >
+                                            {new Date(a.date).getDate()}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex items-center gap-4 mt-4 text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 bg-green-100 dark:bg-green-900/30 rounded"></div>
+                                        <span className="text-gray-600 dark:text-gray-400">Presente</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 bg-red-100 dark:bg-red-900/30 rounded"></div>
+                                        <span className="text-gray-600 dark:text-gray-400">Ausente</span>
+                                    </div>
+                                    <div className="ml-auto">
+                                        <span className="text-gray-500 dark:text-gray-400">Presentes: </span>
+                                        <span className="font-bold text-gray-900 dark:text-gray-100">{presentCount}/{data.attendances.length}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    )
+                })()}
 
                 {/* Books / Progress Section */}
                 <section className="space-y-4">

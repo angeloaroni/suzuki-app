@@ -75,7 +75,12 @@ export default async function ParentPortalPage({ params }: { params: { code: str
             date: s.date.toISOString(),
             duration: s.duration,
             notes: s.notes
-        }))
+        })),
+        attendances: student.attendances?.map(a => ({
+            id: a.id,
+            date: a.date.toISOString(),
+            present: a.present
+        })) || []
     }
 
     return <ParentPortalClient data={transformedData} />

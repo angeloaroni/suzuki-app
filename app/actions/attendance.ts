@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { revalidatePath } from 'next/cache'
 
-export async function toggleAttendance(studentId: string, date: string, present: boolean) {
+export async function toggleAttendance(studentId: string, date: string, present: boolean, notes?: string) {
     const session = await getSession()
     if (!session) {
         return { error: 'No autorizado' }
@@ -35,12 +35,14 @@ export async function toggleAttendance(studentId: string, date: string, present:
                 }
             },
             update: {
-                present
+                present,
+                notes: notes || null
             },
             create: {
                 studentId,
                 date: dateObj,
-                present
+                present,
+                notes: notes || null
             }
         })
 
@@ -90,7 +92,8 @@ export async function getAttendanceByRange(startDateIso: string, endDateIso: str
                 ...a,
                 date: a.date.toISOString(),
                 createdAt: a.createdAt.toISOString(),
-                updatedAt: a.updatedAt.toISOString()
+                updatedAt: a.updatedAt.toISOString(),
+                notes: a.notes
             }))
         }
     } catch (error) {
@@ -167,5 +170,46 @@ export async function deleteAttendance(studentId: string, date: string) {
         return { success: true }
     } catch (error) {
         return { error: 'Error al eliminar asistencia' }
+    }
+}
+
+export async function markAllAttendance(date: string, present: boolean) {
+    const session = await getSession()
+    if (!session?.user?.id) {
+        return { error: 'No autorizado' }
+    }
+
+    try {
+        const students = await prisma.student.findMany({
+            where: { teacherId: session.user.id },
+            select: { id: true }
+        })
+
+        const dateObj = new Date(date)
+        dateObj.setHours(0, 0, 0, 0)
+
+        await prisma.$transaction(
+            students.map(student =>
+                prisma.attendance.upsert({
+                    where: {
+                        studentId_date: {
+                            studentId: student.id,
+                            date: dateObj
+                        }
+                    },
+                    update: { present },
+                    create: {
+                        studentId: student.id,
+                        date: dateObj,
+                        present
+                    }
+                })
+            )
+        )
+
+        revalidatePath('/attendance')
+        return { success: true, count: students.length }
+    } catch (error) {
+        return { error: 'Error al marcar asistencia' }
     }
 }
