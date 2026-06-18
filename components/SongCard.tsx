@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { toggleSongProgress, uploadSongImage } from "@/app/actions/song"
 import Image from "next/image"
 import SongDetailModal from "./SongDetailModal"
@@ -22,7 +23,8 @@ interface SongProps {
     progressNotesCount?: number
 }
 
-export default function SongCard({ song, studentId, dragHandleProps }: { song: SongProps, studentId?: string, dragHandleProps?: any }) {
+export default function SongCard({ song, studentId, dragHandleProps }: { song: SongProps, studentId?: string, dragHandleProps?: Record<string, unknown> }) {
+    const router = useRouter()
     const [isExpanded, setIsExpanded] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -88,13 +90,13 @@ export default function SongCard({ song, studentId, dragHandleProps }: { song: S
             const result = await uploadSongImage(song.id, base64Data, file.name)
 
             if (result.success) {
-                window.location.reload()
+                router.refresh()
             } else {
                 alert(result.error || "Error al subir imagen")
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Upload error:", error)
-            alert("Error al subir imagen: " + error.message)
+            alert("Error al subir imagen: " + (error instanceof Error ? error.message : "Error desconocido"))
         }
         setIsUploading(false)
     }
@@ -272,7 +274,15 @@ export default function SongCard({ song, studentId, dragHandleProps }: { song: S
     )
 }
 
-function ProgressButton({ label, active, onClick, color, activeColor }: any) {
+interface ProgressButtonProps {
+    label: string
+    active: boolean
+    onClick: () => void
+    color: string
+    activeColor: string
+}
+
+function ProgressButton({ label, active, onClick, color, activeColor }: ProgressButtonProps) {
     return (
         <button
             onClick={(e) => {

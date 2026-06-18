@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { X, Music, Check } from 'lucide-react'
 import { createCustomSong } from '@/app/actions/song'
 
@@ -13,6 +14,7 @@ interface AddSongModalProps {
 }
 
 export default function AddSongModal({ isOpen, onClose, bookId, bookTitle, nextOrder }: AddSongModalProps) {
+    const router = useRouter()
     const [formData, setFormData] = useState({
         title: '',
         order: nextOrder,
@@ -46,7 +48,7 @@ export default function AddSongModal({ isOpen, onClose, bookId, bookTitle, nextO
             setSuccess(true)
             setTimeout(() => {
                 onClose()
-                window.location.reload()
+                router.refresh()
             }, 1000)
         } else {
             setError(result.error || 'Error al crear la canción')

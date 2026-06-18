@@ -3,37 +3,36 @@
 import { prisma } from "@/lib/prisma"
 import { getSession } from "@/lib/session"
 import { revalidatePath } from "next/cache"
+import { createStudentSchema, updateStudentSchema } from "@/lib/validations"
 
 export async function createStudent(data: { name: string; dob?: string; notes?: string }) {
     try {
-        console.log("Server Action: createStudent called")
         const session = await getSession()
-        console.log("Server Action Session:", session ? "Found" : "Not Found")
 
         if (!session?.user?.id) {
             return { error: "No autorizado (Sesión no encontrada en Server Action)" }
         }
 
-        if (!data.name) {
-            return { error: "El nombre es obligatorio" }
+        const parsed = createStudentSchema.safeParse(data)
+        if (!parsed.success) {
+            return { error: parsed.error.errors[0].message }
         }
+        const validatedData = parsed.data
 
         const student = await prisma.student.create({
             data: {
-                name: data.name,
-                dob: data.dob ? new Date(data.dob) : null,
-                notes: data.notes,
+                name: validatedData.name,
+                dob: validatedData.dob ? new Date(validatedData.dob) : null,
+                notes: validatedData.notes,
                 teacherId: session.user.id
             }
         })
 
-        console.log("Server Action: Student created", student.id)
         revalidatePath('/dashboard')
         return { success: true, student }
 
-    } catch (error: any) {
-        console.error("Server Action Error:", error)
-        return { error: "Error interno del servidor: " + error.message }
+    } catch (error) {
+        return { error: "Error interno del servidor: " + (error instanceof Error ? error.message : "Error desconocido") }
     }
 }
 
@@ -54,16 +53,18 @@ export async function updateStudent(studentId: string, data: { name: string; dob
             return { error: "Estudiante no encontrado o no autorizado" }
         }
 
-        if (!data.name) {
-            return { error: "El nombre es obligatorio" }
+        const parsed = updateStudentSchema.safeParse(data)
+        if (!parsed.success) {
+            return { error: parsed.error.errors[0].message }
         }
+        const validatedData = parsed.data
 
         const updatedStudent = await prisma.student.update({
             where: { id: studentId },
             data: {
-                name: data.name,
-                dob: data.dob ? new Date(data.dob) : null,
-                notes: data.notes
+                name: validatedData.name,
+                dob: validatedData.dob ? new Date(validatedData.dob) : null,
+                notes: validatedData.notes
             }
         })
 
@@ -71,9 +72,8 @@ export async function updateStudent(studentId: string, data: { name: string; dob
         revalidatePath(`/students/${studentId}`)
         return { success: true, student: updatedStudent }
 
-    } catch (error: any) {
-        console.error("Update Student Error:", error)
-        return { error: "Error al actualizar el estudiante: " + error.message }
+    } catch (error) {
+        return { error: "Error al actualizar el estudiante: " + (error instanceof Error ? error.message : "Error desconocido") }
     }
 }
 
@@ -102,9 +102,8 @@ export async function deleteStudent(studentId: string) {
         revalidatePath('/dashboard')
         return { success: true }
 
-    } catch (error: any) {
-        console.error("Delete Student Error:", error)
-        return { error: "Error al eliminar el estudiante: " + error.message }
+    } catch (error) {
+        return { error: "Error al eliminar el estudiante: " + (error instanceof Error ? error.message : "Error desconocido") }
     }
 }
 

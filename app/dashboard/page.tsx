@@ -9,6 +9,11 @@ import { DashboardClient } from "@/components/DashboardClient"
 
 export const dynamic = 'force-dynamic'
 
+export const metadata = {
+    title: 'Dashboard - SuzukiTracker',
+    description: 'Resumen de tus estudiantes y progreso musical',
+}
+
 export default async function Dashboard() {
     const session = await getSession()
 
@@ -131,7 +136,7 @@ export default async function Dashboard() {
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-6 py-8">
                 <DashboardClient
-                    students={serializedStudents as any}
+                    students={serializedStudents}
                     books={books}
                 />
             </div>

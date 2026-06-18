@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { X, BookOpen, Trash2, Check } from 'lucide-react'
 import { updateBookTemplate } from '@/app/actions/book-template'
 import { removeBookFromStudent } from '@/app/actions/book-assignment'
@@ -19,6 +20,7 @@ interface EditBookModalProps {
 }
 
 export default function EditBookModal({ isOpen, onClose, book }: EditBookModalProps) {
+    const router = useRouter()
     const [formData, setFormData] = useState({
         title: book.title,
         number: book.number
@@ -43,7 +45,7 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
             setSuccess(true)
             setTimeout(() => {
                 onClose()
-                window.location.reload()
+                router.refresh()
             }, 1000)
         } else {
             setError(result.error || 'Error al actualizar el libro')
@@ -59,7 +61,7 @@ export default function EditBookModal({ isOpen, onClose, book }: EditBookModalPr
         const result = await removeBookFromStudent(book.id)
 
         if (result.success) {
-            window.location.reload()
+            router.refresh()
         } else {
             setError(result.error || 'Error al eliminar el libro')
             setLoading(false)

@@ -38,8 +38,7 @@ export async function generateAccessCode(studentId: string) {
 
         revalidatePath(`/students/${studentId}`)
         return { success: true, code }
-    } catch (error: any) {
-        console.error("Error generating access code:", error)
+    } catch (error) {
         return { success: false, error: "Error al generar el código" }
     }
 }
@@ -71,8 +70,7 @@ export async function regenerateAccessCode(studentId: string) {
 
         revalidatePath(`/students/${studentId}`)
         return { success: true, code }
-    } catch (error: any) {
-        console.error("Error regenerating access code:", error)
+    } catch (error) {
         return { success: false, error: "Error al regenerar el código" }
     }
 }
@@ -122,8 +120,7 @@ export async function getStudentByAccessCode(code: string) {
         }
 
         return { success: true, data: student }
-    } catch (error: any) {
-        console.error("Error fetching student by access code:", error)
+    } catch (error) {
         return { success: false, error: "Error al obtener los datos" }
     }
 }

@@ -2,10 +2,27 @@ import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
-const secretKey = process.env.NEXTAUTH_SECRET || 'suzuki-tracker-secret-key-change-me-in-production'
+export interface SessionUser {
+    id: string
+    email: string
+    name?: string | null
+}
+
+export interface SessionPayload {
+    user: SessionUser
+    expires: Date
+    iat?: number
+    exp?: number
+    [key: string]: unknown
+}
+
+const secretKey = process.env.NEXTAUTH_SECRET
+if (!secretKey) {
+    throw new Error('NEXTAUTH_SECRET environment variable is required')
+}
 const key = new TextEncoder().encode(secretKey)
 
-export async function encrypt(payload: any) {
+export async function encrypt(payload: Record<string, unknown>) {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
@@ -13,31 +30,21 @@ export async function encrypt(payload: any) {
         .sign(key)
 }
 
-export async function decrypt(input: string): Promise<any> {
+export async function decrypt(input: string): Promise<SessionPayload | null> {
     try {
         const { payload } = await jwtVerify(input, key, {
             algorithms: ['HS256'],
         })
-        return payload
-    } catch (error) {
+        return payload as unknown as SessionPayload
+    } catch {
         return null
     }
 }
 
-export async function login(userData: any) {
-    console.log("Iniciando login en lib/session")
-    // Create the session
+export async function login(userData: SessionUser) {
     const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
-    console.log("Expiración calculada:", expires)
-
-    try {
-        const session = await encrypt({ user: userData, expires })
-        console.log("JWT firmado correctamente")
-        return { session, expires }
-    } catch (err) {
-        console.error("Error en lib/session login:", err)
-        throw err
-    }
+    const session = await encrypt({ user: userData, expires })
+    return { session, expires }
 }
 
 export async function logout() {
@@ -45,30 +52,17 @@ export async function logout() {
     cookies().set('session', '', { expires: new Date(0) })
 }
 
-export async function getSession() {
+export async function getSession(): Promise<SessionPayload | null> {
     const cookieStore = cookies()
     const sessionCookie = cookieStore.get('session')
 
-    console.log("[getSession] Buscando cookie 'session'...")
-
     if (!sessionCookie) {
-        console.log("[getSession] Cookie 'session' NO encontrada. Cookies disponibles:", cookieStore.getAll().map(c => c.name).join(', '))
         return null
     }
 
-    console.log("[getSession] Cookie encontrada. Valor (truncado):", sessionCookie.value.substring(0, 10) + "...")
-
     try {
-        const payload = await decrypt(sessionCookie.value)
-        if (payload) {
-            console.log("[getSession] Sesión desencriptada correctamente. User ID:", payload.user?.id)
-            return payload
-        } else {
-            console.log("[getSession] Falló la desencriptación (payload null)")
-            return null
-        }
-    } catch (e) {
-        console.error("[getSession] Error al desencriptar:", e)
+        return await decrypt(sessionCookie.value)
+    } catch {
         return null
     }
 }
@@ -79,6 +73,8 @@ export async function updateSession(request: NextRequest) {
 
     // Refresh the session so it doesn't expire
     const parsed = await decrypt(session)
+    if (!parsed) return
+
     parsed.expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
     const res = NextResponse.next()
     res.cookies.set({

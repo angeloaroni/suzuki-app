@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import { practiceSessionSchema } from "@/lib/validations"
 
 /**
  * Log a practice session (called from parent portal, no teacher auth required)
@@ -13,15 +14,21 @@ export async function logPracticeSession(data: {
     notes?: string
 }) {
     try {
+        const parsed = practiceSessionSchema.safeParse(data)
+        if (!parsed.success) {
+            return { success: false, error: parsed.error.errors[0].message }
+        }
+        const validatedData = parsed.data
+
         const student = await prisma.student.findUnique({
-            where: { accessCode: data.accessCode }
+            where: { accessCode: validatedData.accessCode }
         })
 
         if (!student) {
             return { success: false, error: "Código de acceso no válido" }
         }
 
-        const dateObj = new Date(data.date + 'T00:00:00.000Z')
+        const dateObj = new Date(validatedData.date + 'T00:00:00.000Z')
 
         const session = await prisma.practiceSession.upsert({
             where: {
@@ -31,20 +38,19 @@ export async function logPracticeSession(data: {
                 }
             },
             update: {
-                duration: data.duration,
-                notes: data.notes || null
+                duration: validatedData.duration,
+                notes: validatedData.notes || null
             },
             create: {
                 studentId: student.id,
                 date: dateObj,
-                duration: data.duration,
-                notes: data.notes || null
+                duration: validatedData.duration,
+                notes: validatedData.notes || null
             }
         })
 
         return { success: true, data: session }
-    } catch (error: any) {
-        console.error("Error logging practice session:", error)
+    } catch (error) {
         return { success: false, error: "Error al registrar la sesión de práctica" }
     }
 }
@@ -69,8 +75,7 @@ export async function getPracticeSessions(accessCode: string) {
         }
 
         return { success: true, data: student.practiceSessions }
-    } catch (error: any) {
-        console.error("Error fetching practice sessions:", error)
+    } catch (error) {
         return { success: false, error: "Error al obtener sesiones", data: [] }
     }
 }

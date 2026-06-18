@@ -15,7 +15,7 @@ export async function getBookTemplates() {
         }
 
         const templates = await prisma.bookTemplate.findMany({
-            // where: { teacherId: session.user.id }, // Allow seeing all books
+            where: { teacherId: session.user.id },
             include: {
                 songs: {
                     orderBy: { order: 'asc' }
@@ -29,7 +29,6 @@ export async function getBookTemplates() {
 
         return { success: true, data: templates }
     } catch (error) {
-        console.error("Error fetching book templates:", error)
         return { success: false, error: "Error al obtener los libros", data: [] }
     }
 }
@@ -51,7 +50,6 @@ export async function getNextBookNumber() {
 
         return { success: true, data: (lastBook?.number || 0) + 1 }
     } catch (error) {
-        console.error("Error fetching next book number:", error)
         return { success: false, error: "Error al obtener el número", data: 1 }
     }
 }
@@ -66,7 +64,7 @@ export async function checkBookNumberAvailability(number: number, excludeId?: st
             return { success: false, error: "No autorizado" }
         }
 
-        const where: any = {
+        const where: { teacherId: string; number: number; id?: { not: string } } = {
             teacherId: session.user.id,
             number: number
         }
@@ -81,7 +79,6 @@ export async function checkBookNumberAvailability(number: number, excludeId?: st
 
         return { success: true, available: !existing }
     } catch (error) {
-        console.error("Error checking book number:", error)
         return { success: false, error: "Error al verificar número" }
     }
 }
@@ -99,7 +96,7 @@ export async function getBookTemplate(id: string) {
         const template = await prisma.bookTemplate.findFirst({
             where: {
                 id,
-                // teacherId: session.user.id // Allow viewing any book
+                teacherId: session.user.id,
             },
             include: {
                 songs: {
@@ -119,7 +116,6 @@ export async function getBookTemplate(id: string) {
 
         return { success: true, data: template }
     } catch (error) {
-        console.error("Error fetching book template:", error)
         return { success: false, error: "Error al obtener el libro", data: null }
     }
 }
@@ -169,7 +165,6 @@ export async function createBookTemplate(data: {
         revalidatePath('/books')
         return { success: true, data: template }
     } catch (error) {
-        console.error("Error creating book template:", error)
         return { success: false, error: "Error al crear el libro" }
     }
 }
@@ -195,7 +190,7 @@ export async function updateBookTemplate(
         const existing = await prisma.bookTemplate.findFirst({
             where: {
                 id,
-                // teacherId: session.user.id // Allow editing any book
+                teacherId: session.user.id,
             }
         })
 
@@ -241,7 +236,6 @@ export async function updateBookTemplate(
         revalidatePath(`/books/${id}`)
         return { success: true, data: template }
     } catch (error) {
-        console.error("Error updating book template:", error)
         return { success: false, error: "Error al actualizar el libro" }
     }
 }
@@ -260,7 +254,7 @@ export async function deleteBookTemplate(id: string) {
         const existing = await prisma.bookTemplate.findFirst({
             where: {
                 id,
-                // teacherId: session.user.id // Allow deleting any book
+                teacherId: session.user.id,
             },
             include: {
                 _count: {
@@ -288,7 +282,6 @@ export async function deleteBookTemplate(id: string) {
         revalidatePath('/books')
         return { success: true }
     } catch (error) {
-        console.error("Error deleting book template:", error)
         return { success: false, error: "Error al eliminar el libro" }
     }
 }
@@ -310,7 +303,7 @@ export async function addSongToTemplate(
         const template = await prisma.bookTemplate.findFirst({
             where: {
                 id: bookTemplateId,
-                // teacherId: session.user.id // Allow adding songs to any book
+                teacherId: session.user.id,
             }
         })
 
@@ -329,7 +322,6 @@ export async function addSongToTemplate(
         revalidatePath(`/books/${bookTemplateId}`)
         return { success: true, data: songTemplate }
     } catch (error) {
-        console.error("Error adding song:", error)
         return { success: false, error: "Error al añadir la canción" }
     }
 }
@@ -355,7 +347,7 @@ export async function updateSongTemplate(
             }
         })
 
-        if (!song) { // || song.bookTemplate.teacherId !== session.user.id) {
+        if (!song || song.bookTemplate.teacherId !== session.user.id) {
             return { success: false, error: "Canción no encontrada" }
         }
 
@@ -367,7 +359,6 @@ export async function updateSongTemplate(
         revalidatePath(`/books/${song.bookTemplateId}`)
         return { success: true, data: updated }
     } catch (error) {
-        console.error("Error updating song:", error)
         return { success: false, error: "Error al actualizar la canción" }
     }
 }
@@ -411,7 +402,6 @@ export async function deleteSongTemplate(songId: string) {
 
         return { success: true }
     } catch (error) {
-        console.error("Error deleting song:", error)
         return { success: false, error: "Error al eliminar la canción" }
     }
 }
@@ -468,7 +458,6 @@ export async function moveSongTemplate(songId: string, direction: 'up' | 'down')
         revalidatePath(`/books/${song.bookTemplateId}`)
         return { success: true }
     } catch (error) {
-        console.error("Error moving song:", error)
         return { success: false, error: "Error al mover la canción" }
     }
 }

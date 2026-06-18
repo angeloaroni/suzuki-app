@@ -321,7 +321,15 @@ export function AttendanceCalendar({
     )
 }
 
-function StudentAttendanceModal({ student, attendances, onClose, onToggle, loading }: any) {
+interface StudentAttendanceModalProps {
+    student: Student
+    attendances: AttendanceRecord[]
+    onClose: () => void
+    onToggle: (studentId: string, day: number, month: number, year: number) => void
+    loading: string | null
+}
+
+function StudentAttendanceModal({ student, attendances, onClose, onToggle, loading }: StudentAttendanceModalProps) {
     // Current view month within the modal
     const [viewMonth, setViewMonth] = useState(new Date().getMonth())
     const [viewYear, setViewYear] = useState(new Date().getFullYear())
@@ -370,7 +378,16 @@ function StudentAttendanceModal({ student, attendances, onClose, onToggle, loadi
     )
 }
 
-function CalendarGrid({ year, month, studentId, attendances, loading, onToggle }: any) {
+interface CalendarGridProps {
+    year: number
+    month: number
+    studentId: string
+    attendances: AttendanceRecord[]
+    loading: string | null
+    onToggle: (studentId: string, day: number) => void
+}
+
+function CalendarGrid({ year, month, studentId, attendances, loading, onToggle }: CalendarGridProps) {
     const daysInMonth = new Date(year, month + 1, 0).getDate()
     const firstDayOfMonth = new Date(year, month, 1).getDay()
 
@@ -391,7 +408,7 @@ function CalendarGrid({ year, month, studentId, attendances, loading, onToggle }
             {calendarDays.map((day, idx) => {
                 if (day === null) return <div key={`empty-${idx}`} />
                 const dateStr = formatDateKey(year, month, day)
-                const attendance = attendances.find((a: any) => a.studentId === studentId && a.date.startsWith(dateStr))
+                const attendance = attendances.find((a: AttendanceRecord) => a.studentId === studentId && a.date.startsWith(dateStr))
                 const isLoadingCell = loading === `${studentId}-${day}`
 
                 return (

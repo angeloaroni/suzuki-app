@@ -47,7 +47,6 @@ export async function toggleAttendance(studentId: string, date: string, present:
         revalidatePath('/attendance')
         return { success: true, attendance }
     } catch (error) {
-        console.error('Error toggling attendance:', error)
         return { error: 'Error al actualizar asistencia' }
     }
 }
@@ -95,7 +94,6 @@ export async function getAttendanceByRange(startDateIso: string, endDateIso: str
             }))
         }
     } catch (error) {
-        console.error('Error fetching attendance:', error)
         return { error: 'Error al obtener asistencia', data: [] }
     }
 }
@@ -142,7 +140,6 @@ export async function getAttendanceByMonth(year: number, month: number) {
             }))
         }
     } catch (error) {
-        console.error('Error fetching attendance:', error)
         return { error: 'Error al obtener asistencia', data: [] }
     }
 }
@@ -169,7 +166,6 @@ export async function deleteAttendance(studentId: string, date: string) {
         revalidatePath('/attendance')
         return { success: true }
     } catch (error) {
-        console.error('Error deleting attendance:', error)
         return { error: 'Error al eliminar asistencia' }
     }
 }

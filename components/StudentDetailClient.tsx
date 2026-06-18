@@ -6,6 +6,7 @@ import AssignBookModal from "@/components/AssignBookModal"
 import AddSongModal from "@/components/AddSongModal"
 import EditBookModal from "@/components/EditBookModal"
 import { removeBookFromStudent, toggleBookGraduation } from "@/app/actions/book-assignment"
+import { useRouter } from "next/navigation"
 import { BookOpen, Plus, Edit, Music, Trash2, GraduationCap } from "lucide-react"
 import BookSection from "@/components/BookSection"
 import SharePortalButton from "@/components/SharePortalButton"
@@ -50,7 +51,7 @@ interface StudentDetailClientProps {
 import { AnimatedList, AnimatedItem } from "@/components/AnimatedList"
 
 export default function StudentDetailClient({ student }: StudentDetailClientProps) {
-    // ... state and handlers ...
+    const router = useRouter()
     const [showAssignBook, setShowAssignBook] = useState(false)
     const [showAddSong, setShowAddSong] = useState(false)
     const [showEditBook, setShowEditBook] = useState(false)
@@ -70,7 +71,7 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
         if (confirm(`¿Estás seguro de que deseas eliminar el libro "${bookTitle}" de este estudiante? Esta acción eliminará todo el progreso asociado.`)) {
             const result = await removeBookFromStudent(assignmentId)
             if (result.success) {
-                window.location.reload()
+                router.refresh()
             } else {
                 alert(result.error || "Error al eliminar el libro")
             }
@@ -85,7 +86,7 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
             const result = await toggleBookGraduation(assignmentId)
             console.log("🔙 [Client] Server action result:", result)
             if (result.success) {
-                window.location.reload()
+                router.refresh()
             } else {
                 alert(result.error || "Error al actualizar graduación")
             }

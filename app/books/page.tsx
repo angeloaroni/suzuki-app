@@ -5,6 +5,11 @@ import { PlusCircle, BookOpen } from "lucide-react"
 
 export const dynamic = 'force-dynamic'
 
+export const metadata = {
+    title: 'Libros - SuzukiTracker',
+    description: 'Gestiona los libros del repertorio Suzuki',
+}
+
 import { AnimatedList, AnimatedItem } from "@/components/AnimatedList"
 
 export default async function BooksPage() {

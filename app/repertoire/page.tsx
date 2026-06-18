@@ -8,6 +8,11 @@ import LogoutButton from "@/components/LogoutButton"
 
 export const dynamic = 'force-dynamic'
 
+export const metadata = {
+    title: 'Repertorio - SuzukiTracker',
+    description: 'Explora y gestiona el repertorio Suzuki',
+}
+
 export default async function RepertoirePage() {
     const session = await getSession()
 

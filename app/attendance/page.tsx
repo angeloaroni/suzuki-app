@@ -9,6 +9,11 @@ import { AttendanceCalendar } from "@/components/AttendanceCalendar"
 
 export const dynamic = 'force-dynamic'
 
+export const metadata = {
+    title: 'Asistencia - SuzukiTracker',
+    description: 'Control de asistencia de estudiantes',
+}
+
 export default async function AttendancePage() {
     const session = await getSession()
 

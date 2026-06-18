@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
 import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
+import { getSession } from "@/lib/session"
 
 export async function POST(request: NextRequest) {
     try {
+        const session = await getSession()
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                { error: "No autorizado" },
+                { status: 401 }
+            )
+        }
+
         const data = await request.formData()
         const file: File | null = data.get('file') as unknown as File
 
@@ -38,11 +47,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ success: true, url })
 
-    } catch (error: any) {
-        console.error('Upload error:', error)
-        return NextResponse.json(
-            { error: "Error uploading file: " + error.message },
-            { status: 500 }
-        )
+    } catch (error) {
+        return NextResponse.json({ error: "Error uploading file" }, { status: 500 })
     }
 }

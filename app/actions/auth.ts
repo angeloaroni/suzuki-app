@@ -7,6 +7,7 @@ import { logout, login } from "@/lib/session"
 import { cookies } from "next/headers"
 import crypto from "crypto"
 import { sendPasswordResetEmail } from "@/lib/mail"
+import { loginSchema, registerSchema } from "@/lib/validations"
 
 export async function logoutAction() {
     await logout()
@@ -14,11 +15,11 @@ export async function logoutAction() {
 }
 
 export async function loginAction(data: { email: string; password: string }) {
-    const { email, password } = data
-
-    if (!email || !password) {
+    const parsed = loginSchema.safeParse(data)
+    if (!parsed.success) {
         return { error: 'credentials' }
     }
+    const { email, password } = parsed.data
 
     try {
         const user = await prisma.user.findUnique({
@@ -57,18 +58,17 @@ export async function loginAction(data: { email: string; password: string }) {
 
         return { success: true }
     } catch (error) {
-        console.error("Login error:", error)
         return { error: 'server' }
     }
 }
 
 
 export async function registerUser(data: { name: string, email: string, password: string }) {
-    const { name, email, password } = data
-
-    if (!email || !password || !name) {
-        return { error: "Faltan campos obligatorios" }
+    const parsed = registerSchema.safeParse(data)
+    if (!parsed.success) {
+        return { error: parsed.error.errors[0].message }
     }
+    const { name, email, password } = parsed.data
 
     try {
         const existingUser = await prisma.user.findUnique({
@@ -91,11 +91,6 @@ export async function registerUser(data: { name: string, email: string, password
 
         return { success: true }
     } catch (error) {
-        console.error("Registration error details:", error)
-        if (error instanceof Error) {
-            console.error("Error message:", error.message)
-            console.error("Error stack:", error.stack)
-        }
         return { error: "Error al crear el usuario. Revisa la consola del servidor." }
     }
 }
@@ -111,7 +106,7 @@ export async function forgotPasswordAction(email: string) {
         })
 
         if (!user) {
-            return { error: "No existe un usuario con ese email" }
+            return { success: true }
         }
 
         // Generar token único
@@ -134,7 +129,6 @@ export async function forgotPasswordAction(email: string) {
 
         return { success: true }
     } catch (error) {
-        console.error("Forgot password error:", error)
         return { error: "Error al procesar la solicitud" }
     }
 }
@@ -167,7 +161,6 @@ export async function resetPasswordAction(token: string, password: string) {
 
         return { success: true }
     } catch (error) {
-        console.error("Reset password error:", error)
         return { error: "Error al restablecer la contraseña" }
     }
 }

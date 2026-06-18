@@ -30,17 +30,14 @@ export async function getAvailableBooksForStudent(studentId: string) {
 
         return { success: true, data: availableBooks }
     } catch (error) {
-        console.error("Error fetching available books:", error)
         return { error: "Error al obtener libros disponibles" }
     }
 }
 
 export async function assignBookToStudent(studentId: string, bookTemplateId: string) {
-    console.log("📚 Assigning book:", { studentId, bookTemplateId })
     try {
         const session = await getSession()
         if (!session?.user?.id) {
-            console.log("❌ No session")
             return { error: "No autorizado" }
         }
 
@@ -54,15 +51,10 @@ export async function assignBookToStudent(studentId: string, bookTemplateId: str
         })
 
         if (!student || !bookTemplate) {
-            console.log("❌ Student or Book not found")
             return { error: "Estudiante o libro no encontrado" }
         }
 
         if (student.teacherId !== session.user.id) {
-            console.log("❌ Auth mismatch", {
-                studentTeacher: student.teacherId,
-                user: session.user.id
-            })
             return { error: "No autorizado" }
         }
 
@@ -77,12 +69,10 @@ export async function assignBookToStudent(studentId: string, bookTemplateId: str
         })
 
         if (existingAssignment) {
-            console.log("⚠️ Already assigned")
             return { error: "El libro ya está asignado a este estudiante" }
         }
 
         // Create assignment
-        console.log("📝 Creating assignment record...")
         await prisma.bookAssignment.create({
             data: {
                 studentId,
@@ -92,8 +82,6 @@ export async function assignBookToStudent(studentId: string, bookTemplateId: str
 
         // Create student songs for all songs in the template
         if (bookTemplate.songs.length > 0) {
-            console.log(`🎵 Creating ${bookTemplate.songs.length} student songs...`)
-
             // Clean up any potential orphaned songs for this book to avoid unique constraint errors
             const songIds = bookTemplate.songs.map(s => s.id)
             await prisma.studentSong.deleteMany({
@@ -113,9 +101,8 @@ export async function assignBookToStudent(studentId: string, bookTemplateId: str
 
         revalidatePath(`/students/${studentId}`)
         return { success: true }
-    } catch (error: any) {
-        console.error("❌ Error assigning book:", error)
-        return { error: "Error al asignar el libro: " + error.message }
+    } catch (error) {
+        return { error: "Error al asignar el libro: " + (error instanceof Error ? error.message : "Error desconocido") }
     }
 }
 
@@ -170,21 +157,16 @@ export async function removeBookFromStudent(assignmentId: string) {
 
         revalidatePath(`/students/${assignment.studentId}`)
         return { success: true }
-    } catch (error: any) {
-        console.error("Error removing book:", error)
+    } catch (error) {
         return { error: "Error al eliminar el libro" }
     }
 }
 
 export async function toggleBookGraduation(assignmentId: string) {
-    console.log("🎓 Toggling graduation for:", assignmentId)
     try {
-        console.log("🎓 [toggleBookGraduation] START for assignmentId:", assignmentId)
         const session = await getSession()
-        console.log("👤 [toggleBookGraduation] Session user:", session?.user?.id)
 
         if (!session?.user?.id) {
-            console.log("❌ [toggleBookGraduation] No session")
             return { error: "No autorizado" }
         }
 
@@ -192,24 +174,17 @@ export async function toggleBookGraduation(assignmentId: string) {
             where: { id: assignmentId },
             include: { student: true }
         })
-        console.log("📚 [toggleBookGraduation] Assignment found:", assignment ? "YES" : "NO")
 
         if (!assignment) {
-            console.log("❌ [toggleBookGraduation] Assignment not found in DB")
             return { error: "Asignación no encontrada" }
         }
 
-        console.log("👨‍🏫 [toggleBookGraduation] Student Teacher ID:", assignment.student.teacherId)
-        console.log("🔄 [toggleBookGraduation] Current Status:", assignment.isGraduated)
-
         if (assignment.student.teacherId !== session.user.id) {
-            console.log("❌ [toggleBookGraduation] Auth mismatch")
             return { error: "No autorizado" }
         }
 
         const newStatus = !assignment.isGraduated
         const graduationDate = newStatus ? new Date() : null
-        console.log("📝 [toggleBookGraduation] Updating to:", newStatus)
 
         const updated = await prisma.bookAssignment.update({
             where: { id: assignmentId },
@@ -218,12 +193,10 @@ export async function toggleBookGraduation(assignmentId: string) {
                 graduationDate: graduationDate
             }
         })
-        console.log("✅ [toggleBookGraduation] Update successful:", updated.isGraduated)
 
         revalidatePath(`/students/${assignment.studentId}`)
         return { success: true, isGraduated: newStatus, graduationDate }
-    } catch (error: any) {
-        console.error("❌ [toggleBookGraduation] Error toggling graduation:", error)
-        return { error: "Error al actualizar estado de graduación: " + error.message }
+    } catch (error) {
+        return { error: "Error al actualizar estado de graduación: " + (error instanceof Error ? error.message : "Error desconocido") }
     }
 }

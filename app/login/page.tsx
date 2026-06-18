@@ -1,9 +1,11 @@
 import LoginForm from "@/components/LoginForm"
 
-export default function LoginPage({
-    searchParams,
-}: {
-    searchParams: { error?: string }
-}) {
-    return <LoginForm error={searchParams?.error} />
+export const metadata = {
+    title: 'Iniciar Sesión - SuzukiTracker',
+    description: 'Accede a tu cuenta de SuzukiTracker',
+}
+
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+    const resolvedParams = await searchParams
+    return <LoginForm error={resolvedParams?.error as string | undefined} />
 }

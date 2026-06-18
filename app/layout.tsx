@@ -5,8 +5,8 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Suzuki Tracker',
-  description: 'Track your Suzuki piano progress',
+  title: 'SuzukiTracker - Gestión de Enseñanza Suzuki',
+  description: 'Plataforma para profesores del Método Suzuki. Gestiona estudiantes, repertorio y progreso.',
 }
 
 import { ThemeProvider } from '@/components/ThemeProvider'

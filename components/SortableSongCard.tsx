@@ -5,7 +5,22 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import SongCard from './SongCard';
 
-export function SortableSongCard({ song, studentId }: { song: any, studentId: string }) {
+interface SortableSong {
+    id: string
+    templateId?: string
+    title: string
+    imageUrl?: string | null
+    completed: boolean
+    learnedLeft: boolean
+    learnedRight: boolean
+    learnedBoth: boolean
+    notes?: string | null
+    youtubeUrl?: string | null
+    audioUrl?: string | null
+    progressNotesCount?: number
+}
+
+export function SortableSongCard({ song, studentId }: { song: SortableSong, studentId: string }) {
     const {
         attributes,
         listeners,

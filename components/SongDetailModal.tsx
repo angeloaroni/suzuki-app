@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { updateSongDetails, uploadSongAudio } from "@/app/actions/song"
 import { getSongProgressHistory } from "@/app/actions/progress"
 import ConfirmDialog from "./ConfirmDialog"
@@ -33,6 +34,7 @@ type ProgressNote = {
 }
 
 export default function SongDetailModal({ song, isOpen, onClose }: SongDetailModalProps) {
+    const router = useRouter()
     const [activeTab, setActiveTab] = useState<'details' | 'progress'>('details')
     const [title, setTitle] = useState(song.title)
     const [notes, setNotes] = useState(song.notes || "")
@@ -105,13 +107,13 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
             const result = await uploadSongAudio(song.id, base64Data, file.name)
 
             if (result.success) {
-                window.location.reload()
+                router.refresh()
             } else {
                 alert(result.error || "Error al subir audio")
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Upload error:", error)
-            alert("Error al subir audio: " + error.message)
+            alert("Error al subir audio: " + (error instanceof Error ? error.message : "Error desconocido"))
         }
         setIsUploadingAudio(false)
     }

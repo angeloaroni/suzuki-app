@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { getSession } from "@/lib/session"
 import { revalidatePath } from "next/cache"
+import { progressSchema } from "@/lib/validations"
 
 /**
  * Create a new progress note for a song
@@ -15,6 +16,12 @@ export async function createProgressNote(data: {
     note?: string
 }) {
     try {
+        const parsed = progressSchema.safeParse(data)
+        if (!parsed.success) {
+            return { success: false, error: parsed.error.errors[0].message }
+        }
+        const validatedData = parsed.data
+
         const session = await getSession()
 
         if (!session?.user?.id) {
@@ -23,7 +30,7 @@ export async function createProgressNote(data: {
 
         // Verify the song belongs to a student of this teacher
         const studentSong = await prisma.studentSong.findUnique({
-            where: { id: data.studentSongId },
+            where: { id: validatedData.studentSongId },
             include: {
                 student: true
             }
@@ -33,23 +40,14 @@ export async function createProgressNote(data: {
             return { success: false, error: "Canción no encontrada o no autorizada" }
         }
 
-        // Validate progress values (0-100)
-        if (
-            data.leftHand < 0 || data.leftHand > 100 ||
-            data.rightHand < 0 || data.rightHand > 100 ||
-            data.bothHands < 0 || data.bothHands > 100
-        ) {
-            return { success: false, error: "Los valores de progreso deben estar entre 0 y 100" }
-        }
-
         // Create progress note
         const progress = await prisma.progress.create({
             data: {
-                studentSongId: data.studentSongId,
-                leftHand: data.leftHand,
-                rightHand: data.rightHand,
-                bothHands: data.bothHands,
-                note: data.note || null,
+                studentSongId: validatedData.studentSongId,
+                leftHand: validatedData.leftHand,
+                rightHand: validatedData.rightHand,
+                bothHands: validatedData.bothHands,
+                note: validatedData.note || null,
                 date: new Date()
             }
         })
@@ -59,9 +57,8 @@ export async function createProgressNote(data: {
 
         return { success: true, progress }
 
-    } catch (error: any) {
-        console.error("Error creating progress note:", error)
-        return { success: false, error: "Error al crear la nota de progreso: " + error.message }
+    } catch (error) {
+        return { success: false, error: "Error al crear la nota de progreso: " + (error instanceof Error ? error.message : "Error desconocido") }
     }
 }
 
@@ -96,8 +93,7 @@ export async function getSongProgressHistory(studentSongId: string) {
 
         return { success: true, data: progressHistory }
 
-    } catch (error: any) {
-        console.error("Error fetching progress history:", error)
+    } catch (error) {
         return { success: false, error: "Error al obtener el historial de progreso", data: [] }
     }
 }
@@ -139,9 +135,8 @@ export async function deleteProgressNote(progressId: string) {
 
         return { success: true }
 
-    } catch (error: any) {
-        console.error("Error deleting progress note:", error)
-        return { success: false, error: "Error al eliminar la nota de progreso: " + error.message }
+    } catch (error) {
+        return { success: false, error: "Error al eliminar la nota de progreso: " + (error instanceof Error ? error.message : "Error desconocido") }
     }
 }
 
@@ -200,8 +195,7 @@ export async function updateProgressNote(progressId: string, data: {
         revalidatePath(`/students/${progress.studentSong.studentId}`)
         return { success: true, progress: updated }
 
-    } catch (error: any) {
-        console.error("Error updating progress note:", error)
+    } catch (error) {
         return { success: false, error: "Error al actualizar la nota" }
     }
 }

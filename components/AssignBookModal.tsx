@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { X, BookOpen, Check } from 'lucide-react'
 import { assignBookToStudent, getAvailableBooksForStudent } from '@/app/actions/book-assignment'
 
@@ -20,6 +21,7 @@ interface AssignBookModalProps {
 }
 
 export default function AssignBookModal({ isOpen, onClose, studentId, studentName }: AssignBookModalProps) {
+    const router = useRouter()
     const [availableBooks, setAvailableBooks] = useState<BookTemplate[]>([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -49,7 +51,7 @@ export default function AssignBookModal({ isOpen, onClose, studentId, studentNam
             setSuccess(true)
             setTimeout(() => {
                 onClose()
-                window.location.reload() // Refresh to show new book
+                router.refresh()
             }, 1000)
         } else {
             setError(result.error || 'Error al asignar el libro')

@@ -93,8 +93,7 @@ export async function toggleSongProgress(
         revalidatePath(`/students/${studentSong.studentId}`)
         return { success: true, newValue, updatedFields: updateData }
 
-    } catch (error: any) {
-        console.error("Error toggling progress:", error)
+    } catch (error) {
         return { error: "Error al actualizar el progreso" }
     }
 }
@@ -141,9 +140,8 @@ export async function uploadSongImage(studentSongId: string, base64Data: string,
 
         revalidatePath(`/students/${studentSong.studentId}`)
         return { success: true, imageUrl }
-    } catch (error: any) {
-        console.error("Error uploading image:", error)
-        return { error: "Error al subir la imagen: " + error.message }
+    } catch (error) {
+        return { error: "Error al subir la imagen: " + (error instanceof Error ? error.message : "Error desconocido") }
     }
 }
 
@@ -172,8 +170,7 @@ export async function updateSongDetails(studentSongId: string, data: { notes?: s
 
         revalidatePath(`/students/${studentSong.studentId}`)
         return { success: true }
-    } catch (error: any) {
-        console.error("Error updating song details:", error)
+    } catch (error) {
         return { error: "Error al actualizar los detalles" }
     }
 }
@@ -221,8 +218,7 @@ export async function uploadSongAudio(studentSongId: string, base64Data: string,
         revalidatePath(`/students/${studentSong.studentId}`)
         return { success: true, audioUrl }
 
-    } catch (error: any) {
-        console.error("Error uploading audio:", error)
+    } catch (error) {
         return { error: "Error al subir el audio" }
     }
 }
@@ -252,8 +248,7 @@ export async function createCustomSong(bookId: string, data: { title: string, or
 
         revalidatePath(`/books/${bookId}`)
         return { success: true, song }
-    } catch (error: any) {
-        console.error("Error creating custom song:", error)
+    } catch (error) {
         return { error: "Error al crear la canción" }
     }
 }
@@ -294,8 +289,7 @@ export async function updateStudentSongOrders(studentId: string, updates: { temp
 
         revalidatePath(`/students/${studentId}`)
         return { success: true }
-    } catch (error: any) {
-        console.error("Error updating song orders:", error)
+    } catch (error) {
         return { error: "Error al actualizar el orden de las canciones" }
     }
 }

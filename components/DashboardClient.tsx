@@ -8,7 +8,7 @@ import { AnimatedList, AnimatedItem } from '@/components/AnimatedList'
 interface StudentWithBooks {
     id: string
     name: string
-    dob: Date | null
+    dob: Date | string | null
     bookAssignments: Array<{
         id: string
         isGraduated: boolean
