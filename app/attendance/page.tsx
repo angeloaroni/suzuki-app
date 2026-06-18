@@ -10,7 +10,7 @@ import { AttendanceCalendar } from "@/components/AttendanceCalendar"
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-    title: 'Asistencia - SuzukiTracker',
+    title: 'Asistencia - Musivo',
     description: 'Control de asistencia de estudiantes',
 }
 

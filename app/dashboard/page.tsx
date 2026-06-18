@@ -10,7 +10,7 @@ import { DashboardClient } from "@/components/DashboardClient"
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-    title: 'Dashboard - SuzukiTracker',
+    title: 'Dashboard - Musivo',
     description: 'Resumen de tus estudiantes y progreso musical',
 }
 
@@ -95,7 +95,7 @@ export default async function Dashboard() {
                             </div>
                             <div className="flex flex-col items-center sm:items-start gap-0 min-w-0">
                                 <h1 className="text-[11px] sm:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate uppercase tracking-tighter sm:tracking-normal sm:normal-case leading-none">
-                                    SuzukiTracker
+                                    Musivo
                                 </h1>
                                 <p className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 truncate font-bold sm:font-normal uppercase sm:normal-case opacity-80 sm:opacity-100 mt-0.5 sm:mt-0">Panel de Control</p>
                             </div>

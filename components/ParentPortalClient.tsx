@@ -400,7 +400,7 @@ export default function ParentPortalClient({ data }: { data: ParentPortalData })
                 {/* Footer */}
                 <footer className="text-center py-6">
                     <p className="text-xs text-gray-400 dark:text-gray-500">
-                        SuzukiTracker · Portal de seguimiento para padres y alumnos
+                        Musivo · Portal de seguimiento para padres y alumnos
                     </p>
                 </footer>
             </div>

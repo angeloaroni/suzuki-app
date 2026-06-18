@@ -173,7 +173,7 @@ export default function NewStudentPage() {
                     <ul className="text-sm text-indigo-800 dark:text-indigo-400 space-y-2">
                         <li className="flex items-start gap-2">
                             <span className="text-indigo-600 dark:text-indigo-500 mt-0.5">•</span>
-                            <span>Se asignará automáticamente el <strong>Libro 1</strong> del método Suzuki</span>
+                            <span>Se asignará automáticamente el <strong>Libro 1</strong></span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-indigo-600 dark:text-indigo-500 mt-0.5">•</span>

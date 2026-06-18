@@ -10,8 +10,8 @@ import { RepertoireClient } from "@/components/RepertoireClient"
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-    title: 'Repertorio - SuzukiTracker',
-    description: 'Explora y gestiona el repertorio Suzuki',
+    title: 'Repertorio - Musivo',
+    description: 'Explora y gestiona el repertorio musical',
 }
 
 export default async function RepertoirePage() {

@@ -1,8 +1,8 @@
 import LoginForm from "@/components/LoginForm"
 
 export const metadata = {
-    title: 'Iniciar Sesión - SuzukiTracker',
-    description: 'Accede a tu cuenta de SuzukiTracker',
+    title: 'Iniciar Sesión - Musivo',
+    description: 'Accede a tu cuenta de Musivo',
 }
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {

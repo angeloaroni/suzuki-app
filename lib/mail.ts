@@ -9,12 +9,12 @@ export async function sendPasswordResetEmail(email: string, token: string) {
 
     try {
         await resend.emails.send({
-            from: 'Suzuki Tracker <onboarding@resend.dev>',
+            from: 'Musivo <onboarding@resend.dev>',
             to: email,
-            subject: 'Restablece tu contraseña - Suzuki Tracker',
+            subject: 'Restablece tu contraseña - Musivo',
             html: `
                 <h1>Restablece tu contraseña</h1>
-                <p>Has solicitado restablecer tu contraseña en Suzuki Tracker.</p>
+                <p>Has solicitado restablecer tu contraseña en Musivo.</p>
                 <p>Haz clic en el siguiente enlace para continuar:</p>
                 <a href="${resetLink}">${resetLink}</a>
                 <p>Este enlace expirará en 1 hora.</p>

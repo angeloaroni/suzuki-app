@@ -15,7 +15,7 @@ export default function Home() {
                 <Music className="w-5 h-5 text-white" />
               </div>
               <span className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 truncate">
-                SuzukiTracker
+                Musivo
               </span>
             </div>
             <nav className="flex items-center gap-2 sm:gap-4 ml-2">
@@ -50,9 +50,9 @@ export default function Home() {
             </div>
 
             <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white mb-8 tracking-tight leading-tight">
-              Domina el método <br />
+              Domina tu<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">
-                Suzuki
+                instrumento
               </span> paso a paso
             </h1>
 
@@ -92,7 +92,7 @@ export default function Home() {
               />
               <FeatureCard
                 title="Repertorio Digital"
-                description="Accede a todo el repertorio Suzuki y gestiona el estado de cada pieza."
+                description="Accede a todo tu repertorio musical y gestiona el estado de cada pieza."
                 icon={<Music className="w-6 h-6 text-white" />}
                 color="bg-pink-500"
               />
@@ -108,10 +108,10 @@ export default function Home() {
             <div className="w-6 h-6 bg-gray-900 dark:bg-indigo-600 rounded flex items-center justify-center">
               <Music className="w-3 h-3 text-white" />
             </div>
-            <span className="font-bold text-gray-900 dark:text-white">SuzukiTracker</span>
+            <span className="font-bold text-gray-900 dark:text-white">Musivo</span>
           </div>
           <p className="text-gray-500 dark:text-gray-400 text-sm">
-            © {new Date().getFullYear()} SuzukiTracker. Hecho con ❤️ para músicos.
+            © {new Date().getFullYear()} Musivo. Hecho con ❤️ para músicos.
           </p>
         </div>
       </footer>

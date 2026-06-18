@@ -165,7 +165,7 @@ export default function SharePortalButton({ studentId, studentName, existingCode
                                         </div>
                                         
                                         <a
-                                            href={`https://wa.me/?text=${encodeURIComponent(`¡Hola! 😊 Aquí puedes seguir el progreso de ${studentName} en sus clases de música a través de SuzukiTracker: ${getPortalUrl()}`)}`}
+                                            href={`https://wa.me/?text=${encodeURIComponent(`¡Hola! 😊 Aquí puedes seguir el progreso de ${studentName} en sus clases de música a través de Musivo: ${getPortalUrl()}`)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-xl font-bold text-sm transition-all shadow-md active:scale-[0.98]"

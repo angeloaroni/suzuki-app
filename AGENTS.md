@@ -1,4 +1,4 @@
-# AGENTS.md - SuzukiTracker 2.0
+# AGENTS.md - Musivo
 
 ## Stack
 
@@ -19,7 +19,7 @@ No test framework is configured. No CI workflows exist.
 - **`app/actions/`**: Server Actions (`'use server'`). All DB mutations go here, not API routes.
 - **`app/api/`**: Minimal routes (health, upload, keep-alive, logout). Avoid adding new API routes; prefer Server Actions.
 - **`components/`**: Shared UI components.
-- **`lib/`**: Core utilities — `prisma.ts` (singleton client), `session.ts` (JWT encrypt/decrypt/login/logout), `validations.ts` (Zod schemas), `suzuki-data.ts` (Suzuki book/song seed data).
+- **`lib/`**: Core utilities — `prisma.ts` (singleton client), `session.ts` (JWT encrypt/decrypt/login/logout), `validations.ts` (Zod schemas), `seed-data.ts` (book/song seed data).
 - **`prisma/schema.prisma`**: PostgreSQL. Models: User, Student, BookTemplate, SongTemplate, BookAssignment, StudentSong, Progress, PracticeSession, Attendance, PasswordResetToken.
 - **`scripts/`**: One-off DB utilities (backup, restore, migrate, create user). Run with `npx tsx scripts/<name>.ts`.
 - **`_agents/`**: Antigravity workflows and skills (not app code).

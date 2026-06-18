@@ -9,7 +9,7 @@
  */
 
 import { PrismaClient } from '@prisma/client'
-import { SUZUKI_BOOKS } from '../lib/suzuki-data'
+import { SUZUKI_BOOKS } from '../lib/seed-data'
 
 const prisma = new PrismaClient()
 

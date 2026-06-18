@@ -194,7 +194,7 @@ export default function StudentDetailClient({ student }: StudentDetailClientProp
                             No hay libros asignados
                         </h3>
                         <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                            Asigna un libro Suzuki para comenzar a seguir el progreso
+                            Asigna un libro para comenzar a seguir el progreso
                         </p>
                         <button
                             onClick={() => setShowAssignBook(true)}

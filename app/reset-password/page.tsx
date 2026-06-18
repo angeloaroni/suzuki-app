@@ -1,7 +1,7 @@
 import ResetPasswordForm from "@/components/ResetPasswordForm"
 
 export const metadata = {
-    title: 'Restablecer Contraseña - SuzukiTracker',
+    title: 'Restablecer Contraseña - Musivo',
     description: 'Establece una nueva contraseña',
 }
 
