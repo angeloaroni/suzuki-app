@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Music, Users, TrendingUp, Award, Plus, ArrowRight, Search, Filter, X } from 'lucide-react'
+import { Music, Users, TrendingUp, Award, Plus, ArrowRight, Search, Filter, X, CalendarCheck } from 'lucide-react'
 import { AnimatedList, AnimatedItem } from '@/components/AnimatedList'
 
 interface StudentWithBooks {
@@ -30,41 +30,47 @@ interface StudentWithBooks {
 interface DashboardClientProps {
     students: StudentWithBooks[]
     books: Array<{ id: string; title: string; number: number }>
+    teacherName: string
+    todayAttendanceMap: Record<string, boolean>
 }
 
-export function DashboardClient({ students, books }: DashboardClientProps) {
+export function DashboardClient({ students, books, teacherName, todayAttendanceMap }: DashboardClientProps) {
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedBook, setSelectedBook] = useState<string>('')
 
-    // Filter students based on search and book filter
+    const hour = new Date().getHours()
+    const greeting = hour < 12 ? 'Buenos días' : hour < 19 ? 'Buenas tardes' : 'Buenas noches'
+    const today = new Date().toLocaleDateString('es-ES', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    })
+
     const filteredStudents = useMemo(() => {
         return students.filter(student => {
-            // Search filter
             const matchesSearch = searchQuery === '' ||
                 student.name.toLowerCase().includes(searchQuery.toLowerCase())
-
-            // Book filter
             const matchesBook = selectedBook === '' ||
                 student.bookAssignments.some(ba => ba.bookTemplate.id === selectedBook)
-
             return matchesSearch && matchesBook
         })
     }, [students, searchQuery, selectedBook])
 
-    // Calculate statistics based on filtered students
     const stats = useMemo(() => {
         const allSongs = filteredStudents.flatMap(s => s.studentSongs)
+        const attendanceCount = filteredStudents.filter(s => todayAttendanceMap[s.id] !== undefined).length
+        const presentCount = filteredStudents.filter(s => todayAttendanceMap[s.id] === true).length
         return {
             totalStudents: filteredStudents.length,
+            attendanceToday: presentCount,
+            attendanceTotal: attendanceCount,
             completedSongs: allSongs.filter(song => song.completed).length,
             inProgressSongs: allSongs.filter(song =>
                 !song.completed && (song.learnedLeft || song.learnedRight || song.learnedBoth)
             ).length,
-            activeStudents: filteredStudents.filter(s =>
-                s.studentSongs.some(song => !song.completed)
-            ).length
         }
-    }, [filteredStudents])
+    }, [filteredStudents, todayAttendanceMap])
 
     const hasFilters = searchQuery !== '' || selectedBook !== ''
 
@@ -73,54 +79,83 @@ export function DashboardClient({ students, books }: DashboardClientProps) {
         setSelectedBook('')
     }
 
+    const firstName = teacherName.split(' ')[0]
+
     return (
         <>
             {/* Welcome Section */}
             <div className="mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                    ¡Hola de nuevo! 👋
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                    {greeting}, {firstName} 👋
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                    Aquí está el resumen de tu progreso musical
+                <p className="text-gray-500 dark:text-gray-400 text-sm capitalize">
+                    {today}
                 </p>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-6 mb-10">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 mb-8">
                 <StatCard
-                    title="Total"
+                    title="Estudiantes"
                     value={stats.totalStudents}
                     icon={<Users className="w-6 h-6" />}
                     gradient="from-blue-500 to-blue-600"
                     bgGradient="from-blue-50 to-blue-100"
                 />
                 <StatCard
-                    title="Progreso"
+                    title="Asistencia Hoy"
+                    value={stats.attendanceTotal > 0 ? stats.attendanceToday : 0}
+                    subtitle={stats.attendanceTotal > 0
+                        ? `${Math.round((stats.attendanceToday / stats.attendanceTotal) * 100)}%`
+                        : 'Sin datos'}
+                    icon={<CalendarCheck className="w-6 h-6" />}
+                    gradient="from-green-500 to-emerald-600"
+                    bgGradient="from-green-50 to-emerald-100"
+                />
+                <StatCard
+                    title="En Progreso"
                     value={stats.inProgressSongs}
                     icon={<TrendingUp className="w-6 h-6" />}
                     gradient="from-amber-500 to-orange-600"
                     bgGradient="from-amber-50 to-orange-100"
                 />
                 <StatCard
-                    title="Hecho"
+                    title="Completadas"
                     value={stats.completedSongs}
                     icon={<Award className="w-6 h-6" />}
-                    gradient="from-green-500 to-emerald-600"
-                    bgGradient="from-green-50 to-emerald-100"
-                />
-                <StatCard
-                    title="Activos"
-                    value={stats.activeStudents}
-                    icon={<Music className="w-6 h-6" />}
                     gradient="from-purple-500 to-purple-600"
                     bgGradient="from-purple-50 to-purple-100"
                 />
             </div>
 
+            {/* Quick Actions */}
+            <div className="flex flex-wrap gap-3 mb-8">
+                <Link
+                    href="/attendance"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md hover:border-green-200 dark:hover:border-green-700 transition-all text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                    <CalendarCheck className="w-4 h-4 text-green-600" />
+                    Marcar asistencia
+                </Link>
+                <Link
+                    href="/students/new"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-700 transition-all text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                    <Plus className="w-4 h-4 text-indigo-600" />
+                    Añadir estudiante
+                </Link>
+                <Link
+                    href="/repertoire"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-700 transition-all text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                    <Music className="w-4 h-4 text-emerald-600" />
+                    Ver repertorio
+                </Link>
+            </div>
+
             {/* Search and Filter Section */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
                 <div className="flex flex-col sm:flex-row gap-4">
-                    {/* Search Input */}
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <input
@@ -131,8 +166,6 @@ export function DashboardClient({ students, books }: DashboardClientProps) {
                             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                         />
                     </div>
-
-                    {/* Book Filter */}
                     <div className="relative min-w-[200px]">
                         <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <select
@@ -148,8 +181,6 @@ export function DashboardClient({ students, books }: DashboardClientProps) {
                             ))}
                         </select>
                     </div>
-
-                    {/* Clear Filters */}
                     {hasFilters && (
                         <button
                             onClick={clearFilters}
@@ -160,8 +191,6 @@ export function DashboardClient({ students, books }: DashboardClientProps) {
                         </button>
                     )}
                 </div>
-
-                {/* Active Filters Indicator */}
                 {hasFilters && (
                     <div className="mt-3 text-sm text-gray-500 dark:text-gray-400">
                         Mostrando {filteredStudents.length} de {students.length} estudiantes
@@ -202,7 +231,7 @@ export function DashboardClient({ students, books }: DashboardClientProps) {
                     <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
                         {hasFilters
                             ? 'Intenta con otros términos de búsqueda o filtros'
-                            : 'Comienza tu viaje musical añadiendo tu primer alumno'}
+                            : 'Comienza añadiendo tu primer alumno'}
                     </p>
                     {hasFilters ? (
                         <button
@@ -230,10 +259,11 @@ export function DashboardClient({ students, books }: DashboardClientProps) {
                         const totalCount = studentSongs.length
                         const progressPercentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
 
-                        // Get current book (highest non-graduated book)
                         const currentBook = student.bookAssignments
                             .filter(ba => !ba.isGraduated)
                             .sort((a, b) => b.bookTemplate.number - a.bookTemplate.number)[0]
+
+                        const attendance = todayAttendanceMap[student.id]
 
                         return (
                             <AnimatedItem key={student.id}>
@@ -247,7 +277,7 @@ export function DashboardClient({ students, books }: DashboardClientProps) {
                                                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-1 truncate">
                                                     {student.name}
                                                 </h3>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2 flex-wrap">
                                                     <p className="text-sm text-gray-500 dark:text-gray-400">
                                                         {student.dob
                                                             ? `${Math.floor((Date.now() - new Date(student.dob).getTime()) / (365 * 24 * 60 * 60 * 1000))} años`
@@ -256,6 +286,15 @@ export function DashboardClient({ students, books }: DashboardClientProps) {
                                                     {currentBook && (
                                                         <span className="text-xs px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full">
                                                             Libro {currentBook.bookTemplate.number}
+                                                        </span>
+                                                    )}
+                                                    {attendance !== undefined && (
+                                                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                                            attendance
+                                                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                                                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                                                        }`}>
+                                                            {attendance ? 'Presente hoy' : 'Ausente hoy'}
                                                         </span>
                                                     )}
                                                 </div>
@@ -314,25 +353,29 @@ export function DashboardClient({ students, books }: DashboardClientProps) {
 function StatCard({
     title,
     value,
+    subtitle,
     icon,
     gradient,
     bgGradient
 }: {
     title: string
     value: number
+    subtitle?: string
     icon: React.ReactNode
     gradient: string
     bgGradient: string
 }) {
     return (
         <div className="group bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 transform hover:-translate-y-1 relative overflow-hidden h-full">
-            {/* Background decoration */}
             <div className={`absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br ${bgGradient} dark:opacity-10 rounded-full -mr-12 -mt-12 sm:-mr-16 sm:-mt-16 opacity-30 group-hover:scale-[2] transition-transform duration-700 ease-in-out`}></div>
 
             <div className="relative flex items-center justify-between gap-3">
                 <div className="min-w-0">
                     <h3 className="text-[10px] sm:text-xs font-black text-gray-400 dark:text-gray-500 mb-0.5 sm:mb-1 truncate uppercase tracking-[0.2em]">{title}</h3>
                     <p className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-gray-100 tabular-nums">{value}</p>
+                    {subtitle && (
+                        <p className="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400 mt-0.5">{subtitle}</p>
+                    )}
                 </div>
                 <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-all duration-300 flex-shrink-0`}>
                     <div className="text-white scale-90 sm:scale-100">
