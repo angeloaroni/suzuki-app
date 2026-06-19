@@ -7,6 +7,7 @@ import Image from "next/image"
 import SongDetailModal from "./SongDetailModal"
 import { GripVertical, ChevronDown, ChevronUp, Music, Image as ImageIcon, Star } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { getInstrumentLabels } from '@/lib/instrument-labels'
 
 interface SongProps {
     id: string
@@ -14,13 +15,14 @@ interface SongProps {
     title: string
     imageUrl?: string | null
     completed: boolean
-    learnedLeft: boolean
-    learnedRight: boolean
-    learnedBoth: boolean
+    learned1: boolean
+    learned2: boolean
+    learned3: boolean
     notes?: string | null
     youtubeUrl?: string | null
     audioUrl?: string | null
     progressNotesCount?: number
+    instrument?: string
 }
 
 export default function SongCard({ song, studentId, dragHandleProps }: { song: SongProps, studentId?: string, dragHandleProps?: Record<string, unknown> }) {
@@ -28,10 +30,11 @@ export default function SongCard({ song, studentId, dragHandleProps }: { song: S
     const [isExpanded, setIsExpanded] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const labels = getInstrumentLabels(song.instrument)
     const [progress, setProgress] = useState({
-        left: song.learnedLeft,
-        right: song.learnedRight,
-        both: song.learnedBoth
+        left: song.learned2,
+        right: song.learned1,
+        both: song.learned3
     })
     const [completed, setCompleted] = useState(song.completed)
     const [showCelebration, setShowCelebration] = useState(false)
@@ -39,14 +42,15 @@ export default function SongCard({ song, studentId, dragHandleProps }: { song: S
 
     async function handleToggle(field: 'left' | 'right' | 'both') {
         const context = studentId && song.templateId ? { studentId, templateId: song.templateId } : undefined
-        const result = await toggleSongProgress(song.id, field, context)
+        const serverField = field === 'left' ? 'metric1' : field === 'right' ? 'metric2' : 'metric3'
+        const result = await toggleSongProgress(song.id, serverField, context)
         if (result.success) {
             if (result.updatedFields) {
                 setProgress(prev => ({
                     ...prev,
-                    left: result.updatedFields.learnedLeft !== undefined ? result.updatedFields.learnedLeft : prev.left,
-                    right: result.updatedFields.learnedRight !== undefined ? result.updatedFields.learnedRight : prev.right,
-                    both: result.updatedFields.learnedBoth !== undefined ? result.updatedFields.learnedBoth : prev.both
+                    left: result.updatedFields.learned2 !== undefined ? result.updatedFields.learned2 : prev.left,
+                    right: result.updatedFields.learned1 !== undefined ? result.updatedFields.learned1 : prev.right,
+                    both: result.updatedFields.learned3 !== undefined ? result.updatedFields.learned3 : prev.both
                 }))
             } else {
                 setProgress(prev => ({ ...prev, [field]: result.newValue }))
@@ -206,9 +210,9 @@ export default function SongCard({ song, studentId, dragHandleProps }: { song: S
 
                         {/* Toggles */}
                         <div className="flex justify-between space-x-2">
-                            <ProgressButton label="✋ Izq" active={progress.left} onClick={() => handleToggle('left')} color="bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400" activeColor="bg-blue-600 text-white hover:bg-blue-700" />
-                            <ProgressButton label="✋ Der" active={progress.right} onClick={() => handleToggle('right')} color="bg-green-50 dark:bg-green-900/40 text-green-600 dark:text-green-400" activeColor="bg-green-600 text-white hover:bg-green-700" />
-                            <ProgressButton label="👐 Ambas" active={progress.both} onClick={() => handleToggle('both')} color="bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400" activeColor="bg-purple-600 text-white hover:bg-purple-700" />
+                            <ProgressButton label={"✋ " + labels.learned2} active={progress.left} onClick={() => handleToggle('left')} color="bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400" activeColor="bg-blue-600 text-white hover:bg-blue-700" />
+                            <ProgressButton label={"✋ " + labels.learned1} active={progress.right} onClick={() => handleToggle('right')} color="bg-green-50 dark:bg-green-900/40 text-green-600 dark:text-green-400" activeColor="bg-green-600 text-white hover:bg-green-700" />
+                            <ProgressButton label={"👐 " + labels.learned3} active={progress.both} onClick={() => handleToggle('both')} color="bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400" activeColor="bg-purple-600 text-white hover:bg-purple-700" />
                         </div>
 
                         {/* Completed button */}
@@ -263,7 +267,7 @@ export default function SongCard({ song, studentId, dragHandleProps }: { song: S
                                 animate={{ scale: [0, 1.5, 1], rotate: 0 }}
                                 className="bg-white dark:bg-gray-800 px-8 py-4 rounded-3xl shadow-2xl border-4 border-indigo-500 text-center"
                             >
-                                <h4 className="text-2xl font-black text-indigo-600 dark:text-indigo-400">¡PIEZA LOGRADA! 🎻</h4>
+                                <h4 className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{"¡PIEZA LOGRADA! " + labels.emoji}</h4>
                                 <p className="text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-xs mt-1">Sigue así</p>
                             </motion.div>
                         </div>

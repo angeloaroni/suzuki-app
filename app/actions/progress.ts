@@ -10,9 +10,9 @@ import { progressSchema } from "@/lib/validations"
  */
 export async function createProgressNote(data: {
     studentSongId: string
-    leftHand: number
-    rightHand: number
-    bothHands: number
+    metric1: number
+    metric2: number
+    metric3: number
     note?: string
 }) {
     try {
@@ -44,9 +44,9 @@ export async function createProgressNote(data: {
         const progress = await prisma.progress.create({
             data: {
                 studentSongId: validatedData.studentSongId,
-                leftHand: validatedData.leftHand,
-                rightHand: validatedData.rightHand,
-                bothHands: validatedData.bothHands,
+                metric1: validatedData.metric1,
+                metric2: validatedData.metric2,
+                metric3: validatedData.metric3,
                 note: validatedData.note || null,
                 date: new Date()
             }
@@ -144,9 +144,9 @@ export async function deleteProgressNote(progressId: string) {
  * Update an existing progress note
  */
 export async function updateProgressNote(progressId: string, data: {
-    leftHand: number
-    rightHand: number
-    bothHands: number
+    metric1: number
+    metric2: number
+    metric3: number
     note?: string
 }) {
     try {
@@ -174,9 +174,9 @@ export async function updateProgressNote(progressId: string, data: {
 
         // Validate values
         if (
-            data.leftHand < 0 || data.leftHand > 100 ||
-            data.rightHand < 0 || data.rightHand > 100 ||
-            data.bothHands < 0 || data.bothHands > 100
+            data.metric1 < 0 || data.metric1 > 100 ||
+            data.metric2 < 0 || data.metric2 > 100 ||
+            data.metric3 < 0 || data.metric3 > 100
         ) {
             return { success: false, error: "Valores inválidos" }
         }
@@ -185,9 +185,9 @@ export async function updateProgressNote(progressId: string, data: {
         const updated = await prisma.progress.update({
             where: { id: progressId },
             data: {
-                leftHand: data.leftHand,
-                rightHand: data.rightHand,
-                bothHands: data.bothHands,
+                metric1: data.metric1,
+                metric2: data.metric2,
+                metric3: data.metric3,
                 note: data.note || null
             }
         })

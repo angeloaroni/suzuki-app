@@ -4,6 +4,7 @@
 import { useState } from "react"
 import { BookOpen, Plus, Edit, Music, Trash2, GraduationCap, ChevronDown, ChevronUp } from "lucide-react"
 import SongCard from "@/components/SongCard"
+import { getInstrumentLabels } from '@/lib/instrument-labels'
 
 interface Book {
     id: string
@@ -19,9 +20,9 @@ interface Book {
         order: number
         imageUrl: string | null
         completed: boolean
-        learnedLeft: boolean
-        learnedRight: boolean
-        learnedBoth: boolean
+        learned1: boolean
+        learned2: boolean
+        learned3: boolean
         notes: string | null
         youtubeUrl: string | null
         audioUrl: string | null
@@ -32,6 +33,7 @@ interface Book {
 interface BookSectionProps {
     book: Book
     studentId: string
+    instrument?: string
     onEditBook: (book: Book) => void
     onAddSong: (book: Book) => void
     onRemoveBook: (assignmentId: string, bookTitle: string) => void
@@ -62,6 +64,7 @@ import { updateStudentSongOrders } from "@/app/actions/song"
 export default function BookSection({
     book,
     studentId,
+    instrument,
     onEditBook,
     onAddSong,
     onRemoveBook,
@@ -69,6 +72,7 @@ export default function BookSection({
 }: BookSectionProps) {
     const [isExpanded, setIsExpanded] = useState(false)
     const [songs, setSongs] = useState(book.songs)
+    const labels = getInstrumentLabels(instrument)
 
     useEffect(() => {
         setSongs(book.songs)
@@ -122,9 +126,9 @@ export default function BookSection({
     const completedSongs = songs.filter(s => s.completed).length
     const progressPercentage = totalSongs > 0 ? Math.round((completedSongs / totalSongs) * 100) : 0
 
-    const learnedRight = songs.filter(s => s.learnedRight).length
-    const learnedLeft = songs.filter(s => s.learnedLeft).length
-    const learnedBoth = songs.filter(s => s.learnedBoth).length
+    const learned1 = songs.filter(s => s.learned1).length
+    const learned2 = songs.filter(s => s.learned2).length
+    const learned3 = songs.filter(s => s.learned3).length
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mb-6 transition-all duration-200 hover:shadow-md">
@@ -167,17 +171,17 @@ export default function BookSection({
                                     <div className="hidden sm:block w-px h-4 bg-gray-300 dark:bg-gray-700" />
 
                                     <div className="flex gap-2 sm:gap-3">
-                                        <span className="flex items-center gap-1" title="Mano Derecha">
+                                        <span className="flex items-center gap-1" title={labels.metric1}>
                                             <span className="text-[10px] font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded">R</span>
-                                            {learnedRight}/{totalSongs}
+                                            {learned1}/{totalSongs}
                                         </span>
-                                        <span className="flex items-center gap-1" title="Mano Izquierda">
+                                        <span className="flex items-center gap-1" title={labels.metric2}>
                                             <span className="text-[10px] font-bold bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 px-1.5 py-0.5 rounded">L</span>
-                                            {learnedLeft}/{totalSongs}
+                                            {learned2}/{totalSongs}
                                         </span>
-                                        <span className="flex items-center gap-1" title="Ambas Manos">
+                                        <span className="flex items-center gap-1" title={labels.metric3}>
                                             <span className="text-[10px] font-bold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded">👐</span>
-                                            {learnedBoth}/{totalSongs}
+                                            {learned3}/{totalSongs}
                                         </span>
                                     </div>
                                 </div>
@@ -291,13 +295,14 @@ export default function BookSection({
                                                         title: song.title,
                                                         imageUrl: song.imageUrl,
                                                         completed: song.completed,
-                                                        learnedLeft: song.learnedLeft,
-                                                        learnedRight: song.learnedRight,
-                                                        learnedBoth: song.learnedBoth,
+                                                        learned1: song.learned1,
+                                                        learned2: song.learned2,
+                                                        learned3: song.learned3,
                                                         notes: song.notes,
                                                         youtubeUrl: song.youtubeUrl,
                                                         audioUrl: song.audioUrl,
-                                                        progressNotesCount: song.progresses?.length ?? 0
+                                                        progressNotesCount: song.progresses?.length ?? 0,
+                                                        instrument
                                                     }}
                                                 />
                                             ))}

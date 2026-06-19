@@ -26,9 +26,9 @@ interface SongDetailModalProps {
 type ProgressNote = {
     id: string
     studentSongId: string
-    leftHand: number
-    rightHand: number
-    bothHands: number
+    metric1: number
+    metric2: number
+    metric3: number
     note: string | null
     date: Date
 }
@@ -316,9 +316,9 @@ export default function SongDetailModal({ song, isOpen, onClose }: SongDetailMod
                 isOpen={showAddProgressModal}
                 initialData={editingNote ? {
                     id: editingNote.id,
-                    leftHand: editingNote.leftHand,
-                    rightHand: editingNote.rightHand,
-                    bothHands: editingNote.bothHands,
+                    metric1: editingNote.metric1,
+                    metric2: editingNote.metric2,
+                    metric3: editingNote.metric3,
                     note: editingNote.note
                 } : undefined}
                 onClose={() => {

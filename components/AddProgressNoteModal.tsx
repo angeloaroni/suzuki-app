@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { createProgressNote, updateProgressNote } from "@/app/actions/progress"
 import { X, Save, TrendingUp, Edit3 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { getInstrumentLabels } from '@/lib/instrument-labels'
 
 type AddProgressNoteModalProps = {
     songId: string
@@ -11,11 +12,12 @@ type AddProgressNoteModalProps = {
     isOpen: boolean
     onClose: () => void
     onSuccess: () => void
+    instrument?: string
     initialData?: {
         id: string
-        leftHand: number
-        rightHand: number
-        bothHands: number
+        metric1: number
+        metric2: number
+        metric3: number
         note: string | null
     }
 }
@@ -24,7 +26,7 @@ const QUICK_PHRASES = [
     "¡Excelente postura!",
     "Repasar ritmo lento",
     "Cuidar afinación",
-    "Manos relajadas",
+    "Buen progreso",
     "Buen sonido",
     "Pieza terminada 🎻"
 ]
@@ -35,12 +37,14 @@ export default function AddProgressNoteModal({
     isOpen,
     onClose,
     onSuccess,
+    instrument,
     initialData
 }: AddProgressNoteModalProps) {
     const isEditing = !!initialData
-    const [leftHand, setLeftHand] = useState(0)
-    const [rightHand, setRightHand] = useState(0)
-    const [bothHands, setBothHands] = useState(0)
+    const labels = getInstrumentLabels(instrument)
+    const [metric1, setMetric1] = useState(0)
+    const [metric2, setMetric2] = useState(0)
+    const [metric3, setMetric3] = useState(0)
     const [note, setNote] = useState("")
     const [isSaving, setIsSaving] = useState(false)
 
@@ -48,14 +52,14 @@ export default function AddProgressNoteModal({
     useEffect(() => {
         if (isOpen) {
             if (initialData) {
-                setLeftHand(initialData.leftHand)
-                setRightHand(initialData.rightHand)
-                setBothHands(initialData.bothHands)
+                setMetric1(initialData.metric1)
+                setMetric2(initialData.metric2)
+                setMetric3(initialData.metric3)
                 setNote(initialData.note ?? "")
             } else {
-                setLeftHand(0)
-                setRightHand(0)
-                setBothHands(0)
+                setMetric1(0)
+                setMetric2(0)
+                setMetric3(0)
                 setNote("")
             }
         }
@@ -68,17 +72,17 @@ export default function AddProgressNoteModal({
         let result;
         if (isEditing && initialData) {
             result = await updateProgressNote(initialData.id, {
-                leftHand,
-                rightHand,
-                bothHands,
+                metric1,
+                metric2,
+                metric3,
                 note: note.trim() || undefined
             })
         } else {
             result = await createProgressNote({
                 studentSongId: songId,
-                leftHand,
-                rightHand,
-                bothHands,
+                metric1,
+                metric2,
+                metric3,
                 note: note.trim() || undefined
             })
         }
@@ -131,23 +135,23 @@ export default function AddProgressNoteModal({
                         </h3>
 
                         <SliderInput
-                            label="Mano Izquierda"
-                            value={leftHand}
-                            onChange={setLeftHand}
+                            label={labels.metric2}
+                            value={metric2}
+                            onChange={setMetric2}
                             color="blue"
                         />
 
                         <SliderInput
-                            label="Mano Derecha"
-                            value={rightHand}
-                            onChange={setRightHand}
+                            label={labels.metric1}
+                            value={metric1}
+                            onChange={setMetric1}
                             color="green"
                         />
 
                         <SliderInput
-                            label="Ambas Manos"
-                            value={bothHands}
-                            onChange={setBothHands}
+                            label={labels.metric3}
+                            value={metric3}
+                            onChange={setMetric3}
                             color="purple"
                         />
                     </div>

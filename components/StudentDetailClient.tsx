@@ -25,9 +25,9 @@ interface Book {
         order: number
         imageUrl: string | null
         completed: boolean
-        learnedLeft: boolean
-        learnedRight: boolean
-        learnedBoth: boolean
+        learned1: boolean
+        learned2: boolean
+        learned3: boolean
         notes: string | null
         youtubeUrl: string | null
         audioUrl: string | null

@@ -226,7 +226,7 @@ export function BookTemplateForm({ initialData, isEdit = false, initialNumber = 
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         className="w-full px-4 py-3 border border-slate-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-900 dark:text-white bg-white dark:bg-gray-700"
-                        placeholder="Ej: Suzuki Piano School Vol. 1"
+                        placeholder="Ej: Método de Piano Vol. 1"
                         required
                     />
                 </div>

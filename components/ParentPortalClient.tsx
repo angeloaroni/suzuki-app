@@ -6,20 +6,21 @@ import PracticeTimer from './PracticeTimer'
 import PracticeCalendar from './PracticeCalendar'
 import { calculateStreak } from '@/lib/practice-utils'
 import { ThemeToggle } from './ThemeToggle'
+import { getInstrumentLabels } from '@/lib/instrument-labels'
 
 interface Song {
     id: string
     title: string
     order: number
     completed: boolean
-    learnedLeft: boolean
-    learnedRight: boolean
-    learnedBoth: boolean
+    learned1: boolean
+    learned2: boolean
+    learned3: boolean
     notes: string | null
     lastProgress: {
-        leftHand: number
-        rightHand: number
-        bothHands: number
+        metric1: number
+        metric2: number
+        metric3: number
         note: string | null
         date: string
     } | null
@@ -29,6 +30,7 @@ interface Book {
     title: string
     number: number
     isGraduated: boolean
+    instrument?: string
     songs: Song[]
 }
 
@@ -62,7 +64,7 @@ export default function ParentPortalClient({ data }: { data: ParentPortalData })
     const stats = useMemo(() => {
         const allSongs = data.books.flatMap(b => b.songs)
         const completed = allSongs.filter(s => s.completed).length
-        const inProgress = allSongs.filter(s => !s.completed && (s.learnedLeft || s.learnedRight || s.learnedBoth)).length
+        const inProgress = allSongs.filter(s => !s.completed && (s.learned1 || s.learned2 || s.learned3)).length
         const total = allSongs.length
         const streak = calculateStreak(data.practiceSessions.map(s => ({ date: s.date })))
         const totalPracticeMinutes = data.practiceSessions.reduce((acc, s) => acc + s.duration, 0)
@@ -73,8 +75,8 @@ export default function ParentPortalClient({ data }: { data: ParentPortalData })
     // Get songs currently being worked on
     const currentSongs = useMemo(() => {
         return data.books.flatMap(b =>
-            b.songs.filter(s => !s.completed && (s.learnedLeft || s.learnedRight || s.learnedBoth))
-                .map(s => ({ ...s, bookTitle: b.title, bookNumber: b.number }))
+            b.songs.filter(s => !s.completed && (s.learned1 || s.learned2 || s.learned3))
+                .map(s => ({ ...s, bookTitle: b.title, bookNumber: b.number, instrument: b.instrument }))
         )
     }, [data])
 
@@ -167,18 +169,20 @@ export default function ParentPortalClient({ data }: { data: ParentPortalData })
                             </p>
                         </div>
                         <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                            {currentSongs.map(song => (
+                            {currentSongs.map(song => {
+                                const songLabels = getInstrumentLabels(song.instrument)
+                                return (
                                 <div key={song.id} className="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                     <div className="flex-shrink-0">
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${song.learnedBoth
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${song.learned3
                                                 ? 'bg-gradient-to-br from-purple-500 to-pink-500'
-                                                : song.learnedLeft && song.learnedRight
+                                                : song.learned1 && song.learned2
                                                     ? 'bg-gradient-to-br from-blue-500 to-green-500'
-                                                    : song.learnedLeft
-                                                        ? 'bg-gradient-to-br from-blue-400 to-blue-600'
-                                                        : 'bg-gradient-to-br from-green-400 to-green-600'
+                                                    : song.learned1
+                                                        ? 'bg-gradient-to-br from-green-400 to-green-600'
+                                                        : 'bg-gradient-to-br from-blue-400 to-blue-600'
                                             }`}>
-                                            <Music className="w-5 h-5 text-white" />
+                                            <span className="text-white text-lg">{songLabels.emoji}</span>
                                         </div>
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -186,18 +190,19 @@ export default function ParentPortalClient({ data }: { data: ParentPortalData })
                                         <p className="text-xs text-gray-500 dark:text-gray-400">Libro {song.bookNumber} · {song.bookTitle}</p>
                                     </div>
                                     <div className="flex gap-1">
-                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${song.learnedLeft ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}`}>
-                                            Izq
+                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${song.learned1 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}`}>
+                                            {songLabels.learned1}
                                         </span>
-                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${song.learnedRight ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}`}>
-                                            Der
+                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${song.learned2 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}`}>
+                                            {songLabels.learned2}
                                         </span>
-                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${song.learnedBoth ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}`}>
-                                            Ambas
+                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${song.learned3 ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}`}>
+                                            {songLabels.learned3}
                                         </span>
                                     </div>
                                 </div>
-                            ))}
+                                )
+                            })}
                         </div>
                     </section>
                 )}
@@ -242,7 +247,7 @@ export default function ParentPortalClient({ data }: { data: ParentPortalData })
                 <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <div className="p-5 border-b border-gray-100 dark:border-gray-700">
                         <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                            <span className="text-xl">🎹</span> Práctica en Casa
+                            <span className="text-xl">{getInstrumentLabels().emoji}</span> Práctica en Casa
                         </h2>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                             Usa el temporizador para medir tu sesión de práctica
@@ -358,39 +363,42 @@ export default function ParentPortalClient({ data }: { data: ParentPortalData })
 
                             {expandedBook === book.number && (
                                 <div className="border-t border-gray-100 dark:border-gray-700 divide-y divide-gray-50 dark:divide-gray-700/50">
-                                    {book.songs.map(song => (
-                                        <div key={song.id} className="px-4 py-3 flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${song.completed
-                                                    ? 'bg-green-100 dark:bg-green-900/30'
-                                                    : (song.learnedLeft || song.learnedRight || song.learnedBoth)
-                                                        ? 'bg-amber-100 dark:bg-amber-900/30'
-                                                        : 'bg-gray-100 dark:bg-gray-700'
-                                                }`}>
-                                                {song.completed ? (
-                                                    <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                                                ) : (song.learnedLeft || song.learnedRight || song.learnedBoth) ? (
-                                                    <span className="text-sm">🎵</span>
-                                                ) : (
-                                                    <Music className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                                                )}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className={`text-sm font-medium truncate ${song.completed ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-gray-100'}`}>
-                                                    {song.title}
-                                                </p>
-                                            </div>
-                                            {!song.completed && (song.learnedLeft || song.learnedRight || song.learnedBoth) && (
-                                                <div className="flex gap-1">
-                                                    {song.learnedLeft && <span className="w-2 h-2 rounded-full bg-blue-500" title="Izq" />}
-                                                    {song.learnedRight && <span className="w-2 h-2 rounded-full bg-green-500" title="Der" />}
-                                                    {song.learnedBoth && <span className="w-2 h-2 rounded-full bg-purple-500" title="Ambas" />}
-                                                </div>
-                                            )}
-                                            {song.completed && (
-                                                <span className="text-xs text-green-600 dark:text-green-400 font-medium">✓</span>
-                                            )}
+                            {book.songs.map(song => {
+                                const songLabels = getInstrumentLabels(book.instrument)
+                                return (
+                                <div key={song.id} className="px-4 py-3 flex items-center gap-3">
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${song.completed
+                                            ? 'bg-green-100 dark:bg-green-900/30'
+                                            : (song.learned1 || song.learned2 || song.learned3)
+                                                ? 'bg-amber-100 dark:bg-amber-900/30'
+                                                : 'bg-gray-100 dark:bg-gray-700'
+                                        }`}>
+                                        {song.completed ? (
+                                            <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                        ) : (song.learned1 || song.learned2 || song.learned3) ? (
+                                            <span className="text-sm">{songLabels.emoji}</span>
+                                        ) : (
+                                            <Music className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className={`text-sm font-medium truncate ${song.completed ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-gray-100'}`}>
+                                            {song.title}
+                                        </p>
+                                    </div>
+                                    {!song.completed && (song.learned1 || song.learned2 || song.learned3) && (
+                                        <div className="flex gap-1">
+                                            {song.learned1 && <span className="w-2 h-2 rounded-full bg-green-500" title={songLabels.learned1} />}
+                                            {song.learned2 && <span className="w-2 h-2 rounded-full bg-blue-500" title={songLabels.learned2} />}
+                                            {song.learned3 && <span className="w-2 h-2 rounded-full bg-purple-500" title={songLabels.learned3} />}
                                         </div>
-                                    ))}
+                                    )}
+                                    {song.completed && (
+                                        <span className="text-xs text-green-600 dark:text-green-400 font-medium">✓</span>
+                                    )}
+                                </div>
+                                )
+                            })}
                                 </div>
                             )}
                         </div>

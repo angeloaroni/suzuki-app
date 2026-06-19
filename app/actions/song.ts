@@ -8,7 +8,7 @@ import { join } from "path"
 
 export async function toggleSongProgress(
     id: string,
-    field: 'left' | 'right' | 'both' | 'completed',
+    field: 'metric1' | 'metric2' | 'metric3' | 'completed',
     context?: { studentId: string, templateId: string }
 ) {
     try {
@@ -62,21 +62,21 @@ export async function toggleSongProgress(
         let newValue: boolean
 
         switch (field) {
-            case 'left':
-                newValue = !studentSong.learnedLeft
-                updateData = { learnedLeft: newValue }
+            case 'metric1':
+                newValue = !studentSong.learned1
+                updateData = { learned1: newValue }
                 break
-            case 'right':
-                newValue = !studentSong.learnedRight
-                updateData = { learnedRight: newValue }
+            case 'metric2':
+                newValue = !studentSong.learned2
+                updateData = { learned2: newValue }
                 break
-            case 'both':
-                newValue = !studentSong.learnedBoth
-                updateData = { learnedBoth: newValue }
-                // If both hands are learned, also mark left and right as learned
+            case 'metric3':
+                newValue = !studentSong.learned3
+                updateData = { learned3: newValue }
+                // If metric3 is learned, also mark metric1 and metric2 as learned
                 if (newValue) {
-                    updateData.learnedLeft = true
-                    updateData.learnedRight = true
+                    updateData.learned1 = true
+                    updateData.learned2 = true
                 }
                 break
             case 'completed':

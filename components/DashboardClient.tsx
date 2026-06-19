@@ -21,9 +21,9 @@ interface StudentWithBooks {
     studentSongs: Array<{
         id: string
         completed: boolean
-        learnedLeft: boolean
-        learnedRight: boolean
-        learnedBoth: boolean
+        learned1: boolean
+        learned2: boolean
+        learned3: boolean
     }>
 }
 
@@ -67,7 +67,7 @@ export function DashboardClient({ students, books, teacherName, todayAttendanceM
             attendanceTotal: attendanceCount,
             completedSongs: allSongs.filter(song => song.completed).length,
             inProgressSongs: allSongs.filter(song =>
-                !song.completed && (song.learnedLeft || song.learnedRight || song.learnedBoth)
+                !song.completed && (song.learned1 || song.learned2 || song.learned3)
             ).length,
         }
     }, [filteredStudents, todayAttendanceMap])

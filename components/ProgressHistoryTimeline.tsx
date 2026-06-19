@@ -4,13 +4,14 @@ import { Clock, TrendingUp, Trash2 } from "lucide-react"
 import { deleteProgressNote } from "@/app/actions/progress"
 import { useState } from "react"
 import ConfirmDialog from "./ConfirmDialog"
+import { getInstrumentLabels } from '@/lib/instrument-labels'
 
 type ProgressNote = {
     id: string
     studentSongId: string
-    leftHand: number
-    rightHand: number
-    bothHands: number
+    metric1: number
+    metric2: number
+    metric3: number
     note: string | null
     date: Date
 }
@@ -19,13 +20,15 @@ type ProgressHistoryTimelineProps = {
     progressHistory: ProgressNote[]
     onUpdate: () => void
     onEdit: (progress: ProgressNote) => void
+    instrument?: string
 }
 
 import { Edit3 } from "lucide-react"
 
-export default function ProgressHistoryTimeline({ progressHistory, onUpdate, onEdit }: ProgressHistoryTimelineProps) {
+export default function ProgressHistoryTimeline({ progressHistory, onUpdate, onEdit, instrument }: ProgressHistoryTimelineProps) {
     const [deleteId, setDeleteId] = useState<string | null>(null)
     const [isDeleting, setIsDeleting] = useState(false)
+    const labels = getInstrumentLabels(instrument)
 
     const handleDelete = async () => {
         if (!deleteId) return
@@ -125,18 +128,18 @@ export default function ProgressHistoryTimeline({ progressHistory, onUpdate, onE
                         {/* Progress bars */}
                         <div className="space-y-2 mb-3">
                             <ProgressBar
-                                label="Mano Izquierda"
-                                value={progress.leftHand}
+                                label={labels.metric2}
+                                value={progress.metric2}
                                 color="from-blue-400 to-blue-600"
                             />
                             <ProgressBar
-                                label="Mano Derecha"
-                                value={progress.rightHand}
+                                label={labels.metric1}
+                                value={progress.metric1}
                                 color="from-green-400 to-green-600"
                             />
                             <ProgressBar
-                                label="Ambas Manos"
-                                value={progress.bothHands}
+                                label={labels.metric3}
+                                value={progress.metric3}
                                 color="from-purple-400 to-purple-600"
                             />
                         </div>

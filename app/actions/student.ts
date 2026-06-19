@@ -5,7 +5,7 @@ import { getSession } from "@/lib/session"
 import { revalidatePath } from "next/cache"
 import { createStudentSchema, updateStudentSchema } from "@/lib/validations"
 
-export async function createStudent(data: { name: string; dob?: string; notes?: string }) {
+export async function createStudent(data: { name: string; dob?: string; notes?: string; instrument?: string }) {
     try {
         const session = await getSession()
 
@@ -24,6 +24,7 @@ export async function createStudent(data: { name: string; dob?: string; notes?: 
                 name: validatedData.name,
                 dob: validatedData.dob ? new Date(validatedData.dob) : null,
                 notes: validatedData.notes,
+                instrument: validatedData.instrument || "Piano",
                 teacherId: session.user.id
             }
         })
@@ -63,7 +64,7 @@ export async function createStudent(data: { name: string; dob?: string; notes?: 
     }
 }
 
-export async function updateStudent(studentId: string, data: { name: string; dob?: string; notes?: string }) {
+export async function updateStudent(studentId: string, data: { name: string; dob?: string; notes?: string; instrument?: string }) {
     try {
         const session = await getSession()
 
@@ -91,7 +92,8 @@ export async function updateStudent(studentId: string, data: { name: string; dob
             data: {
                 name: validatedData.name,
                 dob: validatedData.dob ? new Date(validatedData.dob) : null,
-                notes: validatedData.notes
+                notes: validatedData.notes,
+                instrument: validatedData.instrument,
             }
         })
 

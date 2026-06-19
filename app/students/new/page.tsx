@@ -181,7 +181,7 @@ export default function NewStudentPage() {
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-indigo-600 dark:text-indigo-500 mt-0.5">•</span>
-                            <span>Registrar el avance de mano izquierda, derecha y ambas manos</span>
+                            <span>Registrar el avance de cada fase de aprendizaje</span>
                         </li>
                     </ul>
                 </div>

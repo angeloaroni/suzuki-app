@@ -11,13 +11,14 @@ interface SortableSong {
     title: string
     imageUrl?: string | null
     completed: boolean
-    learnedLeft: boolean
-    learnedRight: boolean
-    learnedBoth: boolean
+    learned1: boolean
+    learned2: boolean
+    learned3: boolean
     notes?: string | null
     youtubeUrl?: string | null
     audioUrl?: string | null
     progressNotesCount?: number
+    instrument?: string
 }
 
 export function SortableSongCard({ song, studentId }: { song: SortableSong, studentId: string }) {

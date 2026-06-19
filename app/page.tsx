@@ -86,7 +86,7 @@ export default function Home() {
               />
               <FeatureCard
                 title="Seguimiento Detallado"
-                description="Registra el progreso de cada mano y visualiza el avance en tiempo real."
+                description="Registra el progreso de cada pieza y visualiza el avance en tiempo real."
                 icon={<BarChart3 className="w-6 h-6 text-white" />}
                 color="bg-purple-500"
               />

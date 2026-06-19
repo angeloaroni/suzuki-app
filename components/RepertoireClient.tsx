@@ -12,9 +12,9 @@ interface Song {
         id: string
         studentId: string
         completed: boolean
-        learnedLeft: boolean
-        learnedRight: boolean
-        learnedBoth: boolean
+        learned1: boolean
+        learned2: boolean
+        learned3: boolean
         student: { id: string; name: string }
     }>
 }
@@ -49,7 +49,7 @@ export function RepertoireClient({ bookGroups }: RepertoireClientProps) {
         bookGroups.flatMap(g => g.songs.flatMap(s => s.studentSongs.map(ss => ss.studentId)))
     ).size
     const totalSongsInProgress = bookGroups.flatMap(g => g.songs).filter(s =>
-        s.studentSongs.some(ss => !ss.completed && (ss.learnedLeft || ss.learnedRight || ss.learnedBoth))
+        s.studentSongs.some(ss => !ss.completed && (ss.learned1 || ss.learned2 || ss.learned3))
     ).length
     const totalSongsCompleted = bookGroups.flatMap(g => g.songs).filter(s =>
         s.studentSongs.some(ss => ss.completed)
@@ -167,11 +167,11 @@ export function RepertoireClient({ bookGroups }: RepertoireClientProps) {
                             <div className="divide-y divide-gray-100 dark:divide-gray-700">
                                 {songs.map(song => {
                                     const playingStudents = song.studentSongs.filter(ss =>
-                                        !ss.completed && (ss.learnedLeft || ss.learnedRight || ss.learnedBoth)
+                                        !ss.completed && (ss.learned1 || ss.learned2 || ss.learned3)
                                     )
                                     const completedStudents = song.studentSongs.filter(ss => ss.completed)
                                     const notStartedStudents = song.studentSongs.filter(ss =>
-                                        !ss.completed && !ss.learnedLeft && !ss.learnedRight && !ss.learnedBoth
+                                        !ss.completed && !ss.learned1 && !ss.learned2 && !ss.learned3
                                     )
 
                                     return (

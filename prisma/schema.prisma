@@ -27,6 +27,7 @@ model Student {
   notes            String?
   accessCode       String?            @unique // Unique code for parent portal access
   teacherId        String
+  instrument       String?            @default("Piano")
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   teacher          User               @relation(fields: [teacherId], references: [id])
@@ -42,6 +43,7 @@ model BookTemplate {
   number      Int
   coverImage  String?
   teacherId   String
+  instrument  String?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   teacher     User             @relation(fields: [teacherId], references: [id])
@@ -87,9 +89,9 @@ model StudentSong {
   youtubeUrl     String?
   audioUrl       String?
   completed      Boolean      @default(false)
-  learnedLeft    Boolean      @default(false)
-  learnedRight   Boolean      @default(false)
-  learnedBoth    Boolean      @default(false)
+  learned1       Boolean      @default(false) @map("learnedLeft")
+  learned2       Boolean      @default(false) @map("learnedRight")
+  learned3       Boolean      @default(false) @map("learnedBoth")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -102,9 +104,9 @@ model StudentSong {
 model Progress {
   id            String      @id @default(uuid())
   studentSongId String
-  rightHand     Int         @default(0)
-  leftHand      Int         @default(0)
-  bothHands     Int         @default(0)
+  metric1       Int         @default(0) @map("rightHand")
+  metric2       Int         @default(0) @map("leftHand")
+  metric3       Int         @default(0) @map("bothHands")
   note          String?
   date          DateTime    @default(now())
   studentSong   StudentSong @relation(fields: [studentSongId], references: [id], onDelete: Cascade)

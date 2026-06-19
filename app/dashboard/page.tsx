@@ -47,9 +47,9 @@ export default async function Dashboard() {
                 select: {
                     id: true,
                     completed: true,
-                    learnedLeft: true,
-                    learnedRight: true,
-                    learnedBoth: true,
+                    learned1: true,
+                    learned2: true,
+                    learned3: true,
                 }
             }
         },

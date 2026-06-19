@@ -127,6 +127,7 @@ export async function createBookTemplate(data: {
     title: string
     number: number
     coverImage?: string
+    instrument?: string
     songs: Array<{ title: string; order: number }>
 }) {
     try {
@@ -152,6 +153,7 @@ export async function createBookTemplate(data: {
                 title: data.title,
                 number: data.number,
                 coverImage: data.coverImage,
+                instrument: data.instrument,
                 teacherId: session.user.id,
                 songs: {
                     create: data.songs

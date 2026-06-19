@@ -4,12 +4,14 @@ export const createStudentSchema = z.object({
     name: z.string().min(1, "El nombre es obligatorio").max(100),
     dob: z.string().optional(),
     notes: z.string().max(500).optional(),
+    instrument: z.string().max(50).optional(),
 })
 
 export const updateStudentSchema = z.object({
     name: z.string().min(1, "El nombre es obligatorio").max(100),
     dob: z.string().optional(),
     notes: z.string().max(500).optional(),
+    instrument: z.string().max(50).optional(),
 })
 
 export const loginSchema = z.object({
@@ -27,6 +29,7 @@ export const createBookTemplateSchema = z.object({
     title: z.string().min(1, "El título es obligatorio").max(200),
     number: z.number().int().positive("El número debe ser positivo"),
     coverImage: z.string().optional(),
+    instrument: z.string().max(50).optional(),
     songs: z.array(z.object({
         title: z.string().min(1),
         order: z.number().int().positive(),
@@ -35,9 +38,9 @@ export const createBookTemplateSchema = z.object({
 
 export const progressSchema = z.object({
     studentSongId: z.string().uuid(),
-    leftHand: z.number().int().min(0).max(100),
-    rightHand: z.number().int().min(0).max(100),
-    bothHands: z.number().int().min(0).max(100),
+    metric1: z.number().int().min(0).max(100),
+    metric2: z.number().int().min(0).max(100),
+    metric3: z.number().int().min(0).max(100),
     note: z.string().max(500).optional(),
 })
 

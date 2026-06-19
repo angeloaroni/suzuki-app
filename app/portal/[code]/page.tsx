@@ -49,14 +49,14 @@ export default async function ParentPortalPage({ params }: { params: { code: str
                     title: songTemplate.title,
                     order: studentSong?.order ?? songTemplate.order,
                     completed: studentSong?.completed || false,
-                    learnedLeft: studentSong?.learnedLeft || false,
-                    learnedRight: studentSong?.learnedRight || false,
-                    learnedBoth: studentSong?.learnedBoth || false,
+                    learned1: studentSong?.learned1 || false,
+                    learned2: studentSong?.learned2 || false,
+                    learned3: studentSong?.learned3 || false,
                     notes: studentSong?.notes || null,
                     lastProgress: studentSong?.progresses?.[0] ? {
-                        leftHand: studentSong.progresses[0].leftHand,
-                        rightHand: studentSong.progresses[0].rightHand,
-                        bothHands: studentSong.progresses[0].bothHands,
+                        metric1: studentSong.progresses[0].metric1,
+                        metric2: studentSong.progresses[0].metric2,
+                        metric3: studentSong.progresses[0].metric3,
                         note: studentSong.progresses[0].note,
                         date: studentSong.progresses[0].date.toISOString()
                     } : null

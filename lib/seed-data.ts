@@ -3,6 +3,7 @@ export const SUZUKI_BOOKS = [
   {
     title: "Suzuki Piano School Vol. 1",
     number: 1,
+    instrument: "Piano",
     songs: [
       { title: "Twinkle, Twinkle, Little Star - Variation A", order: 1 },
       { title: "Twinkle, Twinkle, Little Star - Variation B", order: 2 },
@@ -13,7 +14,7 @@ export const SUZUKI_BOOKS = [
       { title: "Lightly Row (Folk Song)", order: 7 },
       { title: "The Honeybee (Folk Song)", order: 8 },
       { title: "Cuckoo (Folk Song)", order: 9 },
-      { title: "French Children’s Song", order: 10 },
+      { title: "French Children's Song", order: 10 },
       { title: "London Bridge", order: 11 },
       { title: "Mary Had a Little Lamb", order: 12 },
       { title: "Go Tell Aunt Rhody", order: 13 },
@@ -33,8 +34,9 @@ export const SUZUKI_BOOKS = [
   {
     title: "Suzuki Piano School Vol. 2",
     number: 2,
+    instrument: "Piano",
     songs: [
-      { title: "A Short Story (H. Lichner)", order: 1 }, // Note: User mentioned it might be repeated or omitted, keeping as per list
+      { title: "A Short Story (H. Lichner)", order: 1 },
       { title: "Sonatina in G Major, Op. 36 No. 2, 1st Mov. (Clementi)", order: 2 },
       { title: "Arietta (Mozart)", order: 3 },
       { title: "Melody (Schumann)", order: 4 },
@@ -50,6 +52,7 @@ export const SUZUKI_BOOKS = [
   {
     title: "Suzuki Piano School Vol. 3",
     number: 3,
+    instrument: "Piano",
     songs: [
       { title: "Sonatina in C Major, Op. 36 No. 1 - 1st Mov. (Clementi)", order: 1 },
       { title: "Sonatina in C Major, Op. 36 No. 1 - 2nd Mov. (Clementi)", order: 2 },
@@ -62,4 +65,58 @@ export const SUZUKI_BOOKS = [
       { title: "Sonatina in C Major (Kuhlau) - 2nd Mov.", order: 9 },
     ],
   },
+];
+
+export const SUZUKI_VIOLIN_BOOKS = [
+  {
+    title: "Suzuki Violin School Vol. 1",
+    number: 1,
+    instrument: "Violín",
+    songs: [
+      { title: "Twinkle, Twinkle, Little Star - Variation A", order: 1 },
+      { title: "Twinkle, Twinkle, Little Star - Variation B", order: 2 },
+      { title: "Twinkle, Twinkle, Little Star - Variation C", order: 3 },
+      { title: "Twinkle, Twinkle, Little Star - Variation D", order: 4 },
+      { title: "Twinkle, Twinkle, Little Star - Variation E", order: 5 },
+      { title: "Twinkle, Twinkle, Little Star - Theme", order: 6 },
+      { title: "Lightly Row", order: 7 },
+      { title: "Song of the Wind", order: 8 },
+      { title: "Go Tell Aunt Rhody", order: 9 },
+      { title: "O Come, Little Children", order: 10 },
+      { title: "May Song", order: 11 },
+      { title: "Long, Long Ago", order: 12 },
+      { title: "Allegro (S. Suzuki)", order: 13 },
+      { title: "Perpetual Motion (S. Suzuki)", order: 14 },
+      { title: "Allegretto (S. Suzuki)", order: 15 },
+      { title: "Andantino (S. Suzuki)", order: 16 },
+      { title: "Etude (S. Suzuki)", order: 17 },
+      { title: "Minuet 1 (J. S. Bach)", order: 18 },
+      { title: "Minuet 2 (J. S. Bach)", order: 19 },
+      { title: "Minuet 3 (J. S. Bach)", order: 20 },
+      { title: "The Happy Farmer (Schumann)", order: 21 },
+      { title: "Gavotte (Gossec)", order: 22 },
+    ],
+  },
+  {
+    title: "Suzuki Violin School Vol. 2",
+    number: 2,
+    instrument: "Violín",
+    songs: [
+      { title: "Chorus from Judas Maccabaeus (Handel)", order: 1 },
+      { title: "Musette (J. S. Bach)", order: 2 },
+      { title: "Hunters' Chorus (Weber)", order: 3 },
+      { title: "Waltz (Brahms)", order: 4 },
+      { title: "Bourrée (Handel)", order: 5 },
+      { title: "The Two Grenadiers (Schumann)", order: 6 },
+      { title: "Theme from Witches' Dance (Paganini)", order: 7 },
+      { title: "Gavotte (Lully)", order: 8 },
+      { title: "Gigue (Veracini)", order: 9 },
+      { title: "Concerto in A Minor, 1st Mov. (Vivaldi)", order: 10 },
+    ],
+  },
+];
+
+export const ALL_SEED_BOOKS = [
+  ...SUZUKI_BOOKS,
+  ...SUZUKI_VIOLIN_BOOKS,
 ];
